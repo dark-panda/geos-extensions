@@ -145,6 +145,69 @@ module Geos
 				].compact
 			end
 		end
+		
+		# Build some XmlMarkup for KML. You can set various KML options like
+		# tessellate, altitudeMode, etc. Use Rails/Ruby-style code and it
+		# will be converted automatically, i.e. :altitudeMode, not
+		# :altitude_mode.
+		def to_kml *args
+			xml, options = xml_options(*args)
+
+			xml.LineString(:id => options[:id]) do
+				xml.extrude(options[:extrude]) if options[:extrude]
+				xml.tessellate(options[:tessellate]) if options[:tessellate]
+				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.coordinates do
+					self.to_a.each do
+						xml << (self.to_a.join(','))
+					end
+				end
+			end
+		end
+
+		# Build some XmlMarkup for GeoRSS GML. You should include the
+		# appropriate georss and gml XML namespaces in your document.
+		def to_georss *args
+			xml, options = xml_options(*args)
+
+			xml.georss(:where) do
+				xml.gml(:LineString) do
+					xml.gml(:posList) do
+						xml << self.to_a.collect do |p|
+							"#{p[1]} #{p[0]}"
+						end.join(' ')
+					end
+				end
+			end
+		end
+
+		# Returns a Hash suitable for converting to JSON.
+		#
+		# Options:
+		#
+		# * :encoded - enable or disable Google Maps encoding. The default is
+		#   true.
+		# * :level - set the level of the Google Maps encoding algorithm.
+		def to_jsonable options = {}
+			options = {
+				:encoded => true,
+				:level => 3
+			}.merge options
+
+			if options[:encoded]
+				{
+					:type => 'lineString',
+					:encoded => true
+				}.merge(GMapsLineEncoder.encode(self.to_a, options[:level]))
+			else
+				{
+					:type => 'lineString',
+					:encoded => false,
+					:points => self.to_a
+				}
+			end
+		end
+		
 	end
 
 
