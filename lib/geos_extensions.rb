@@ -263,6 +263,41 @@ module Geos
 		def lower_left
 			self
 		end
+		
+		# Build some XmlMarkup for KML. You can set KML options for extrude and
+		# altitudeMode. Use Rails/Ruby-style code and it will be converted
+		# appropriately, i.e. :altitude_mode, not :altitudeMode.
+		def to_kml *args
+			xml, options = xml_options(*args)
+        
+			xml.Point(:id => options[:id]) do
+				xml.extrude(options[:extrude]) if options[:extrude]
+				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.coordinates(self.to_a.join(','))
+			end
+		end
+        
+		# Build some XmlMarkup for GeoRSS. You should include the
+		# appropriate georss and gml XML namespaces in your document.
+		def to_georss *args
+			xml, options = xml_options(*args)
+        
+			xml.georss(:where) do
+				xml.gml(:Point) do
+					xml.gml(:pos, "#{self.lat} #{self.lng}")
+				end
+			end
+		end
+        
+		# Returns a Hash suitable for converting to JSON.
+		def to_jsonable options = {}
+			cs = self.coord_seq
+			if self.has_z?
+				{ :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0), :z => cs.get_z(0) }
+			else
+				{ :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0) }
+			end
+		end
 	end
 
 
