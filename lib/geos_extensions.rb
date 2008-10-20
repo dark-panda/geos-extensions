@@ -1,4 +1,7 @@
 
+require 'geos'
+require 'g_maps_line_encoder'
+
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	# Returns some kind of Geometry object from the given WKB in
@@ -144,7 +147,7 @@ module Geos
 				[
 					self.get_x(p),
 					(self.dimensions >= 2 ? self.get_y(p) : nil),
-					(self.dimensions >= 3 ? self.get_z(p) : nil)
+					(self.dimensions >= 3 && self.get_z(p) > 1.7e-306 ? self.get_z(p) : nil)
 				].compact
 			end
 		end
@@ -318,6 +321,122 @@ module Geos
 		def to_g_polygon options = {}
 			self.exterior_ring.to_g_polygon options
 		end
+
+		# Build some XmlMarkup for XML. You can set various KML options like
+		# tessellate, altitudeMode, etc. Use Rails/Ruby-style code and it
+		# will be converted automatically, i.e. :altitudeMode, not
+		# :altitude_mode. You can also include interior rings by setting
+		# :interior_rings to true. The default is false.
+		def to_kml *args
+			xml, options = xml_options(*args)
+
+			xml.Polygon(:id => options[:id]) do
+				xml.extrude(options[:extrude]) if options[:extrude]
+				xml.tessellate(options[:tessellate]) if options[:tessellate]
+				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.outerBoundaryIs do
+					xml.LinearRing do
+						xml.coordinates do
+							xml << self.exterior_ring.coord_seq.to_a.collect do |p|
+								p.join(',')
+							end.join(' ')
+						end
+					end
+				end
+				(0..(self.num_interior_rings) - 1).to_a.each do |n|
+					xml.innerBoundaryIs do
+						xml.LinearRing do
+							xml.coordinates do
+								xml << self.interior_ring_n(n).coord_seq.to_a.collect do |p|
+									p.join(',')
+								end.join(' ')
+							end
+						end
+					end
+				end if options[:interior_rings] && self.num_interior_rings > 0
+			end
+		end
+
+		# Build some XmlMarkup for GeoRSS. You should include the
+		# appropriate georss and gml XML namespaces in your document.
+		def to_georss *args
+			xml, options = xml_options(*args)
+
+			xml.georss(:where) do
+				xml.gml(:Polygon) do
+					xml.gml(:exterior) do
+						xml.gml(:LinearRing) do
+							xml.gml(:posList) do
+								xml << self.exterior_ring.coord_seq.to_a.collect do |p|
+									"#{p[1]} #{p[0]}"
+								end.join(' ')
+							end
+						end
+					end
+				end
+			end
+		end
+
+		# Returns a Hash suitable for converting to JSON.
+		#
+		# Options:
+		#
+		# * :encoded - enable or disable Google Maps encoding. The default is
+		#   true.
+		# * :level - set the level of the Google Maps encoding algorithm.
+		# * :interior_rings - add interior rings to the output. The default
+		#   is false.
+		# * :style_options - any style options you want to pass along in the
+		#   JSON. These options will be automatically camelized into
+		#   Javascripty code.
+		def to_jsonable options = {}
+			options = {
+				:encoded => true,
+				:interior_rings => false
+			}.merge options
+
+			if options[:encoded]
+				ret = {
+					:type => 'polygon',
+					:encoded => true,
+					:polylines => [ GMapsLineEncoder.encode(
+							self.exterior_ring.coord_seq.to_a
+						).merge(:bounds => {
+							:sw => self.lower_left.to_a,
+							:ne => self.upper_right.to_a
+						})
+					],
+					:options => options[:style_options].then { camelize_keys(:lower) }
+				}
+
+				if options[:interior_rings] && self.num_interior_rings > 0
+					(0..(self.num_interior_rings) - 1).to_a.each do |n|
+						ret[:polylines] << GMapsLineEncoder.encode(self.interior_ring_n(n).coord_seq.to_a)
+					end
+				end
+				ret
+			else
+				ret = {
+					:type => 'polygon',
+					:encoded => false,
+					:polylines => [{
+						:points => self.exterior_ring.coord_seq.to_a,
+						:bounds => {
+							:sw => self.lower_left.to_a,
+							:ne => self.upper_right.to_a
+						}
+					}]
+				}
+				if options[:interior_rings] && self.num_interior_rings > 0
+					(0..(self.num_interior_rings) - 1).to_a.each do |n|
+						ret[:polylines] << {
+							:points => self.interior_ring_n(n).coord_seq.to_a
+						}
+					end
+				end
+				ret
+			end
+		end
 	end
 
 
@@ -392,5 +511,28 @@ module Geos
 			self.get_geometry_n(n) if n < self.num_geometries
 		end
 		alias :at :[]
+
+		# Returns a Hash suitable for converting to JSON.
+		def to_jsonable options = {}
+			self.collect do |p|
+				p.to_jsonable options
+			end
+		end
+
+		# Build some XmlMarkup for KML.
+		def to_kml *args
+			self.collect do |p|
+				p.to_kml *args
+			end
+		end
+
+		# Build some XmlMarkup for GeoRSS. Since GeoRSS is pretty trimed down,
+		# we just take the entire collection and use the exterior_ring as
+		# a Polygon. Not to bright, mind you, but until GeoRSS stops with the
+		# suck, what are we to do. You should include the appropriate georss
+		# and gml XML namespaces in your document.
+		def to_georss *args
+			self.exterior_ring.to_georss *args
+		end
 	end
 end
