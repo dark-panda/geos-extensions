@@ -7,19 +7,16 @@ module Geos
 	# Returns some kind of Geometry object from the given WKB in
 	# binary.
 	def self.from_wkb_bin wkb
-                raise RuntimeError, "Trying to convert a nil wkb bin to a geometry" if wkb.nil?
 		WkbReader.new.read(wkb)
 	end
 
 	# Returns some kind of Geometry object from the given WKB in hex.
 	def self.from_wkb wkb
-                raise RuntimeError, "Trying to convert a nil wkb to a geometry" if wkb.nil?
 		WkbReader.new.read_hex(wkb)
 	end
 
 	# Returns some kind of Geometry object from the given WKT.
 	def self.from_wkt wkt
-                raise RuntimeError, "Trying to convert a nil wkt to a geometry" if wkt.nil?
 		WktReader.new.read(wkt)
 	end
 
