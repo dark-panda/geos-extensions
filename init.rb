@@ -1,2 +1,3 @@
+
 require 'geos'
-require 'geos_extensions'
+require File.join(File.dirname(__FILE__), 'lib', 'geos_extensions')
