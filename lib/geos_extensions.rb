@@ -390,6 +390,13 @@ module Geos
 				:interior_rings => false
 			}.merge options
 
+			style_options = Hash.new
+			if options[:style_options] && !options[:style_options].empty?
+				options[:style_options].each do |k, v|
+					style_options[k.to_s.camelize(:lower)] = v
+				end
+			end
+
 			if options[:encoded]
 				ret = {
 					:type => 'polygon',
@@ -401,7 +408,7 @@ module Geos
 							:ne => self.upper_right.to_a
 						})
 					],
-					:options => options[:style_options].then { camelize_keys(:lower) }
+					:options => style_options
 				}
 
 				if options[:interior_rings] && self.num_interior_rings > 0
