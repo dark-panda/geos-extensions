@@ -1,7 +1,4 @@
 
-require 'geos'
-require 'g_maps_line_encoder'
-
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	# Returns some kind of Geometry object from the given WKB in
@@ -210,13 +207,15 @@ module Geos
 		# * :encoded - enable or disable Google Maps encoding. The default is
 		#   true.
 		# * :level - set the level of the Google Maps encoding algorithm.
+		#
+		# Encoding only works if the GMapsLineEncoder plugin is available.
 		def to_jsonable options = {}
 			options = {
 				:encoded => true,
 				:level => 3
 			}.merge options
 
-			if options[:encoded]
+			if options[:encoded] && defined?(GMapsLineEncoder)
 				{
 					:type => 'lineString',
 					:encoded => true
@@ -403,6 +402,8 @@ module Geos
 		# * :style_options - any style options you want to pass along in the
 		#   JSON. These options will be automatically camelized into
 		#   Javascripty code.
+		#
+		# Encoding only works if the GMapsLineEncoder plugin is available.
 		def to_jsonable options = {}
 			options = {
 				:encoded => true,
@@ -416,7 +417,7 @@ module Geos
 				end
 			end
 
-			if options[:encoded]
+			if options[:encoded] && defined?(GMapsLineEncoder)
 				ret = {
 					:type => 'polygon',
 					:encoded => true,
