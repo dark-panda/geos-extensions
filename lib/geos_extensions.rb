@@ -23,14 +23,33 @@ module Geos
 	# This is our base module that we use for some generic methods used all
 	# over the place.
 	class Geometry
+		protected
+
+		WKB_WRITER_OPTIONS = [ :output_dimensions, :byte_order, :include_srid ].freeze
+		def wkb_writer(options = {}) #:nodoc:
+			writer = WkbWriter.new
+			options.reject { |k, v| !WKB_WRITER_OPTIONS.include?(k) }.each do |k, v|
+				writer.send("#{k}=", v)
+			end
+			writer
+		end
+
+		public
+
 		# Spits the geometry out into WKB in binary.
-		def to_wkb_bin
-			WkbWriter.new.write(self)
+		#
+		# You can set the :output_dimensions, :byte_order and :include_srid
+		# options via the options Hash.
+		def to_wkb_bin(options = {})
+			wkb_writer(options).write(self)
 		end
 
 		# Spits the geometry out into WKB in hex.
-		def to_wkb
-			WkbWriter.new.write_hex(self)
+		#
+		# You can set the :output_dimensions, :byte_order and :include_srid
+		# options via the options Hash.
+		def to_wkb(options = {})
+			wkb_writer(options).write_hex(self)
 		end
 
 		# Spits the geometry out into WKT.
