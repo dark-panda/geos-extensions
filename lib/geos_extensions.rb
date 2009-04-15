@@ -3,18 +3,22 @@
 module Geos
 	# Returns some kind of Geometry object from the given WKB in
 	# binary.
-	def self.from_wkb_bin wkb
+	def self.from_wkb_bin(wkb)
 		WkbReader.new.read(wkb)
 	end
 
 	# Returns some kind of Geometry object from the given WKB in hex.
-	def self.from_wkb wkb
+	def self.from_wkb(wkb)
 		WkbReader.new.read_hex(wkb)
 	end
 
-	# Returns some kind of Geometry object from the given WKT.
-	def self.from_wkt wkt
-		WktReader.new.read(wkt)
+	# Returns some kind of Geometry object from the given WKT. This method
+	# will also accept PostGIS-style EWKT and its various enhancements.
+	def self.from_wkt(wkt)
+		srid, raw_wkt = wkt.scan(/^(?:SRID=([0-9]+);)?(.+)/).first
+		geom = WktReader.new.read(raw_wkt)
+		geom.srid = srid.to_i if srid
+		geom
 	end
 
 	# This is our base module that we use for some generic methods used all
@@ -49,9 +53,14 @@ module Geos
 			wkb_writer(options).write_hex(self)
 		end
 
-		# Spits the geometry out into WKT.
-		def to_wkt
-			WktWriter.new.write(self)
+		# Spits the geometry out into WKT. You can specify the :include_srid
+		# option to create a PostGIS-style EWKT output.
+		def to_wkt(options = {})
+			writer = WktWriter.new
+			ret = ''
+			ret << "SRID=#{self.srid};" if options[:include_srid]
+			ret << writer.write(self)
+			ret
 		end
 
 		# Returns a Point for the envelope's upper left coordinate.
