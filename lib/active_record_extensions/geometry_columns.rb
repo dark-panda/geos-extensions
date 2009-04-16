@@ -158,25 +158,25 @@ module Geos
 					# Stubs for documentation purposes:
 
 					# Returns a Geos geometry.
-					def geometry_column_name_geos; end
+					def __geometry_column_name_geos; end
 
 					# Returns a hex-encoded WKB String.
-					def geometry_column_name_wkb; end
+					def __geometry_column_name_wkb; end
 
 					# Returns a WKB String in binary.
-					def geometry_column_name_wkb_bin; end
+					def __geometry_column_name_wkb_bin; end
 
 					# Returns a WKT String.
-					def geometry_column_name_wkt; end
+					def __geometry_column_name_wkt; end
 
 					# Returns a hex-encoded EWKB String.
-					def geometry_column_name_ewkb; end
+					def __geometry_column_name_ewkb; end
 
 					# Returns an EWKB String in binary.
-					def geometry_column_name_ewkb_bin; end
+					def __geometry_column_name_ewkb_bin; end
 
 					# Returns an EWKT String.
-					def geometry_column_name_ewkt; end
+					def __geometry_column_name_ewkt; end
 
 					# An enhanced setter that tries to deduce how you're
 					# setting the value. The setter can handle Geos::Geometry
@@ -199,7 +199,7 @@ module Geos
 					#
 					# For WKB, you're better off manipulating the WKB directly
 					# or using proper Geos geometry objects.
-					def geometry_column_name=(geom); end
+					def __geometry_column_name=(geom); end
 
 					# An enhanced getter that accepts an options Hash or
 					# String/Symbol that can be used to determine the output
@@ -212,17 +212,17 @@ module Geos
 					#	geometry_column_name(:wkt)
 					#	geometry_column_name(:format => :wkt)
 					#	geometry_column_name_wkt
-					def geometry_column_name(options = {}); end
+					def __geometry_column_name(options = {}); end
 
-					undef geometry_column_name_geos
-					undef geometry_column_name_wkb
-					undef geometry_column_name_wkb_bin
-					undef geometry_column_name_wkt
-					undef geometry_column_name_ewkb
-					undef geometry_column_name_ewkb_bin
-					undef geometry_column_name_ewkt
-					undef geometry_column_name=
-					undef geometry_column_name
+					undef __geometry_column_name_geos
+					undef __geometry_column_name_wkb
+					undef __geometry_column_name_wkb_bin
+					undef __geometry_column_name_wkt
+					undef __geometry_column_name_ewkb
+					undef __geometry_column_name_ewkb_bin
+					undef __geometry_column_name_ewkt
+					undef __geometry_column_name=
+					undef __geometry_column_name
 			end
 		end
 	end
