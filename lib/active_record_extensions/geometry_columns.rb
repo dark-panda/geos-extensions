@@ -13,8 +13,8 @@ module Geos
 		# methods for you to make your life easier. These accessor methods will
 		# override the ActiveRecord defaults and allow you to set geometry
 		# column values using Geos geometry objects directly or with
-		# PostGIS-style extended WKT and such. See create_geospatial_accessors!
-		# for details.
+		# PostGIS-style extended WKT and such. See
+		# create_geometry_column_accessors! for details.
 		#
 		# === Caveats:
 		#
@@ -76,7 +76,7 @@ module Geos
 					#
 					# You can specify which geometry columns you want to apply
 					# these accessors using the :only and :except options.
-					def create_geospatial_accessors!(options = nil)
+					def create_geometry_column_accessors!(options = nil)
 						create_these = if options.nil?
 							self.geometry_columns.keys
 						elsif options[:except] && options[:only]
