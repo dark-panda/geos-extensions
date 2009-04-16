@@ -45,12 +45,28 @@ module Geos
 			wkb_writer(options).write(self)
 		end
 
+		# Quickly call to_wkb_bin with :include_srid set to true.
+		def to_ewkb_bin(options = {})
+			options = {
+				:include_srid => true
+			}.merge options
+			to_wkb_bin(options)
+		end
+
 		# Spits the geometry out into WKB in hex.
 		#
 		# You can set the :output_dimensions, :byte_order and :include_srid
 		# options via the options Hash.
 		def to_wkb(options = {})
 			wkb_writer(options).write_hex(self)
+		end
+
+		# Quickly call to_wkb with :include_srid set to true.
+		def to_ewkb(options = {})
+			options = {
+				:include_srid => true
+			}.merge options
+			to_wkb(options)
 		end
 
 		# Spits the geometry out into WKT. You can specify the :include_srid
@@ -61,6 +77,14 @@ module Geos
 			ret << "SRID=#{self.srid};" if options[:include_srid]
 			ret << writer.write(self)
 			ret
+		end
+
+		# Quickly call to_wkt with :include_srid set to true.
+		def to_ewkt(options = {})
+			options = {
+				:include_srid => true
+			}.merge options
+			to_wkt(options)
 		end
 
 		# Returns a Point for the envelope's upper left coordinate.
