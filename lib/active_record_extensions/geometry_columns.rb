@@ -31,6 +31,12 @@ module Geos
 				end
 			end
 
+			class SRIDNotFound < ::ActiveRecord::ActiveRecordError
+				def initialize(table_name, column)
+					super("Couldn't find SRID for #{table_name}.#{column}")
+				end
+			end
+
 			def self.included(base) #:nodoc:
 				base.extend(ClassMethods)
 			end
@@ -40,15 +46,9 @@ module Geos
 					@geometry_columns = nil
 
 				public
-					# Returns a list of available geometry columns in the
-					# table.
-					#
-					# === Examples:
-					#
-					#	SomeTable.geometry_columns
-					#	# => { "the_geom"=>#<struct #<Class:0xaaac440> srid=4326, coord_dimension=2>}
-					#	SomeTable.geometry_columns[:the_geom].srid
-					#	# => 4326
+					# Returns an Array of available geometry columns in the
+					# table. These are PostgreSQLColumns with values set for
+					# the srid and coord_dimensions properties.
 					def geometry_columns
 						if @geometry_columns.nil?
 							@geometry_columns = connection.geometry_columns(self.table_name)
@@ -78,50 +78,56 @@ module Geos
 					# these accessors using the :only and :except options.
 					def create_geometry_column_accessors!(options = nil)
 						create_these = if options.nil?
-							self.geometry_columns.keys
+							self.geometry_columns
 						elsif options[:except] && options[:only]
 							raise ArgumentError, "You can only specify either :except or :only (#{options.keys.inspect})"
 						elsif options[:except]
 							except = Array(options[:except])
-							self.geometry_columns.keys.reject { |c| except.include?(c.to_sym) }
+							self.geometry_columns.reject { |c| except.include?(c.to_sym) }
 						elsif options[:only]
 							only = Array(options[:only])
-							self.geometry_columns.keys.select { |c| only.include?(c.to_sym) }
+							self.geometry_columns.select { |c| only.include?(c.to_sym) }
 						end
 
 						create_these.each do |k|
 							self.class_eval <<-EOF
-								def #{k}=(geom)
-									self["#{k}"] = case geom
+								def #{k.name}=(geom)
+									self['#{k.name}'] = case geom
 										when Geos::Geometry
 											geom.to_ewkb
 										when /^SRID=[0-9]+;/
 											Geos.from_wkt(geom).to_ewkb
 										when /^SRID=default;/
-											geom = geom.sub(/default/, self.class.geometry_columns[:#{k}].srid.to_s)
-											Geos.from_wkt(geom).to_ewkb
+											if #{k.srid.inspect}
+												geom = geom.sub(/default/, #{k.srid.inspect}.to_s)
+												Geos.from_wkt(geom).to_ewkb
+											else
+												raise SRIDNotFound.new(self.table_name, #{k.name})
+											end
 										when /^[PLMCG]/
 											Geos.from_wkt(geom).to_wkb
 										when /^[A-Fa-f0-9]+$/
 											geom
-										else
+										when String
 											geom.unpack('H*').first.upcase
+										else
+											geom
 									end
 
 									GEOMETRY_COLUMN_OUTPUT_FORMATS.each do |f|
-										@#{k}_\#{f} = nil
+										instance_variable_set("@#{k.name}_\#{f}", nil)
 									end
 								end
 
-								def #{k}_geos
-									@#{k}_geos ||= Geos.from_wkb(self['#{k}'])
+								def #{k.name}_geos
+									@#{k.name}_geos ||= Geos.from_wkb(self['#{k.name}'])
 								end
 
-								def #{k}(options = {})
+								def #{k.name}(options = {})
 									case options
 										when String, Symbol
 											if GEOMETRY_COLUMN_OUTPUT_FORMATS.include?(options.to_sym)
-												return self.send(:"#{k}_\#{options}")
+												return self.send(:"#{k.name}_\#{options}")
 											else
 												raise ArgumentError, "Invalid option: \#{options}"
 											end
@@ -129,20 +135,20 @@ module Geos
 											options = options.symbolize_keys
 											if options[:format]
 												if GEOMETRY_COLUMN_OUTPUT_FORMATS.include?(options[:format])
-													return self.send(:"#{k}_\#{options[:format]}")
+													return self.send(:"#{k.name}_\#{options[:format]}")
 												else
 													raise ArgumentError, "Invalid option: \#{options[:format]}"
 												end
 											end
 									end
-									self['#{k}']
+									self['#{k.name}']
 								end
 							EOF
 
 							GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == :geos }.each do |f|
 								self.class_eval <<-EOF
-									def #{k}_#{f}
-										@#{k}_#{f} ||= self.#{k}_geos.to_#{f}
+									def #{k.name}_#{f}
+										@#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f} rescue nil
 									end
 								EOF
 							end
