@@ -1,6 +1,6 @@
 
 module Geos
-	module ActiveRecord
+	module ActiveRecord #:nodoc:
 
 		# This little module helps us out with geometry columns. At least, in
 		# PostgreSQL it does.
@@ -61,23 +61,18 @@ module Geos
 					# Sets up nifty setters and getters for geometry columns.
 					# The methods created look like this:
 					#
-					# * #{geometry_column_name}_geos - a Geos geometry
-					# * #{geometry_column_name}_wkb - hex-encoded WKB String
-					# * #{geometry_column_name}_wkb_bin - WKB String in binary
-					# * #{geometry_column_name}_wkt - WKT String
-					# * #{geometry_column_name}_ewkb - hex-encoded EWKB String
-					# * #{geometry_column_name}_ewkb_bin - EWKB String in
-					#   binary
-					# * #{geometry_column_name}_ewkt - EWKT String
-					# * #{geometry_column_name}=(geom) - an enhanced setter
-					#   that tries to deduce how you're setting the value.
-					#   The setter can handle Geos::Geometry objects, WKT,
-					#   EWKT and WKB and EWKB in both hex and binary.
-					# * #{geometry_column_name}(options = {}) - getter that
-					#   accepts an options Hash or String/Symbol that can be
-					#   used to determine the output format. In the options
-					#   Hash, use :format, or set the format directly as a
-					#   String or Symbol.
+					# * geometry_column_name_geos
+					# * geometry_column_name_wkb
+					# * geometry_column_name_wkb_bin
+					# * geometry_column_name_wkt
+					# * geometry_column_name_ewkb
+					# * geometry_column_name_ewkb_bin
+					# * geometry_column_name_ewkt
+					# * geometry_column_name=(geom)
+					# * geometry_column_name(options = {})
+					#
+					# Where "geometry_column_name" is the name of the actual
+					# column.
 					#
 					# You can specify which geometry columns you want to apply
 					# these accessors using the :only and :except options.
@@ -100,7 +95,10 @@ module Geos
 									self["#{k}"] = case geom
 										when Geos::Geometry
 											geom.to_ewkb
-										when /^SRID=/
+										when /^SRID=[0-9]+;/
+											Geos.from_wkt(geom).to_ewkb
+										when /^SRID=default;/
+											geom = geom.sub(/default/, self.class.geometry_columns[:#{k}].srid.to_s)
 											Geos.from_wkt(geom).to_ewkb
 										when /^[PLMCG]/
 											Geos.from_wkt(geom).to_wkb
@@ -150,6 +148,75 @@ module Geos
 							end
 						end
 					end
+
+					# Stubs for documentation purposes:
+
+					# Returns a Geos geometry.
+					def geometry_column_name_geos; end
+
+					# Returns a hex-encoded WKB String.
+					def geometry_column_name_wkb; end
+
+					# Returns a WKB String in binary.
+					def geometry_column_name_wkb_bin; end
+
+					# Returns a WKT String.
+					def geometry_column_name_wkt; end
+
+					# Returns a hex-encoded EWKB String.
+					def geometry_column_name_ewkb; end
+
+					# Returns an EWKB String in binary.
+					def geometry_column_name_ewkb_bin; end
+
+					# Returns an EWKT String.
+					def geometry_column_name_ewkt; end
+
+					# An enhanced setter that tries to deduce how you're
+					# setting the value. The setter can handle Geos::Geometry
+					# objects, WKT, EWKT and WKB and EWKB in both hex and
+					# binary.
+					#
+					# When dealing with SRIDs, you can have the SRID set
+					# automatically on WKT by setting the value as
+					# "SRID=default;GEOMETRY(...)", i.e.:
+					#
+					#	geometry_column_name = "SRID=default;POINT(1.0 1.0)"
+					#
+					# The SRID will be filled in automatically if available.
+					# Note that we're only setting the SRID on the geometry,
+					# but we're not doing any sort of re-projection or anything
+					# of the sort. If you need to convert from one SRID to
+					# another, you're stuck for the moment, but we'll be adding
+					# support for reprojections/transoformations via proj4rb
+					# soon.
+					#
+					# For WKB, you're better off manipulating the WKB directly
+					# or using proper Geos geometry objects.
+					def geometry_column_name=(geom); end
+
+					# An enhanced getter that accepts an options Hash or
+					# String/Symbol that can be used to determine the output
+					# format. In the options Hash, use :format, or set the
+					# format directly as a String or Symbol.
+					#
+					# This basically allows you to do the following, which
+					# are equivalent:
+					#
+					#	geometry_column_name(:wkt)
+					#	geometry_column_name(:format => :wkt)
+					#	geometry_column_name_wkt
+					def geometry_column_name(options = {}); end
+
+					undef geometry_column_name_geos
+					undef geometry_column_name_wkb
+					undef geometry_column_name_wkb_bin
+					undef geometry_column_name_wkt
+					undef geometry_column_name_ewkb
+					undef geometry_column_name_ewkb_bin
+					undef geometry_column_name_ewkt
+					undef geometry_column_name=
+					undef geometry_column_name
 			end
 		end
 	end
