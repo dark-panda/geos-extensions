@@ -6,7 +6,7 @@ module ActiveRecord
 		class PostgreSQLAdapter < AbstractAdapter
 			# Returns the geometry columns for the table.
 			def geometry_columns(table_name, name = nil)
-				columns(table_name, name).select { |c| c.type == :geometry }.collect do |c|
+				columns(table_name, name).select { |c| c.sql_type == 'geometry' }.collect do |c|
 					res = execute(
 						"SELECT * FROM geometry_columns WHERE f_table_name = #{quote(table_name)} AND f_geometry_column = #{quote(c.name)}",
 						"Geometry column load for #{table_name}"
