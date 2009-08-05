@@ -1,22 +1,30 @@
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
+	def self.wkb_reader_singleton
+		@@wkb_reader_singleton ||= WkbReader.new	
+	end
+
+	def self.wkt_reader_singleton
+		@@wkt_reader_singleton ||= WktReader.new
+	end
+
 	# Returns some kind of Geometry object from the given WKB in
 	# binary.
 	def self.from_wkb_bin(wkb)
-		WkbReader.new.read(wkb)
+		self.wkb_reader_singleton.read(wkb)
 	end
 
 	# Returns some kind of Geometry object from the given WKB in hex.
 	def self.from_wkb(wkb)
-		WkbReader.new.read_hex(wkb)
+		self.wkb_reader_singleton.read_hex(wkb)
 	end
 
 	# Returns some kind of Geometry object from the given WKT. This method
 	# will also accept PostGIS-style EWKT and its various enhancements.
 	def self.from_wkt(wkt)
 		srid, raw_wkt = wkt.scan(/^(?:SRID=([0-9]+);)?(.+)/).first
-		geom = WktReader.new.read(raw_wkt)
+		geom = self.wkt_reader_singleton.read(raw_wkt)
 		geom.srid = srid.to_i if srid
 		geom
 	end
@@ -90,25 +98,25 @@ module Geos
 		# Returns a Point for the envelope's upper left coordinate.
 		def upper_left
 			cs = self.envelope.exterior_ring.coord_seq
-			WktReader.new.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
+			@upper_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
 		end
 
 		# Returns a Point for the envelope's upper right coordinate.
 		def upper_right
 			cs = self.envelope.exterior_ring.coord_seq
-			WktReader.new.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
+			@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
 		end
 
 		# Returns a Point for the envelope's lower right coordinate.
 		def lower_right
 			cs = self.envelope.exterior_ring.coord_seq
-			WktReader.new.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
+			@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
 		end
 
 		# Returns a Point for the envelope's lower left coordinate.
 		def lower_left
 			cs = self.envelope.exterior_ring.coord_seq
-			WktReader.new.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
+			@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
 		end
 
 		# Returns a new GLatLngBounds object with the proper GLatLngs in place
