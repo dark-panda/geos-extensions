@@ -528,6 +528,8 @@ module Geos
 
 
 	class GeometryCollection
+		include Enumerable
+
 		# Returns a Ruby Array of GPolylines for each geometry in the
 		# collection.
 		def to_g_polyline options = {}
@@ -558,30 +560,6 @@ module Geos
 			end
 			nil
 		end
-
-		# Same as each but also provides an index for the block's second
-		# argument.
-		def each_with_index
-			(0..(self.num_geometries - 1)).to_a.each do |p|
-				yield self.get_geometry_n(p), p
-			end
-			nil
-		end
-
-		# Returns a new array with the results of running block once for every
-		# element in the collection.
-		def collect &block
-			retval = Array.new
-			self.each do |r|
-				if block
-					retval << yield(r)
-				else
-					retval << r
-				end
-			end
-			retval
-		end
-		alias :map :collect
 
 		# Returns the first geometry from the collection.
 		def first
