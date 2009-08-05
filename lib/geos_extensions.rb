@@ -287,13 +287,32 @@ module Geos
 		# Returns the Y coordinate of the Point, which is actually the
 		# latitude.
 		def lat
-			self.coord_seq.get_y(0)
+			self.to_a[1]
 		end
 
 		# Returns the X coordinate of the Point, which is actually the
 		# longitude.
 		def lng
-			self.coord_seq.get_x(0)
+			self.to_a[0]
+		end
+
+		# Returns the X coordinate of the Point.
+		def x
+			self.lng
+		end
+
+		# Returns the Y coordinate of the Point.
+		def y
+			self.lat
+		end
+
+		# Returns the Z coordinate of the Point.
+		def z
+			if self.has_z?
+				self.to_a[2]
+			else
+				nil
+			end
 		end
 
 		# Returns the Point's coordinates as an Array in the following format:
