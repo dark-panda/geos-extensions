@@ -276,7 +276,12 @@ module Geos
 	class Point
 		# Returns a new GLatLng.
 		def to_g_lat_lng
-			"new GLatLng(#{self.coord_seq.get_y(0)}, #{self.coord_seq.get_x(0)})"
+			"new GLatLng(#{self.lat}, #{self.lng})"
+		end
+
+		# Returns a new GPoint
+		def to_g_point
+			"new GPoint(#{self.x}, #{self.y})"
 		end
 
 		# Returns the Y coordinate of the Point, which is actually the
