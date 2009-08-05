@@ -323,7 +323,7 @@ module Geos
 		# dimension.
 		def to_a
 			cs = self.coord_seq
-			if self.has_z?
+			@to_a ||= if self.has_z?
 				[ cs.get_x(0), cs.get_y(0), cs.get_z(0) ]
 			else
 				[ cs.get_x(0), cs.get_y(0) ]
