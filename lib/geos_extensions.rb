@@ -249,18 +249,18 @@ module Geos
 		#   true.
 		# * :level - set the level of the Google Maps encoding algorithm.
 		#
-		# Encoding only works if the GMapsLineEncoder plugin is available.
+		# Encoding only works if the GoogleMaps::PolylineEncoder plugin is available.
 		def to_jsonable options = {}
 			options = {
 				:encoded => true,
 				:level => 3
 			}.merge options
 
-			if options[:encoded] && defined?(GMapsLineEncoder)
+			if options[:encoded] && defined?(GoogleMaps::PolylineEncoder)
 				{
 					:type => 'lineString',
 					:encoded => true
-				}.merge(GMapsLineEncoder.encode(self.to_a, options[:level]))
+				}.merge(GoogleMaps::PolylineEncoder.encode(self.to_a, options[:level]))
 			else
 				{
 					:type => 'lineString',
@@ -468,7 +468,8 @@ module Geos
 		#   JSON. These options will be automatically camelized into
 		#   Javascripty code.
 		#
-		# Encoding only works if the GMapsLineEncoder plugin is available.
+		# Encoding only works if the GoogleMaps::PolylineEncoder plugin is
+		# available.
 		def to_jsonable options = {}
 			options = {
 				:encoded => true,
@@ -482,11 +483,11 @@ module Geos
 				end
 			end
 
-			if options[:encoded] && defined?(GMapsLineEncoder)
+			if options[:encoded] && defined?(GoogleMaps::PolylineEncoder)
 				ret = {
 					:type => 'polygon',
 					:encoded => true,
-					:polylines => [ GMapsLineEncoder.encode(
+					:polylines => [ GoogleMaps::PolylineEncoder.encode(
 							self.exterior_ring.coord_seq.to_a
 						).merge(:bounds => {
 							:sw => self.lower_left.to_a,
@@ -498,7 +499,7 @@ module Geos
 
 				if options[:interior_rings] && self.num_interior_rings > 0
 					(0..(self.num_interior_rings) - 1).to_a.each do |n|
-						ret[:polylines] << GMapsLineEncoder.encode(self.interior_ring_n(n).coord_seq.to_a)
+						ret[:polylines] << GoogleMaps::PolylineEncoder.encode(self.interior_ring_n(n).coord_seq.to_a)
 					end
 				end
 				ret
