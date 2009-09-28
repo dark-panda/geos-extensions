@@ -119,6 +119,26 @@ module Geos
 			@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
 		end
 
+		# Northern-most Y coordinate.
+		def north
+			@north ||= self.upper_right.to_a[1]
+		end
+
+		# Eastern-most X coordinate.
+		def east
+			@east ||= self.upper_right.to_a[0]
+		end
+
+		# Southern-most Y coordinate.
+		def south
+			@south ||= self.lower_left.to_a[1]
+		end
+
+		# Western-most X coordinate.
+		def west
+			@west ||= self.lower_left.to_a[0]
+		end
+
 		# Returns a new GLatLngBounds object with the proper GLatLngs in place
 		# for determining the geometry bounds.
 		def to_g_lat_lng_bounds
@@ -145,6 +165,24 @@ module Geos
 				opts[k.to_s.camelize(:lower)] = v
 			end
 			"new GMarker(#{self.centroid.to_g_lat_lng}, #{opts.to_json})"
+		end
+
+		# Spit out Google's JSON geocoder Point format. The extra 0 is added
+		# on as Google's format seems to like including the Z coordinate.
+		def to_g_json_point
+			{
+				:coordinates => (self.centroid.to_a << 0)
+			}
+		end
+
+		# Spit out Google's JSON geocoder ExtendedData LatLonBox format.
+		def to_g_lat_lon_box
+			{
+				:north => self.north,
+				:east => self.east,
+				:south => self.south,
+				:west => self.west
+			}
 		end
 	end
 
@@ -269,7 +307,6 @@ module Geos
 				}
 			end
 		end
-		
 	end
 
 
