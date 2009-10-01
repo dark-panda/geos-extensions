@@ -57,6 +57,15 @@ module Geos
 						@geometry_columns
 					end
 
+					# Grabs a geometry column based on name.
+					def geometry_column_by_name(name)
+						@geometry_column_by_name ||= self.geometry_columns.inject(HashWithIndifferentAccess.new) do |memo, obj|
+							memo[obj.name] = obj
+							memo
+						end
+						@geometry_column_by_name[name]
+					end
+
 				protected
 					# Sets up nifty setters and getters for geometry columns.
 					# The methods created look like this:
