@@ -326,22 +326,16 @@ module Geos
 		def lat
 			self.to_a[1]
 		end
+		alias :latitude :lat
+		alias :y :lat
 
 		# Returns the X coordinate of the Point, which is actually the
 		# longitude.
 		def lng
 			self.to_a[0]
 		end
-
-		# Returns the X coordinate of the Point.
-		def x
-			self.lng
-		end
-
-		# Returns the Y coordinate of the Point.
-		def y
-			self.lat
-		end
+		alias :longitude :lng
+		alias :x :lng
 
 		# Returns the Z coordinate of the Point.
 		def z
