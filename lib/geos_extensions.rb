@@ -1,4 +1,10 @@
 
+begin
+	require 'google_maps/polyline_encoder'
+rescue MissingSourceFile
+	# do nothing
+end
+
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	def self.wkb_reader_singleton
