@@ -1,7 +1,7 @@
 
 begin
 	require 'google_maps/polyline_encoder'
-rescue MissingSourceFile
+rescue LoadError
 	# do nothing
 end
 
