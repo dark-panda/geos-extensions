@@ -99,7 +99,7 @@ module Geos
 						end
 
 						create_these.each do |k|
-							self.class_eval <<-EOF
+							self.class_eval(%{
 								def #{k.name}=(geom)
 									self['#{k.name}'] = case geom
 										when Geos::Geometry
@@ -152,14 +152,14 @@ module Geos
 									end
 									self['#{k.name}']
 								end
-							EOF
+							})
 
 							GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == :geos }.each do |f|
-								self.class_eval <<-EOF
+								self.class_eval(%{
 									def #{k.name}_#{f}
 										@#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f} rescue nil
 									end
-								EOF
+								})
 							end
 						end
 					end

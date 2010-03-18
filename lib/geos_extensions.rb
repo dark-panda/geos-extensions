@@ -8,7 +8,7 @@ end
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	def self.wkb_reader_singleton
-		@@wkb_reader_singleton ||= WkbReader.new	
+		@@wkb_reader_singleton ||= WkbReader.new
 	end
 
 	def self.wkt_reader_singleton
@@ -249,7 +249,7 @@ module Geos
 				].compact
 			end
 		end
-		
+
 		# Build some XmlMarkup for KML. You can set various KML options like
 		# tessellate, altitudeMode, etc. Use Rails/Ruby-style code and it
 		# will be converted automatically, i.e. :altitudeMode, not
@@ -386,7 +386,7 @@ module Geos
 		def lower_left
 			self
 		end
-		
+
 		# Build some XmlMarkup for KML. You can set KML options for extrude and
 		# altitudeMode. Use Rails/Ruby-style code and it will be converted
 		# appropriately, i.e. :altitude_mode, not :altitudeMode.
@@ -625,7 +625,7 @@ module Geos
 		# Build some XmlMarkup for KML.
 		def to_kml *args
 			self.collect do |p|
-				p.to_kml *args
+				p.to_kml(*args)
 			end
 		end
 
@@ -635,7 +635,7 @@ module Geos
 		# suck, what are we to do. You should include the appropriate georss
 		# and gml XML namespaces in your document.
 		def to_georss *args
-			self.exterior_ring.to_georss *args
+			self.exterior_ring.to_georss(*args)
 		end
 	end
 end
