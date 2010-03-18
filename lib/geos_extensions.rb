@@ -103,26 +103,42 @@ module Geos
 
 		# Returns a Point for the envelope's upper left coordinate.
 		def upper_left
-			cs = self.envelope.exterior_ring.coord_seq
-			@upper_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
+			if @upper_left
+				@upper_left
+			else
+				cs = self.envelope.exterior_ring.coord_seq
+				@upper_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
+			end
 		end
 
 		# Returns a Point for the envelope's upper right coordinate.
 		def upper_right
-			cs = self.envelope.exterior_ring.coord_seq
-			@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
+			if @upper_right
+				@upper_right
+			else
+				cs = self.envelope.exterior_ring.coord_seq
+				@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
+			end
 		end
 
 		# Returns a Point for the envelope's lower right coordinate.
 		def lower_right
-			cs = self.envelope.exterior_ring.coord_seq
-			@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
+			if @lower_right
+				@lower_right
+			else
+				cs = self.envelope.exterior_ring.coord_seq
+				@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
+			end
 		end
 
 		# Returns a Point for the envelope's lower left coordinate.
 		def lower_left
-			cs = self.envelope.exterior_ring.coord_seq
-			@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
+			if @lower_left
+				@lower_left
+			else
+				cs = self.envelope.exterior_ring.coord_seq
+				@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
+			end
 		end
 
 		# Northern-most Y coordinate.
