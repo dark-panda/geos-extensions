@@ -190,6 +190,24 @@ module Geos
 				:west => self.west
 			}
 		end
+
+		# Spits out a bounding box the way Flickr likes it. You can set the
+		# precision of the rounding using the :precision option. In order to
+		# ensure that the box is indeed a box and not merely a point, the
+		# southwest coordinates are floored and the northeast point ceiled.
+		def to_flickr_bbox(options = {})
+			options = {
+				:precision => 1
+			}.merge(options)
+			precision = 10.0 ** options[:precision]
+
+			[
+				(self.west  * precision).floor / precision,
+				(self.south * precision).floor / precision,
+				(self.east  * precision).ceil / precision,
+				(self.north * precision).ceil / precision
+			].join(',')
+		end
 	end
 
 
