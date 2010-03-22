@@ -107,7 +107,7 @@ module Geos
 				@upper_left
 			else
 				cs = self.envelope.exterior_ring.coord_seq
-				@upper_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
+				@upper_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
 			end
 		end
 
@@ -117,7 +117,7 @@ module Geos
 				@upper_right
 			else
 				cs = self.envelope.exterior_ring.coord_seq
-				@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
+				@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
 			end
 		end
 
@@ -127,7 +127,7 @@ module Geos
 				@lower_right
 			else
 				cs = self.envelope.exterior_ring.coord_seq
-				@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
+				@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
 			end
 		end
 
@@ -137,7 +137,7 @@ module Geos
 				@lower_left
 			else
 				cs = self.envelope.exterior_ring.coord_seq
-				@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
+				@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
 			end
 		end
 
