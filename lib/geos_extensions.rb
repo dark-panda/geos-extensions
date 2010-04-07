@@ -35,6 +35,67 @@ module Geos
 		geom
 	end
 
+	# Returns some kind of Geometry object from a String provided by a Google
+	# Maps object. For instance, calling toString() on a GLatLng will output
+	# (lat, lng), while calling on a GLatLngBounds will produce
+	# ((sw lat, sw lng), (ne lat, ne lng)). This method handles both GLatLngs
+	# and GLatLngBounds. In the case of GLatLngs, we return a new Geos::Point,
+	# while for GLatLngBounds we return a Geos::Polygon that encompasses the
+	# bounds. Passing a non-false expression in the second parameter will
+	# cause the geometry to be interpreted as a GPoint or a GBounds, where
+	# the values are in (x, y) format rather than (lat, lng), although
+	# using from_g_point would probably be clearer.
+	def self.from_g_lat_lng(geometry, points = false)
+		case geometry
+			when
+				/^
+					\(
+						\(
+							(-?\d+(?:\.\d+)?) # sw lat or x
+							\s*,\s*
+							(-?\d+(?:\.\d+)?) # sw lng or y
+						\)
+						\s*,\s*
+						\(
+							(-?\d+(?:\.\d+)?) # ne lat or x
+							\s*,\s*
+							(-?\d+(?:\.\d+)?) # ne lng or y
+						\)
+					\)
+				$/x
+					coords = $~.captures.collect_slice(2) { |f|
+						f.collect(&:to_f)
+					}.tap { |c|
+						c.collect!(&:reverse) unless points
+					}
+					Geos.from_wkt("LINESTRING(%s, %s)" % [
+						coords[0].join(' '),
+						coords[1].join(' ')
+					]).envelope
+			when
+				/^
+					\(
+						(-?\d+(?:\.\d+)?) # lat or x
+						\s*,\s*
+						(-?\d+(?:\.\d+)?) # lng or y
+					\)
+				$/x
+					coords = $~.captures.collect(&:to_f).tap { |c|
+						c.reverse! unless points
+					}
+					Geos.from_wkt("POINT(#{coords.join(' ')})")
+			else
+				raise "Invalid GLatLng format"
+		end
+	end
+
+	# Same as from_g_lat_lng but uses GPoints instead of GLatLngs and GBounds
+	# instead of GLatLngBounds. Equivalent to calling from_g_lat_lng with a
+	# non-false expression for the points parameter.
+	def self.from_g_point(geometry)
+		self.from_g_lat_lng(geometry, true)
+	end
+
 	# This is our base module that we use for some generic methods used all
 	# over the place.
 	class Geometry
