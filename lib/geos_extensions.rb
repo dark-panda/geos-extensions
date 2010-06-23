@@ -26,6 +26,28 @@ module Geos
 		self.wkb_reader_singleton.read_hex(wkb)
 	end
 
+	# Tries its best to return a Geometry object.
+	def self.read(geom, options = {})
+		geos = case geom
+			when Geos::Geometry
+				geom
+			when /^SRID=[0-9]+;/, /^[PLMCG]/
+				Geos.from_wkt(geom)
+			when /^[A-Fa-f0-9]+$/
+				Geos.from_wkb(geom)
+			when String
+				Geos.from_wkb(geom.unpack('H*').first.upcase)
+			else
+				raise ArgumentError.new("Invalid geometry!")
+		end
+
+		if options[:srid]
+			geos.srid = options[:srid]
+		end
+
+		geos
+	end
+
 	# Returns some kind of Geometry object from the given WKT. This method
 	# will also accept PostGIS-style EWKT and its various enhancements.
 	def self.from_wkt(wkt)

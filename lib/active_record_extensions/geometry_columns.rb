@@ -101,26 +101,22 @@ module Geos
 						create_these.each do |k|
 							self.class_eval(%{
 								def #{k.name}=(geom)
-									self['#{k.name}'] = case geom
-										when Geos::Geometry
-											geom.to_ewkb
-										when /^SRID=[0-9]+;/
-											Geos.from_wkt(geom).to_ewkb
+									geos = case geom
 										when /^SRID=default;/
 											if #{k.srid.inspect}
 												geom = geom.sub(/default/, #{k.srid.inspect}.to_s)
-												Geos.from_wkt(geom).to_ewkb
+												Geos.from_wkt(geom)
 											else
 												raise SRIDNotFound.new(self.table_name, #{k.name})
 											end
-										when /^[PLMCG]/
-											Geos.from_wkt(geom).to_wkb
-										when /^[A-Fa-f0-9]+$/
-											geom
-										when String
-											geom.unpack('H*').first.upcase
 										else
-											geom
+											Geos.read(geom)
+									end
+
+									self['#{k.name}'] = if geos.srid == 0
+										geos.to_wkb
+									else
+										geos.to_ewkb
 									end
 
 									GEOMETRY_COLUMN_OUTPUT_FORMATS.each do |f|
