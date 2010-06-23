@@ -66,6 +66,16 @@ module Geos
 						@geometry_column_by_name[name]
 					end
 
+					# Quickly grab the SRID for a geometry column.
+					def srid_for(column)
+						self.geometry_column_by_name(column).srid
+					end
+
+					# Quickly grab the number of dimensions for a geometry column.
+					def coord_dimension_for(column)
+						self.geometry_column_by_name(column).coord_dimension
+					end
+
 				protected
 					# Sets up nifty setters and getters for geometry columns.
 					# The methods created look like this:
