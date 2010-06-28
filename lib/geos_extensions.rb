@@ -7,6 +7,31 @@ end
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
+	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/
+	REGEXP_WKB_HEX = /^[A-Fa-f0-9]+$/
+	REGEXP_G_LAT_LNG_BOUNDS = /^
+		\(
+			\(
+				(-?\d+(?:\.\d+)?) # sw lat or x
+				\s*,\s*
+				(-?\d+(?:\.\d+)?) # sw lng or y
+			\)
+			\s*,\s*
+			\(
+				(-?\d+(?:\.\d+)?) # ne lat or x
+				\s*,\s*
+				(-?\d+(?:\.\d+)?) # ne lng or y
+			\)
+		\)
+	$/x
+	REGEXP_G_LAT_LNG = /^
+		\(
+			(-?\d+(?:\.\d+)?) # lat or x
+			\s*,\s*
+			(-?\d+(?:\.\d+)?) # lng or y
+		\)
+	$/x
+
 	def self.wkb_reader_singleton
 		@@wkb_reader_singleton ||= WkbReader.new
 	end
@@ -31,10 +56,12 @@ module Geos
 		geos = case geom
 			when Geos::Geometry
 				geom
-			when /^SRID=[0-9]+;/, /^[PLMCG]/
+			when REGEXP_WKT
 				Geos.from_wkt(geom)
-			when /^[A-Fa-f0-9]+$/
+			when REGEXP_WKB_HEX
 				Geos.from_wkb(geom)
+			when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
+				Geos.from_g_lat_lng(geom, options)
 			when String
 				Geos.from_wkb(geom.unpack('H*').first.upcase)
 			else
@@ -51,7 +78,7 @@ module Geos
 	# Returns some kind of Geometry object from the given WKT. This method
 	# will also accept PostGIS-style EWKT and its various enhancements.
 	def self.from_wkt(wkt)
-		srid, raw_wkt = wkt.scan(/^(?:SRID=([0-9]+);)?(.+)/).first
+		srid, raw_wkt = wkt.scan(REGEXP_WKT).first
 		geom = self.wkt_reader_singleton.read(raw_wkt)
 		geom.srid = srid.to_i if srid
 		geom
@@ -63,59 +90,41 @@ module Geos
 	# ((sw lat, sw lng), (ne lat, ne lng)). This method handles both GLatLngs
 	# and GLatLngBounds. In the case of GLatLngs, we return a new Geos::Point,
 	# while for GLatLngBounds we return a Geos::Polygon that encompasses the
-	# bounds. Passing a non-false expression in the second parameter will
-	# cause the geometry to be interpreted as a GPoint or a GBounds, where
-	# the values are in (x, y) format rather than (lat, lng), although
-	# using from_g_point would probably be clearer.
-	def self.from_g_lat_lng(geometry, points = false)
-		case geometry
-			when
-				/^
-					\(
-						\(
-							(-?\d+(?:\.\d+)?) # sw lat or x
-							\s*,\s*
-							(-?\d+(?:\.\d+)?) # sw lng or y
-						\)
-						\s*,\s*
-						\(
-							(-?\d+(?:\.\d+)?) # ne lat or x
-							\s*,\s*
-							(-?\d+(?:\.\d+)?) # ne lng or y
-						\)
-					\)
-				$/x
-					coords = $~.captures.collect_slice(2) { |f|
-						f.collect(&:to_f)
-					}.tap { |c|
-						c.collect!(&:reverse) unless points
-					}
-					Geos.from_wkt("LINESTRING(%s, %s)" % [
-						coords[0].join(' '),
-						coords[1].join(' ')
-					]).envelope
-			when
-				/^
-					\(
-						(-?\d+(?:\.\d+)?) # lat or x
-						\s*,\s*
-						(-?\d+(?:\.\d+)?) # lng or y
-					\)
-				$/x
-					coords = $~.captures.collect(&:to_f).tap { |c|
-						c.reverse! unless points
-					}
-					Geos.from_wkt("POINT(#{coords.join(' ')})")
+	# bounds. Use the option :points to interpret the incoming value as
+	# as GPoints rather than GLatLngs.
+	def self.from_g_lat_lng(geometry, options = {})
+		geom = case geometry
+			when REGEXP_G_LAT_LNG_BOUNDS
+				coords = $~.captures.collect_slice(2) { |f|
+					f.collect(&:to_f)
+				}.tap { |c|
+					c.collect!(&:reverse) unless options[:points]
+				}
+				Geos.from_wkt("LINESTRING(%s, %s)" % [
+					coords[0].join(' '),
+					coords[1].join(' ')
+				]).envelope
+			when REGEXP_G_LAT_LNG
+				coords = $~.captures.collect(&:to_f).tap { |c|
+					c.reverse! unless options[:points]
+				}
+				Geos.from_wkt("POINT(#{coords.join(' ')})")
 			else
 				raise "Invalid GLatLng format"
 		end
+
+		if options[:srid]
+			geom.srid = options[:srid]
+		end
+
+		geom
 	end
 
 	# Same as from_g_lat_lng but uses GPoints instead of GLatLngs and GBounds
 	# instead of GLatLngBounds. Equivalent to calling from_g_lat_lng with a
 	# non-false expression for the points parameter.
-	def self.from_g_point(geometry)
-		self.from_g_lat_lng(geometry, true)
+	def self.from_g_point(geometry, options = {})
+		self.from_g_lat_lng(geometry, options.merge(:points => true))
 	end
 
 	# This is our base module that we use for some generic methods used all
