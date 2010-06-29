@@ -32,6 +32,26 @@ module Geos
 		\)
 	$/x
 
+	JS_ESCAPE_MAP = {
+		'\\'    => '\\\\',
+		'</'    => '<\/',
+		"\r\n"  => '\n',
+		"\n"    => '\n',
+		"\r"    => '\n',
+		'"'     => '\\"',
+		"'"     => "\\'"
+	}
+
+	# Escape carrier returns and single and double quotes for JavaScript
+	# segments. Borrowed from ActiveSupport.
+	def self.escape_javascript(javascript) #:nodoc:
+		if javascript
+			javascript.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { JS_ESCAPE_MAP[$1] }
+		else
+			''
+		end
+	end
+
 	def self.wkb_reader_singleton
 		@@wkb_reader_singleton ||= WkbReader.new
 	end
@@ -255,8 +275,14 @@ module Geos
 
 		# Returns a new GLatLngBounds object with the proper GLatLngs in place
 		# for determining the geometry bounds.
-		def to_g_lat_lng_bounds
-			"new GLatLngBounds(#{self.lower_left.to_g_lat_lng}, #{self.upper_right.to_g_lat_lng})"
+		def to_g_lat_lng_bounds(options = {})
+			klass = if options[:short_class]
+				'GLatLngBounds'
+			else
+				'google.maps.LatLngBounds'
+			end
+
+			"new #{klass}(#{self.lower_left.to_g_lat_lng}, #{self.upper_right.to_g_lat_lng})"
 		end
 
 		# Returns a new GPolyline.
@@ -273,12 +299,18 @@ module Geos
 		# Hash works the same as the Google Maps API GMarkerOptions class does,
 		# but allows for underscored Ruby-like options which are then converted
 		# to the appropriate camel-cased Javascript options.
-		def to_g_marker options = {}
+		def to_g_marker marker_options = {}, options = {}
+			klass = if options[:short_class]
+				'GMarker'
+			else
+				'google.maps.Marker'
+			end
+
 			opts = Hash.new
-			options.each do |k, v|
+			marker_options.each do |k, v|
 				opts[k.to_s.camelize(:lower)] = v
 			end
-			"new GMarker(#{self.centroid.to_g_lat_lng}, #{opts.to_json})"
+			"new #{klass}(#{self.centroid.to_g_lat_lng}, #{opts.to_json})"
 		end
 
 		# Spit out Google's JSON geocoder Point format. The extra 0 is added
@@ -321,9 +353,15 @@ module Geos
 
 	class CoordinateSequence
 		# Returns a Ruby Array of GLatLngs.
-		def to_g_lat_lng
+		def to_g_lat_lng(options = {})
+			klass = if options[:short_class]
+				'GLatLng'
+			else
+				'google.maps.LatLng'
+			end
+
 			self.to_a.collect do |p|
-				"new GLatLng(#{p[1]}, #{p[0]})"
+				"new #{klass}(#{p[1]}, #{p[0]})"
 			end
 		end
 
@@ -334,14 +372,21 @@ module Geos
 		# The options Hash follows the Google Maps API arguments to the
 		# GPolyline constructor and include :color, :weight, :opacity and
 		# :options. 'null' is used in place of any unset options.
-		def to_g_polyline options = {}
+		def to_g_polyline polyline_options = {}, options = {}
+			klass = if options[:short_class]
+				'GPolyline'
+			else
+				'google.maps.Polyline'
+			end
+
 			args = [
-				(options[:color] ? "'#{options[:color].escape_javascript}'" : 'null'),
-				(options[:weight] || 'null'),
-				(options[:opacity] || 'null'),
-				(options[:options] ? options[:options].to_json : 'null')
+				(polyline_options[:color] ? "'#{Geos.escape_javascript(polyline_options[:color])}'" : 'null'),
+				(polyline_options[:weight] || 'null'),
+				(polyline_options[:opacity] || 'null'),
+				(polyline_options[:polyline_options] ? polyline_options[:polyline_options].to_json : 'null')
 			].join(', ')
-			"new GPolyline([#{self.to_g_lat_lng.join(',')}], #{args})"
+
+			"new #{klass}([#{self.to_g_lat_lng.join(',')}], #{args})"
 		end
 
 		# Returns a new GPolygon. Note that this GPolygon just uses whatever
@@ -352,16 +397,22 @@ module Geos
 		# GPolygon constructor and include :stroke_color, :stroke_weight,
 		# :stroke_opacity, :fill_color, :fill_opacity and :options. 'null' is
 		# used in place of any unset options.
-		def to_g_polygon options = {}
+		def to_g_polygon polygon_options = {}, options = {}
+			klass = if options[:short_class]
+				'GPolygon'
+			else
+				'google.maps.Polygon'
+			end
+
 			args = [
-				(options[:stroke_color] ? "'#{options[:stroke_color].escape_javascript}'" : 'null'),
-				(options[:stroke_weight] || 'null'),
-				(options[:stroke_opacity] || 'null'),
-				(options[:fill_color] ? "'#{options[:fill_color].escape_javascript}'" : 'null'),
-				(options[:fille_opacity] || 'null'),
-				(options[:options] ? options[:options].to_json : 'null')
+				(polygon_options[:stroke_color] ? "'#{Geos.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
+				(polygon_options[:stroke_weight] || 'null'),
+				(polygon_options[:stroke_opacity] || 'null'),
+				(polygon_options[:fill_color] ? "'#{Geos.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
+				(polygon_options[:fille_opacity] || 'null'),
+				(polygon_options[:polygon_options] ? polygon_options[:polygon_options].to_json : 'null')
 			].join(', ')
-			"new GPolygon([#{self.to_g_lat_lng.join(',')}], #{args})"
+			"new #{klass}([#{self.to_g_lat_lng.join(',')}], #{args})"
 		end
 
 		# Returns a Ruby Array of Arrays of coordinates within the
@@ -444,13 +495,25 @@ module Geos
 
 	class Point
 		# Returns a new GLatLng.
-		def to_g_lat_lng
-			"new GLatLng(#{self.lat}, #{self.lng})"
+		def to_g_lat_lng(options = {})
+			klass = if options[:short_class]
+				'GLatLng'
+			else
+				'google.maps.LatLng'
+			end
+
+			"new #{klass}(#{self.lat}, #{self.lng})"
 		end
 
 		# Returns a new GPoint
-		def to_g_point
-			"new GPoint(#{self.x}, #{self.y})"
+		def to_g_point(options = {})
+			klass = if options[:short_class]
+				'GPoint'
+			else
+				'google.maps.Point'
+			end
+
+			"new #{klass}(#{self.x}, #{self.y})"
 		end
 
 		# Returns the Y coordinate of the Point, which is actually the
