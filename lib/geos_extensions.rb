@@ -7,7 +7,7 @@ end
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
-	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/
+	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/i
 	REGEXP_WKB_HEX = /^[A-Fa-f0-9]+$/
 	REGEXP_G_LAT_LNG_BOUNDS = /^
 		\(
@@ -99,7 +99,7 @@ module Geos
 	# will also accept PostGIS-style EWKT and its various enhancements.
 	def self.from_wkt(wkt)
 		srid, raw_wkt = wkt.scan(REGEXP_WKT).first
-		geom = self.wkt_reader_singleton.read(raw_wkt)
+		geom = self.wkt_reader_singleton.read(raw_wkt.upcase)
 		geom.srid = srid.to_i if srid
 		geom
 	end
