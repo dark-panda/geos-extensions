@@ -409,7 +409,7 @@ module Geos
 				(polygon_options[:stroke_weight] || 'null'),
 				(polygon_options[:stroke_opacity] || 'null'),
 				(polygon_options[:fill_color] ? "'#{Geos.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
-				(polygon_options[:fille_opacity] || 'null'),
+				(polygon_options[:fill_opacity] || 'null'),
 				(polygon_options[:polygon_options] ? polygon_options[:polygon_options].to_json : 'null')
 			].join(', ')
 			"new #{klass}([#{self.to_g_lat_lng.join(',')}], #{args})"
