@@ -25,11 +25,11 @@ module Geos
 		\)
 	$/x
 	REGEXP_G_LAT_LNG = /^
-		\(
+		\(?
 			(-?\d+(?:\.\d+)?) # lat or x
 			\s*,\s*
 			(-?\d+(?:\.\d+)?) # lng or y
-		\)
+		\)?
 	$/x
 
 	JS_ESCAPE_MAP = {
