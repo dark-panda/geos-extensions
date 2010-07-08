@@ -123,10 +123,12 @@ module Geos
 											Geos.read(geom)
 									end
 
-									self['#{k.name}'] = if geos.srid == 0
-										geos.to_wkb
-									else
-										geos.to_ewkb
+									self['#{k.name}'] = if geos
+										if geos.srid == 0
+											geos.to_wkb
+										else
+											geos.to_ewkb
+										end
 									end
 
 									GEOMETRY_COLUMN_OUTPUT_FORMATS.each do |f|

@@ -84,11 +84,13 @@ module Geos
 				Geos.from_g_lat_lng(geom, options)
 			when String
 				Geos.from_wkb(geom.unpack('H*').first.upcase)
+			when nil
+				nil
 			else
 				raise ArgumentError.new("Invalid geometry!")
 		end
 
-		if options[:srid]
+		if geos && options[:srid]
 			geos.srid = options[:srid]
 		end
 
