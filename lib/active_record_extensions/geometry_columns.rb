@@ -109,7 +109,7 @@ module Geos
 						end
 
 						create_these.each do |k|
-							self.class_eval(%{
+							src, line = <<-EOF, __LINE__ + 1
 								def #{k.name}=(geom)
 									geos = case geom
 										when /^SRID=default;/
@@ -160,14 +160,16 @@ module Geos
 									end
 									self['#{k.name}']
 								end
-							})
+							EOF
+							self.class_eval(src, __FILE__, line)
 
 							GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == :geos }.each do |f|
-								self.class_eval(%{
+								src, line = <<-EOF, __LINE__ + 1
 									def #{k.name}_#{f}
 										@#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f} rescue nil
 									end
-								})
+								EOF
+								self.class_eval(src, __FILE__, line)
 							end
 						end
 					end
