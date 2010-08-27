@@ -230,6 +230,8 @@ module Geos
 				@upper_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
 			end
 		end
+		alias :nw :upper_left
+		alias :northwest :upper_left
 
 		# Returns a Point for the envelope's upper right coordinate.
 		def upper_right
@@ -240,6 +242,8 @@ module Geos
 				@upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
 			end
 		end
+		alias :ne :upper_right
+		alias :northeast :upper_right
 
 		# Returns a Point for the envelope's lower right coordinate.
 		def lower_right
@@ -250,6 +254,8 @@ module Geos
 				@lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
 			end
 		end
+		alias :se :lower_right
+		alias :southeast :lower_right
 
 		# Returns a Point for the envelope's lower left coordinate.
 		def lower_left
@@ -260,26 +266,36 @@ module Geos
 				@lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
 			end
 		end
+		alias :sw :lower_left
+		alias :southwest :lower_left
 
 		# Northern-most Y coordinate.
-		def north
-			@north ||= self.upper_right.to_a[1]
+		def top
+			@top ||= self.upper_right.to_a[1]
 		end
+		alias :n :top
+		alias :north :top
 
 		# Eastern-most X coordinate.
-		def east
-			@east ||= self.upper_right.to_a[0]
+		def right
+			@right ||= self.upper_right.to_a[0]
 		end
+		alias :e :right
+		alias :east :right
 
 		# Southern-most Y coordinate.
-		def south
-			@south ||= self.lower_left.to_a[1]
+		def bottom
+			@bottom ||= self.lower_left.to_a[1]
 		end
+		alias :s :bottom
+		alias :south :bottom
 
 		# Western-most X coordinate.
-		def west
-			@west ||= self.lower_left.to_a[0]
+		def left
+			@left ||= self.lower_left.to_a[0]
 		end
+		alias :w :left
+		alias :west :left
 
 		# Returns a new GLatLngBounds object with the proper GLatLngs in place
 		# for determining the geometry bounds.
