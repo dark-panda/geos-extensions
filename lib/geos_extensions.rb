@@ -338,6 +338,12 @@ module Geos
 			}
 		end
 
+		# Spit out Google's toUrlValue format.
+		def to_g_url_value(precision = 6)
+			c = self.centroid
+			"#{GeosHelper.number_with_precision(c.lat, precision)},#{GeosHelper.number_with_precision(c.lng, precision)}"
+		end
+
 		# Spits out a bounding box the way Flickr likes it. You can set the
 		# precision of the rounding using the :precision option. In order to
 		# ensure that the box is indeed a box and not merely a point, the
