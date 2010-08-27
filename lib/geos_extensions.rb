@@ -445,7 +445,7 @@ module Geos
 		# Returns a Ruby Array of Arrays of coordinates within the
 		# CoordinateSequence in the form [ x, y, z ].
 		def to_a
-			(0..(self.length - 1)).to_a.collect do |p|
+			(0...self.length).to_a.collect do |p|
 				[
 					self.get_x(p),
 					(self.dimensions >= 2 ? self.get_y(p) : nil),
@@ -674,7 +674,7 @@ module Geos
 						end
 					end
 				end
-				(0..(self.num_interior_rings) - 1).to_a.each do |n|
+				(0...self.num_interior_rings).to_a.each do |n|
 					xml.innerBoundaryIs do
 						xml.LinearRing do
 							xml.coordinates do
