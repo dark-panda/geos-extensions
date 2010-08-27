@@ -5,6 +5,8 @@ rescue LoadError
 	# do nothing
 end
 
+require File.join(File.dirname(__FILE__), 'geos_helper')
+
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/i
@@ -31,26 +33,6 @@ module Geos
 			(-?\d+(?:\.\d+)?) # lng or y
 		\)?
 	$/x
-
-	JS_ESCAPE_MAP = {
-		'\\'    => '\\\\',
-		'</'    => '<\/',
-		"\r\n"  => '\n',
-		"\n"    => '\n',
-		"\r"    => '\n',
-		'"'     => '\\"',
-		"'"     => "\\'"
-	}
-
-	# Escape carrier returns and single and double quotes for JavaScript
-	# segments. Borrowed from ActiveSupport.
-	def self.escape_javascript(javascript) #:nodoc:
-		if javascript
-			javascript.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { JS_ESCAPE_MAP[$1] }
-		else
-			''
-		end
-	end
 
 	def self.wkb_reader_singleton
 		@@wkb_reader_singleton ||= WkbReader.new
@@ -332,7 +314,7 @@ module Geos
 
 			opts = Hash.new
 			marker_options.each do |k, v|
-				opts[k.to_s.camelize(:lower)] = v
+				opts[GeosHelper.camelize(k.to_s)] = v
 			end
 			"new #{klass}(#{self.centroid.to_g_lat_lng}, #{opts.to_json})"
 		end
@@ -404,7 +386,7 @@ module Geos
 			end
 
 			args = [
-				(polyline_options[:color] ? "'#{Geos.escape_javascript(polyline_options[:color])}'" : 'null'),
+				(polyline_options[:color] ? "'#{GeosHelper.escape_javascript(polyline_options[:color])}'" : 'null'),
 				(polyline_options[:weight] || 'null'),
 				(polyline_options[:opacity] || 'null'),
 				(polyline_options[:polyline_options] ? polyline_options[:polyline_options].to_json : 'null')
@@ -429,10 +411,10 @@ module Geos
 			end
 
 			args = [
-				(polygon_options[:stroke_color] ? "'#{Geos.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
+				(polygon_options[:stroke_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
 				(polygon_options[:stroke_weight] || 'null'),
 				(polygon_options[:stroke_opacity] || 'null'),
-				(polygon_options[:fill_color] ? "'#{Geos.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
+				(polygon_options[:fill_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
 				(polygon_options[:fill_opacity] || 'null'),
 				(polygon_options[:polygon_options] ? polygon_options[:polygon_options].to_json : 'null')
 			].join(', ')
@@ -456,12 +438,12 @@ module Geos
 		# will be converted automatically, i.e. :altitudeMode, not
 		# :altitude_mode.
 		def to_kml *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 
 			xml.LineString(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
 				xml.tessellate(options[:tessellate]) if options[:tessellate]
-				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
 				xml.coordinates do
 					self.to_a.each do
 						xml << (self.to_a.join(','))
@@ -473,7 +455,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS GML. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 
 			xml.georss(:where) do
 				xml.gml(:LineString) do
@@ -604,10 +586,10 @@ module Geos
 		# altitudeMode. Use Rails/Ruby-style code and it will be converted
 		# appropriately, i.e. :altitude_mode, not :altitudeMode.
 		def to_kml *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 			xml.Point(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
-				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
 				xml.coordinates(self.to_a.join(','))
 			end
 		end
@@ -615,7 +597,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 			xml.georss(:where) do
 				xml.gml(:Point) do
 					xml.gml(:pos, "#{self.lat} #{self.lng}")
@@ -656,12 +638,12 @@ module Geos
 		# :altitude_mode. You can also include interior rings by setting
 		# :interior_rings to true. The default is false.
 		def to_kml *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 
 			xml.Polygon(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
 				xml.tessellate(options[:tessellate]) if options[:tessellate]
-				xml.altitudeMode(options[:altitude_mode].camelize(:lower)) if options[:altitudeMode]
+				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
 				xml.outerBoundaryIs do
 					xml.LinearRing do
 						xml.coordinates do
@@ -688,7 +670,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = xml_options(*args)
+			xml, options = GeosHelper.xml_options(*args)
 
 			xml.georss(:where) do
 				xml.gml(:Polygon) do
@@ -729,7 +711,7 @@ module Geos
 			style_options = Hash.new
 			if options[:style_options] && !options[:style_options].empty?
 				options[:style_options].each do |k, v|
-					style_options[k.to_s.camelize(:lower)] = v
+					style_options[GeosHelper.camelize(k.to_s)] = v
 				end
 			end
 
