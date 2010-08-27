@@ -605,7 +605,7 @@ module Geos
 			xml, options = GeosHelper.xml_options(*args)
 			xml.Point(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
-				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
+				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitude_mode]
 				xml.coordinates(self.to_a.join(','))
 			end
 		end
@@ -659,7 +659,7 @@ module Geos
 			xml.Polygon(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
 				xml.tessellate(options[:tessellate]) if options[:tessellate]
-				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
+				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitude_mode]
 				xml.outerBoundaryIs do
 					xml.LinearRing do
 						xml.coordinates do
