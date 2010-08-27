@@ -583,24 +583,19 @@ module Geos
 			end
 		end
 
-		# Returns self.
-		def upper_left
-			self
-		end
-
-		# Returns self.
-		def upper_right
-			self
-		end
-
-		# Returns self.
-		def lower_right
-			self
-		end
-
-		# Returns self.
-		def lower_left
-			self
+		# Optimize some unnecessary code away:
+		%w{
+			upper_left upper_right lower_right lower_left
+			top bottom right left
+			n s e w
+			ne nw se sw
+		}.each do |name|
+			src, line = <<-EOF, __LINE__ + 1
+				def #{name}
+					self
+				end
+			EOF
+			self.class_eval(src, __FILE__, line)
 		end
 
 		# Build some XmlMarkup for KML. You can set KML options for extrude and
