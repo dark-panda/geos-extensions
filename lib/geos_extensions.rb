@@ -117,11 +117,17 @@ module Geos
 	def self.from_g_lat_lng(geometry, options = {})
 		geom = case geometry
 			when REGEXP_G_LAT_LNG_BOUNDS
-				coords = $~.captures.collect_slice(2) { |f|
-					f.collect(&:to_f)
-				}.tap { |c|
-					c.collect!(&:reverse) unless options[:points]
+				coords = Array.new
+				$~.captures.each_slice(2) { |f|
+					coords << f.collect(&:to_f)
 				}
+
+				unless options[:points]
+					coords.each do |c|
+						c.reverse!
+					end
+				end
+
 				Geos.from_wkt("LINESTRING(%s, %s)" % [
 					coords[0].join(' '),
 					coords[1].join(' ')
