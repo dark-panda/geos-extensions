@@ -288,17 +288,17 @@ module Geos
 				'google.maps.LatLngBounds'
 			end
 
-			"new #{klass}(#{self.lower_left.to_g_lat_lng}, #{self.upper_right.to_g_lat_lng})"
+			"new #{klass}(#{self.lower_left.to_g_lat_lng(options)}, #{self.upper_right.to_g_lat_lng(options)})"
 		end
 
 		# Returns a new GPolyline.
-		def to_g_polyline options = {}
-			self.coord_seq.to_g_polyline options
+		def to_g_polyline polyline_options = {}, options = {}
+			self.coord_seq.to_g_polyline polyline_options, options
 		end
 
 		# Returns a new GPolygon.
-		def to_g_polygon options = {}
-			self.coord_seq.to_g_polygon options
+		def to_g_polygon polygon_options = {}, options = {}
+			self.coord_seq.to_g_polygon polygon_options, options
 		end
 
 		# Returns a new GMarker at the centroid of the geometry. The options
@@ -312,11 +312,12 @@ module Geos
 				'google.maps.Marker'
 			end
 
-			opts = Hash.new
-			marker_options.each do |k, v|
-				opts[GeosHelper.camelize(k.to_s)] = v
+			opts = marker_options.inject({}) do |memo, (k, v)|
+				memo[GeosHelper.camelize(k.to_s)] = v
+				memo
 			end
-			"new #{klass}(#{self.centroid.to_g_lat_lng}, #{opts.to_json})"
+
+			"new #{klass}(#{self.centroid.to_g_lat_lng(options)}, #{opts.to_json})"
 		end
 
 		# Spit out Google's JSON geocoder Point format. The extra 0 is added
@@ -385,14 +386,21 @@ module Geos
 				'google.maps.Polyline'
 			end
 
+			poly_opts = if polyline_options[:polyline_options]
+				polyline_options[:polyline_options].inject({}) do |memo, (k, v)|
+					memo[GeosHelper.camelize(k.to_s)] = v
+					memo
+				end
+			end
+
 			args = [
 				(polyline_options[:color] ? "'#{GeosHelper.escape_javascript(polyline_options[:color])}'" : 'null'),
 				(polyline_options[:weight] || 'null'),
 				(polyline_options[:opacity] || 'null'),
-				(polyline_options[:polyline_options] ? polyline_options[:polyline_options].to_json : 'null')
+				(poly_opts ? poly_opts.to_json : 'null')
 			].join(', ')
 
-			"new #{klass}([#{self.to_g_lat_lng.join(',')}], #{args})"
+			"new #{klass}([#{self.to_g_lat_lng(options).join(', ')}], #{args})"
 		end
 
 		# Returns a new GPolygon. Note that this GPolygon just uses whatever
@@ -410,15 +418,22 @@ module Geos
 				'google.maps.Polygon'
 			end
 
+			poly_opts = if polygon_options[:polygon_options]
+				polygon_options[:polygon_options].inject({}) do |memo, (k, v)|
+					memo[GeosHelper.camelize(k.to_s)] = v
+					memo
+				end
+			end
+
 			args = [
 				(polygon_options[:stroke_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
 				(polygon_options[:stroke_weight] || 'null'),
 				(polygon_options[:stroke_opacity] || 'null'),
 				(polygon_options[:fill_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
 				(polygon_options[:fill_opacity] || 'null'),
-				(polygon_options[:polygon_options] ? polygon_options[:polygon_options].to_json : 'null')
+				(poly_opts ? poly_opts.to_json : 'null')
 			].join(', ')
-			"new #{klass}([#{self.to_g_lat_lng.join(',')}], #{args})"
+			"new #{klass}([#{self.to_g_lat_lng(options).join(', ')}], #{args})"
 		end
 
 		# Returns a Ruby Array of Arrays of coordinates within the
@@ -621,15 +636,15 @@ module Geos
 		# Returns a GPolyline of the exterior ring of the Polygon. This does
 		# not take into consideration any interior rings the Polygon may
 		# have.
-		def to_g_polyline options = {}
-			self.exterior_ring.to_g_polyline options
+		def to_g_polyline polyline_options = {}, options = {}
+			self.exterior_ring.to_g_polyline polyline_options, options
 		end
 
 		# Returns a GPolygon of the exterior ring of the Polygon. This does
 		# not take into consideration any interior rings the Polygon may
 		# have.
-		def to_g_polygon options = {}
-			self.exterior_ring.to_g_polygon options
+		def to_g_polygon polygon_options = {}, options = {}
+			self.exterior_ring.to_g_polygon polygon_options, options
 		end
 
 		# Build some XmlMarkup for XML. You can set various KML options like
@@ -765,17 +780,17 @@ module Geos
 
 		# Returns a Ruby Array of GPolylines for each geometry in the
 		# collection.
-		def to_g_polyline options = {}
+		def to_g_polyline polyline_options = {}, options = {}
 			self.collect do |p|
-				p.to_g_polyline options = {}
+				p.to_g_polyline polyline_options, options
 			end
 		end
 
 		# Returns a Ruby Array of GPolygons for each geometry in the
 		# collection.
-		def to_g_polygon options = {}
+		def to_g_polygon polygon_options = {}, options = {}
 			self.collect do |p|
-				p.to_g_polygon options = {}
+				p.to_g_polygon polygon_options, options
 			end
 		end
 
