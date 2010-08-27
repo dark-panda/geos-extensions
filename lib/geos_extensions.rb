@@ -8,7 +8,7 @@ end
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
 	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/i
-	REGEXP_WKB_HEX = /^[A-Fa-f0-9]+$/
+	REGEXP_WKB_HEX = /^[A-Fa-f0-9\s]+$/
 	REGEXP_G_LAT_LNG_BOUNDS = /^
 		\(
 			\(
