@@ -21,6 +21,7 @@ module Geos
 		# * st_overlaps
 		# * st_touches
 		# * st_within
+		# * st_dwithin
 		#
 		# The first argument to each method is can be a Geos::Geometry-based
 		# object or anything readable by Geos.read along with an optional
@@ -110,6 +111,52 @@ module Geos
 						}
 					EOF
 					base.class_eval(src, __FILE__, line)
+				end
+
+				base.class_eval do
+					named_scope :st_dwithin, lambda { |*args|
+						raise ArgumentError.new("wrong number of arguments (#{args.length} for 2-3)") unless
+							args.length.between?(2, 3)
+
+						options = {
+							:column => 'the_geom',
+							:use_index => true
+						}.merge(args.extract_options!)
+
+						geom, distance = Geos.read(args.first), args[1]
+
+						column_name = ::ActiveRecord::Base.connection.quote_table_name(options[:column])
+						column_srid = self.srid_for(options[:column])
+						geom_srid = if geom.srid == 0
+							-1
+						else
+							geom.srid
+						end
+
+						function = if options[:use_index]
+							'ST_dwithin'
+						else
+							'_ST_dwithin'
+						end
+
+						conditions = if column_srid != geom_srid
+							if column_srid == -1 || geom_srid == -1
+								%{#{function}(#{column_name}, ST_SetSRID(?, #{column_srid}), ?)}
+							else
+								%{#{function}(#{column_name}, ST_Transform(?, #{column_srid}), ?)}
+							end
+						else
+							%{#{function}(#{column_name}, ?, ?)}
+						end
+
+						{
+							:conditions => [
+								conditions,
+								geom.to_ewkb,
+								distance
+							]
+						}
+					}
 				end
 			end
 		end
