@@ -68,6 +68,9 @@ module Geos
 				RELATIONSHIPS.each do |relationship|
 					src, line = <<-EOF, __LINE__ + 1
 						named_scope :st_#{relationship}, lambda { |*args|
+							raise ArgumentError.new("wrong number of arguments (\#{args.length} for 1-2)") unless
+								args.length.between?(1, 2)
+
 							options = {
 								:column => 'the_geom',
 								:use_index => true
