@@ -75,7 +75,7 @@ module Geos
 
 							geom = Geos.read(args.first)
 							column_name = ::ActiveRecord::Base.connection.quote_table_name(options[:column])
-							column_srid = self.geometry_column_by_name(options[:column]).try(:srid) || -1
+							column_srid = self.srid_for(options[:column])
 							geom_srid = if geom.srid == 0
 								-1
 							else

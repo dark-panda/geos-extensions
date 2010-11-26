@@ -69,7 +69,7 @@ module Geos
 
 					# Quickly grab the SRID for a geometry column.
 					def srid_for(column)
-						self.geometry_column_by_name(column).srid
+						self.geometry_column_by_name(column).try(:srid) || -1
 					end
 
 					# Quickly grab the number of dimensions for a geometry column.
