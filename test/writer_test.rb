@@ -146,23 +146,76 @@ class GeosWriterTests < Test::Unit::TestCase
 			)
 		end
 
-		def test_to_g_marker
+		def test_to_g_marker_long
+			marker = @point.to_g_marker
+
+			lat, lng, json = if marker =~ /^new\s+
+				google\.maps\.Marker\(
+					new\s+google\.maps\.LatLng\(
+						(\d+\.\d+)\s*,\s*
+						(\d+\.\d+)
+					\),\s*
+						((\{\}))
+				\)
+				/x
+				[ $1, $2, $3 ]
+			end
+
+			assert_in_delta(lng, 10.00, 0.000001)
+			assert_in_delta(lat, 10.01, 0.000001)
 			assert_equal(
-				"new google.maps.Marker(new google.maps.LatLng(10.01, 10.0), {})",
-				@point.to_g_marker
+				{},
+				JSON.load(json)
+			)
+		end
+
+		def test_to_g_marker_short_class
+			marker = @point.to_g_marker({}, :short_class => true)
+
+			lat, lng, json = if marker =~ /^new\s+
+				GMarker\(
+					new\s+GLatLng\(
+						(\d+\.\d+)\s*,\s*
+						(\d+\.\d+)
+					\),\s*
+						(\{\})
+				\)
+				/x
+				[ $1, $2, $3 ]
+			end
+
+			assert_in_delta(lng, 10.00, 0.000001)
+			assert_in_delta(lat, 10.01, 0.000001)
+			assert_equal(
+				{},
+				JSON.load(json)
+			)
+		end
+
+
+		def test_to_g_marker_with_options
+			marker = @point.to_g_marker(
+				:bounce_gravity => 1,
+				:bouncy => true
 			)
 
-			assert_equal(
-				"new GMarker(new GLatLng(10.01, 10.0), {})",
-				@point.to_g_marker({}, :short_class => true)
-			)
+			lat, lng, json = if marker =~ /^new\s+
+				google\.maps\.Marker\(
+					new\s+google\.maps\.LatLng\(
+						(\d+\.\d+)\s*,\s*
+						(\d+\.\d+)
+					\),\s*
+						(\{[^}]+\})
+				\)
+				/x
+				[ $1, $2, $3 ]
+			end
 
+			assert_in_delta(lng, 10.00, 0.000001)
+			assert_in_delta(lat, 10.01, 0.000001)
 			assert_equal(
-				"new google.maps.Marker(new google.maps.LatLng(10.01, 10.0), {\"bouncy\":true,\"bounceGravity\":1})",
-				@point.to_g_marker(
-					:bounce_gravity => 1,
-					:bouncy => true
-				)
+				{ "bounceGravity" => 1, "bouncy" => true },
+				JSON.load(json)
 			)
 		end
 
