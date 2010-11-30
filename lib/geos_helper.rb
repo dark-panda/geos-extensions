@@ -1,5 +1,5 @@
 
-module GeosHelper
+module Geos::Helper
 	JS_ESCAPE_MAP = {
 		'\\'    => '\\\\',
 		'</'    => '<\/',

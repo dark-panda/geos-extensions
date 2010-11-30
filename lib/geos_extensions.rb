@@ -2,12 +2,12 @@
 GEOS_BASE = File.join(File.dirname(__FILE__))
 
 require 'geos'
-require File.join(GEOS_BASE, 'geos_helper')
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
-	autoload :ActiveRecord, File.join(GEOS_BASE, *%w{ active_record_extensions })
-	autoload :GoogleMaps, File.join(GEOS_BASE, *%w{ google_maps })
+	autoload :Helper, File.join(GEOS_BASE, 'geos_helper')
+	autoload :ActiveRecord, File.join(GEOS_BASE, 'active_record_extensions')
+	autoload :GoogleMaps, File.join(GEOS_BASE, 'google_maps')
 
 	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/i
 	REGEXP_WKB_HEX = /^[A-Fa-f0-9\s]+$/
@@ -313,7 +313,7 @@ module Geos
 			end
 
 			opts = marker_options.inject({}) do |memo, (k, v)|
-				memo[GeosHelper.camelize(k.to_s)] = v
+				memo[Geos::Helper.camelize(k.to_s)] = v
 				memo
 			end
 
@@ -341,7 +341,7 @@ module Geos
 		# Spit out Google's toUrlValue format.
 		def to_g_url_value(precision = 6)
 			c = self.centroid
-			"#{GeosHelper.number_with_precision(c.lat, precision)},#{GeosHelper.number_with_precision(c.lng, precision)}"
+			"#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
 		end
 
 		# Spits out a bounding box the way Flickr likes it. You can set the
@@ -394,13 +394,13 @@ module Geos
 
 			poly_opts = if polyline_options[:polyline_options]
 				polyline_options[:polyline_options].inject({}) do |memo, (k, v)|
-					memo[GeosHelper.camelize(k.to_s)] = v
+					memo[Geos::Helper.camelize(k.to_s)] = v
 					memo
 				end
 			end
 
 			args = [
-				(polyline_options[:color] ? "'#{GeosHelper.escape_javascript(polyline_options[:color])}'" : 'null'),
+				(polyline_options[:color] ? "'#{Geos::Helper.escape_javascript(polyline_options[:color])}'" : 'null'),
 				(polyline_options[:weight] || 'null'),
 				(polyline_options[:opacity] || 'null'),
 				(poly_opts ? poly_opts.to_json : 'null')
@@ -426,16 +426,16 @@ module Geos
 
 			poly_opts = if polygon_options[:polygon_options]
 				polygon_options[:polygon_options].inject({}) do |memo, (k, v)|
-					memo[GeosHelper.camelize(k.to_s)] = v
+					memo[Geos::Helper.camelize(k.to_s)] = v
 					memo
 				end
 			end
 
 			args = [
-				(polygon_options[:stroke_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
+				(polygon_options[:stroke_color] ? "'#{Geos::Helper.escape_javascript(polygon_options[:stroke_color])}'" : 'null'),
 				(polygon_options[:stroke_weight] || 'null'),
 				(polygon_options[:stroke_opacity] || 'null'),
-				(polygon_options[:fill_color] ? "'#{GeosHelper.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
+				(polygon_options[:fill_color] ? "'#{Geos::Helper.escape_javascript(polygon_options[:fill_color])}'" : 'null'),
 				(polygon_options[:fill_opacity] || 'null'),
 				(poly_opts ? poly_opts.to_json : 'null')
 			].join(', ')
@@ -459,12 +459,12 @@ module Geos
 		# will be converted automatically, i.e. :altitudeMode, not
 		# :altitude_mode.
 		def to_kml *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 
 			xml.LineString(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
 				xml.tessellate(options[:tessellate]) if options[:tessellate]
-				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitudeMode]
+				xml.altitudeMode(Geos::Helper.camelize(options[:altitude_mode])) if options[:altitudeMode]
 				xml.coordinates do
 					self.to_a.each do
 						xml << (self.to_a.join(','))
@@ -476,7 +476,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS GML. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 
 			xml.georss(:where) do
 				xml.gml(:LineString) do
@@ -600,10 +600,10 @@ module Geos
 		# altitudeMode. Use Rails/Ruby-style code and it will be converted
 		# appropriately, i.e. :altitude_mode, not :altitudeMode.
 		def to_kml *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 			xml.Point(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
-				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitude_mode]
+				xml.altitudeMode(Geos::Helper.camelize(options[:altitude_mode])) if options[:altitude_mode]
 				xml.coordinates(self.to_a.join(','))
 			end
 		end
@@ -611,7 +611,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 			xml.georss(:where) do
 				xml.gml(:Point) do
 					xml.gml(:pos, "#{self.lat} #{self.lng}")
@@ -652,12 +652,12 @@ module Geos
 		# :altitude_mode. You can also include interior rings by setting
 		# :interior_rings to true. The default is false.
 		def to_kml *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 
 			xml.Polygon(:id => options[:id]) do
 				xml.extrude(options[:extrude]) if options[:extrude]
 				xml.tessellate(options[:tessellate]) if options[:tessellate]
-				xml.altitudeMode(GeosHelper.camelize(options[:altitude_mode])) if options[:altitude_mode]
+				xml.altitudeMode(Geos::Helper.camelize(options[:altitude_mode])) if options[:altitude_mode]
 				xml.outerBoundaryIs do
 					xml.LinearRing do
 						xml.coordinates do
@@ -684,7 +684,7 @@ module Geos
 		# Build some XmlMarkup for GeoRSS. You should include the
 		# appropriate georss and gml XML namespaces in your document.
 		def to_georss *args
-			xml, options = GeosHelper.xml_options(*args)
+			xml, options = Geos::Helper.xml_options(*args)
 
 			xml.georss(:where) do
 				xml.gml(:Polygon) do
@@ -722,7 +722,7 @@ module Geos
 			style_options = Hash.new
 			if options[:style_options] && !options[:style_options].empty?
 				options[:style_options].each do |k, v|
-					style_options[GeosHelper.camelize(k.to_s)] = v
+					style_options[Geos::Helper.camelize(k.to_s)] = v
 				end
 			end
 
