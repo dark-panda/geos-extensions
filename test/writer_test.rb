@@ -37,10 +37,14 @@ class GeosWriterTests < Test::Unit::TestCase
 		assert_equal(POLYGON_WKB, @polygon.to_wkb)
 	end
 
-	#def test_to_wkt
-		#assert_equal(POINT_WKT, @point.to_wkt)
-		#assert_equal(POLYGON_WKT, @polygon.to_wkt)
-	#end
+	def test_to_wkt
+		if @point.to_wkt =~ /^POINT\s*\((\d+\.\d+)\s*(\d+\.\d+)\)$/
+			lng, lat = $1.to_f, $2.to_f
+		end
+
+		assert_in_delta(lng, 10.00, 0.000001)
+		assert_in_delta(lat, 10.01, 0.000001)
+	end
 
 	def test_to_ewkb_bin
 		assert_equal(POINT_EWKB_BIN, @point.to_ewkb_bin)
@@ -52,10 +56,14 @@ class GeosWriterTests < Test::Unit::TestCase
 		assert_equal(POLYGON_EWKB, @polygon.to_ewkb)
 	end
 
-	#def test_to_ewkt
-		#assert_equal(POINT_EWKT, @point.to_ewkt)
-		#assert_equal(POLYGON_EWKT, @polygon.to_ewkt)
-	#end
+	def test_to_ewkt
+		if @point.to_ewkt =~ /^SRID=4326;\s*POINT\s*\((\d+\.\d+)\s*(\d+\.\d+)\)$/
+			lng, lat = $1.to_f, $2.to_f
+		end
+
+		assert_in_delta(lng, 10.00, 0.000001)
+		assert_in_delta(lat, 10.01, 0.000001)
+	end
 
 	def test_to_g_lat_lng
 		assert_equal("new google.maps.LatLng(10.01, 10.0)", @point.to_g_lat_lng)
@@ -64,6 +72,28 @@ class GeosWriterTests < Test::Unit::TestCase
 
 	def test_to_flickr_bbox
 		assert_equal('0.0,0.0,5.0,5.0', @polygon.to_flickr_bbox)
+	end
+
+	def test_to_jsonable
+		assert_equal({
+			:type => "point",
+			:lat => 10.01,
+			:lng => 10.0
+		}, @point.to_jsonable)
+
+		assert_equal({
+			:type => "polygon",
+			:polylines => [{
+				:points => "??_ibE_ibE_~cH_~cH_hgN_hgN~po]~po]",
+				:bounds => {
+					:sw => [ 0.0, 0.0 ],
+					:ne => [ 5.0, 5.0 ]
+				},
+				:levels=>"BBBBB"
+			}],
+			:options => {},
+			:encoded => true
+		}, @polygon.to_jsonable)
 	end
 
 	if defined?(JSON)
