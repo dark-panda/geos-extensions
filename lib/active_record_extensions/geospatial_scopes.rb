@@ -50,6 +50,12 @@ module Geos
 		#   as we'll assume the SRID of the column to be whatever the SRID of
 		#   the geometry is.
 		module GeospatialScopes
+			SCOPE_METHOD = if Rails.version >= '3.0'
+				'scope'
+			else
+				'named_scope'
+			end
+
 			RELATIONSHIPS = %w{
 				contains
 				containsproperly
@@ -68,7 +74,7 @@ module Geos
 			def self.included(base)
 				RELATIONSHIPS.each do |relationship|
 					src, line = <<-EOF, __LINE__ + 1
-						named_scope :st_#{relationship}, lambda { |*args|
+						#{SCOPE_METHOD} :st_#{relationship}, lambda { |*args|
 							raise ArgumentError.new("wrong number of arguments (\#{args.length} for 1-2)") unless
 								args.length.between?(1, 2)
 
@@ -113,9 +119,9 @@ module Geos
 					base.class_eval(src, __FILE__, line)
 				end
 
-				base.class_eval do
-					named_scope :st_dwithin, lambda { |*args|
-						raise ArgumentError.new("wrong number of arguments (#{args.length} for 2-3)") unless
+				src, line = <<-EOF, __LINE__ + 1
+					#{SCOPE_METHOD} :st_dwithin, lambda { |*args|
+						raise ArgumentError.new("wrong number of arguments (\#{args.length} for 2-3)") unless
 							args.length.between?(2, 3)
 
 						options = {
@@ -141,12 +147,12 @@ module Geos
 
 						conditions = if column_srid != geom_srid
 							if column_srid == -1 || geom_srid == -1
-								%{#{function}(#{column_name}, ST_SetSRID(?, #{column_srid}), ?)}
+								%{\#{function}(\#{column_name}, ST_SetSRID(?, \#{column_srid}), ?)}
 							else
-								%{#{function}(#{column_name}, ST_Transform(?, #{column_srid}), ?)}
+								%{\#{function}(\#{column_name}, ST_Transform(?, \#{column_srid}), ?)}
 							end
 						else
-							%{#{function}(#{column_name}, ?, ?)}
+							%{\#{function}(\#{column_name}, ?, ?)}
 						end
 
 						{
@@ -157,7 +163,8 @@ module Geos
 							]
 						}
 					}
-				end
+				EOF
+				base.class_eval(src, __FILE__, line)
 			end
 		end
 	end
