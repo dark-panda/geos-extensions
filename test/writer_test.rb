@@ -1,18 +1,17 @@
 
+require 'rubygems'
 require 'test/unit'
 require 'test/test_helper'
 require 'geos'
 require 'lib/geos_extensions'
 
 begin
-	require 'rubygems'
 	require 'json'
 rescue LoadError
 	# do nothing
 end
 
 begin
-	require 'rubygems'
 	require 'builder'
 	require 'stringio'
 rescue LoadError
