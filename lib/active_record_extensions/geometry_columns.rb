@@ -1,4 +1,8 @@
 
+if defined?(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
+	require File.join(GEOS_BASE, *%w{ active_record_extensions connection_adapters postgresql_adapter })
+end
+
 module Geos
 	module ActiveRecord #:nodoc:
 

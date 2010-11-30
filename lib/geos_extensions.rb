@@ -1,14 +1,14 @@
 
-begin
-	require 'google_maps/polyline_encoder'
-rescue LoadError
-	# do nothing
-end
+GEOS_BASE = File.join(File.dirname(__FILE__))
 
-require File.join(File.dirname(__FILE__), 'geos_helper')
+require 'geos'
+require File.join(GEOS_BASE, 'geos_helper')
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
+	autoload :ActiveRecord, File.join(GEOS_BASE, *%w{ active_record_extensions })
+	autoload :GoogleMaps, File.join(GEOS_BASE, *%w{ google_maps })
+
 	REGEXP_WKT = /^(?:SRID=([0-9]+);)?(\s*[PLMCG].+)/i
 	REGEXP_WKB_HEX = /^[A-Fa-f0-9\s]+$/
 	REGEXP_G_LAT_LNG_BOUNDS = /^
