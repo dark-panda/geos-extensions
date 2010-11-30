@@ -1,7 +1,15 @@
 
 module ActiveRecord
 	module ConnectionAdapters
-		class PostgreSQLGeometryColumn < Struct.new(:name, :srid, :coord_dimension); end
+		# Allows access to the name, srid and coord_dimensions of a PostGIS
+		# geometry column in PostgreSQL.
+		class PostgreSQLGeometryColumn
+			attr_accessor :name, :srid, :coord_dimension
+
+			def initialize(name, srid = nil, coord_dimension = nil)
+				@name, @srid, @coord_dimension = name, srid, coord_dimension
+			end
+		end
 
 		class PostgreSQLAdapter < AbstractAdapter
 			# Returns the geometry columns for the table.
