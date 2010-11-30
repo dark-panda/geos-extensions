@@ -1,0 +1,100 @@
+
+== Zoocasa GEOS Extensions
+
+The Zoocasa GEOS Extensions library (ZGEL) is a set of utilities and tools that
+extend the GEOS Ruby bindings module. From http://geos.refractions.net/ ...
+
+  GEOS (Geometry Engine - Open Source) is a C++ port of the  Java Topology
+  Suite (JTS). As such, it aims to contain the complete functionality of JTS
+  in C++. This includes all the OpenGIS Simple Features for SQL spatial
+  predicate functions and spatial operators, as well as specific JTS
+  enhanced topology functions.
+
+The GEOS bindings for Ruby can be installed by installing the GEOS library
+itself using the --enable-ruby switching during configure or can often be
+installed via package managers. There is also a gem available that can be
+built using the +zoocasa-geos+ gem which is available via rubygems.org
+(https://rubygems.org/gems/zoocasa-geos).
+
+ZGEL contains a number of enhancements to the GEOS Ruby library:
+
+* a host of helper methods to make reading and writing to and from WKT
+  and WKB easier. For instance, rather than
+
+    Geos::WktReader.new.read('POINT(0 0')
+
+  you can quickly use
+
+    Geos.read('POINT(0 0)')
+
+  The Geos.read method also works with WKB in both binary and hex,
+  recognizes EWKB and EWKT and can read several of Google Maps
+  JavaScript output formats that we use for our applications. There are
+  also similar methods for outputting to WKT and WKB such as
+  Geos::Geometry#to_wkt, #to_kml, #to_georss and a number of methods to
+  output to Google Maps API v2-style JavaScript.
+
+* a bunch of helper methods to quickly grab some information from
+  geometries like Geos::Point#lat and Geos::Point#lng.
+
+* in all, some 70+ helper methods have been added to Geos::Geometry types.
+
+* Geos::GeometryCollection has been made an Enumerable.
+
+We've also included some Rails integration for PostGIS, including:
+
+* automatic detection of geometry columns and just-in-time conversions
+  for input and output to and from WKB when using PostGIS. This allows
+  you to do stuff like this with your ActiveRecord models:
+
+    m = MyModel.find(12345)
+    m.the_geom # => spits out the untouched geometry value as a string in WKB
+    m.the_geom_geos # => spits out the geometry wrapped in a Geos::Geometry object
+    m.the_geom = 'POINT(0 0)' # => setters will automatically make
+    conversions from any of the formats that the Geos.read can recognize,
+    so Google Maps formats, WKT, WKB, etc. are all converted
+    automatically.
+    m.the_geom_wkt # => automatically converts to a WKT string
+    m.the_geom_wkb_bin # => automatically converts to WKB in binary
+
+  There's also some funky SRID handling code that will automatically
+  look in the geometry_columns table to make conversions for you when
+  necessary. Saving WKT as "SRID=default; POINT(0 0)" for instance will
+  automatically set the SRID when saving the ActiveRecord, or the SRID
+  can be specified manually.
+
+* multiple geometry columns are supported and detected for
+  automatically. These column accessors are all generated dynamically at
+  run time.
+
+* automatic generation of named scopes for ActiveRecord models. The
+  usual suspects are supported:
+
+  * st_contains
+  * st_containsproperly
+  * st_covers
+  * st_coveredby
+  * st_crosses
+  * st_disjoint
+  * st_equals
+  * st_intersects
+  * st_orderingequals
+  * st_overlaps
+  * st_touches
+  * st_within
+  * st_dwithin
+
+  These let you chain together scopes to build geospatial queries:
+
+    neighbourhood = Neighbourhood.find(12345)
+    my_model = MyModel.active.
+      recent.
+      st_within(neighbourhood.the_geom_geos.envelope).
+      st_dwithin(point, 0.1).
+      all(
+        :limit => 10
+      )
+
+We wrote this code for Rails 2.3 and are currently testing on Rails
+3, but it appears that everything is working as expected and is
+working with Arel. (Things are looking good so far!)
