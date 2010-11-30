@@ -222,35 +222,16 @@ class GeosWriterTests < Test::Unit::TestCase
 		end
 
 		def test_to_georss
-		end
-	end
-=begin
-	def test_read
-		[
-			POINT_WKT,
-			POINT_EWKT,
-			POINT_WKB,
-			POINT_WKB_BIN,
-			POINT_EWKB,
-			POINT_EWKB_BIN,
-			POINT_G_LAT_LNG,
-			POINT_G_LAT_LNG_URL_VALUE
-		].each do |geom|
-			point = Geos.read(geom)
-			assert_saneness_of_point(point)
-		end
+			out = StringIO.new
+			polygon = Geos.read(POLYGON_WITH_INTERIOR_RING)
+			xml = Builder::XmlMarkup.new(:target => out)
+			polygon.to_georss(xml)
+			out.rewind
 
-		[
-			POLYGON_WKT,
-			POLYGON_EWKT,
-			POLYGON_WKB,
-			POLYGON_WKB_BIN,
-			POLYGON_EWKB,
-			POLYGON_EWKB_BIN
-		].each do |geom|
-			polygon = Geos.read(geom)
-			assert_saneness_of_polygon(polygon)
+			assert_equal(
+				"<georss:where><gml:Polygon><gml:exterior><gml:LinearRing><gml:posList>0.0 0.0 0.0 5.0 5.0 5.0 5.0 0.0 0.0 0.0</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></georss:where>",
+				out.read
+			)
 		end
 	end
-=end
 end
