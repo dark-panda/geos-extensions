@@ -30,7 +30,7 @@ module Geos
 		# == Options
 		#
 		# * :column - the column to compare against. The default is 'the_geom'.
-		# * :use_index - whether to use the `st_*` methods or the `_st_*`
+		# * :use_index - whether to use the "ST_" methods or the "\_ST_"
 		#   variants which don't use indexes. The default is true.
 		# * :wkb_options - in order to facilitate some conversions, geometries
 		#   are converted to WKB. The default is `{:include_srid => true}` to
