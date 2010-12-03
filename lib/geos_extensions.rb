@@ -291,6 +291,11 @@ module Geos
 			"new #{klass}(#{self.lower_left.to_g_lat_lng(options)}, #{self.upper_right.to_g_lat_lng(options)})"
 		end
 
+		# Returns a String in Google Maps' GLatLngBounds#toString() format.
+		def to_g_lat_lng_bounds_string(precision = 10)
+			"((#{self.lower_left.to_g_url_value(precision)}), (#{self.upper_right.to_g_url_value(precision)}))"
+		end
+
 		# Returns a new GPolyline.
 		def to_g_polyline polyline_options = {}, options = {}
 			self.coord_seq.to_g_polyline polyline_options, options
