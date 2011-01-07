@@ -13,7 +13,7 @@ begin
 	Jeweler::Tasks.new do |gem|
 		gem.name = "zoocasa-geos-extensions"
 		gem.version = "0.0.1"
-		gem.summary = "GEOS (Geometry Engine - Open Source) is a C++ port of the Java Topology Suite (JTS)."
+		gem.summary = "Extensions for the GEOS library."
 		gem.description = gem.summary
 		gem.email = "code@zoocasa.com"
 		gem.homepage = "http://github.com/zoocasa/geos-extensions"
