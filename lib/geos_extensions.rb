@@ -1,7 +1,14 @@
 
 GEOS_EXTENSIONS_BASE = File.join(File.dirname(__FILE__))
 
-require 'geos'
+begin
+  if !ENV['USE_BINARY_GEOS']
+    require 'ffi-geos'
+  end
+rescue LoadError
+end
+
+require 'geos' unless defined?(Geos)
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
