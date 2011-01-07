@@ -1,9 +1,6 @@
 
-require 'rubygems'
-require 'test/unit'
-require 'test/test_helper'
-require 'geos'
-require 'lib/geos_extensions'
+$: << File.dirname(__FILE__)
+require 'test_helper'
 
 begin
 	require 'json'
