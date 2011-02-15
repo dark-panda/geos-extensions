@@ -42,11 +42,11 @@ module Geos
 	$/x
 
 	def self.wkb_reader_singleton
-		@@wkb_reader_singleton ||= WkbReader.new
+		Thread.current[:geos_extensions_wkb_reader] ||= WkbReader.new
 	end
 
 	def self.wkt_reader_singleton
-		@@wkt_reader_singleton ||= WktReader.new
+		Thread.current[:geos_extensions_wkt_reader] ||= WktReader.new
 	end
 
 	# Returns some kind of Geometry object from the given WKB in
