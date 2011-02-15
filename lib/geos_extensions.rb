@@ -855,5 +855,5 @@ module Geos
 		def to_georss *args
 			self.exterior_ring.to_georss(*args)
 		end
-	end
+  end
 end
