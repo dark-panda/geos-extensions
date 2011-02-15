@@ -146,23 +146,22 @@ module Geos
 								end
 
 								def #{k.name}(options = {})
-									case options
+									format = case options
 										when String, Symbol
-											if GEOMETRY_COLUMN_OUTPUT_FORMATS.include?(options.to_sym)
-												return self.send(:"#{k.name}_\#{options}")
-											else
-												raise ArgumentError, "Invalid option: \#{options}"
-											end
+											options
 										when Hash
-											options = options.symbolize_keys
-											if options[:format]
-												if GEOMETRY_COLUMN_OUTPUT_FORMATS.include?(options[:format])
-													return self.send(:"#{k.name}_\#{options[:format]}")
-												else
-													raise ArgumentError, "Invalid option: \#{options[:format]}"
-												end
-											end
+											options = options.stringify_keys
+											options['format'] if options['format']
 									end
+
+									if format
+										if GEOMETRY_COLUMN_OUTPUT_FORMATS.include?(format)
+											return self.send(:"#{k.name}_\#{format}")
+										else
+											raise ArgumentError, "Invalid option: \#{options[:format]}"
+										end
+									end
+
 									self['#{k.name}']
 								end
 							EOF
