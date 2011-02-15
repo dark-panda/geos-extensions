@@ -106,11 +106,11 @@ module Geos
 						elsif options[:except] && options[:only]
 							raise ArgumentError, "You can only specify either :except or :only (#{options.keys.inspect})"
 						elsif options[:except]
-							except = Array(options[:except])
-							self.geometry_columns.reject { |c| except.include?(c.to_sym) }
+							except = Array(options[:except]).collect(&:to_s)
+							self.geometry_columns.reject { |c| except.include?(c) }
 						elsif options[:only]
-							only = Array(options[:only])
-							self.geometry_columns.select { |c| only.include?(c.to_sym) }
+							only = Array(options[:only]).collect(&:to_s)
+							self.geometry_columns.select { |c| only.include?(c) }
 						end
 
 						create_these.each do |k|
