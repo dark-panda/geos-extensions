@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{geos-extensions}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
@@ -31,8 +31,7 @@ Gem::Specification.new do |s|
     "lib/google_maps/polyline_encoder.rb",
     "test/reader_test.rb",
     "test/test_helper.rb",
-    "test/writer_test.rb",
-    "zoocasa-geos-extensions.gemspec"
+    "test/writer_test.rb"
   ]
   s.homepage = %q{http://github.com/zoocasa/geos-extensions}
   s.require_paths = ["lib"]
