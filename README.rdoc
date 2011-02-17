@@ -11,10 +11,9 @@ extend the GEOS Ruby bindings module. From http://geos.refractions.net/ ...
   enhanced topology functions.
 
 The GEOS bindings for Ruby can be installed by installing the GEOS library
-itself using the --enable-ruby switching during configure or can often be
-installed via package managers. There is also a gem available that can be
-built using the zoocasa-geos gem which is available via rubygems.org
-(https://rubygems.org/gems/zoocasa-geos).
+itself using the --enable-ruby switch during configure or can often be
+installed via package managers. There is also an FFI-based Ruby gem being
+written available at https://github.com/dark-panda/ffi-geos .
 
 ZGEL contains a number of enhancements to the GEOS Ruby library:
 
