@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "MIT-LICENSE",
     "README.rdoc",
     "Rakefile",
+    "geos-extensions.gemspec",
     "lib/active_record_extensions.rb",
     "lib/active_record_extensions/connection_adapters/postgresql_adapter.rb",
     "lib/active_record_extensions/geometry_columns.rb",
