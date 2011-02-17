@@ -784,7 +784,28 @@ module Geos
 
 
   class GeometryCollection
-    include Enumerable
+    if !GeometryCollection.included_modules.include?(Enumerable)
+      include Enumerable
+
+      # Iterates the collection through the given block.
+      def each
+        self.num_geometries.times do |n|
+          yield self.get_geometry_n(n)
+        end
+        nil
+      end
+
+      # Returns the nth geometry from the collection.
+      def [](*args)
+        self.to_a[*args]
+      end
+      alias :slice :[]
+    end
+
+    # Returns the last geometry from the collection.
+    def last
+      self.get_geometry_n(self.num_geometries - 1) if self.num_geometries > 0
+    end
 
     # Returns a Ruby Array of GPolylines for each geometry in the
     # collection.
@@ -801,37 +822,6 @@ module Geos
         p.to_g_polygon polygon_options, options
       end
     end
-
-    # Returns an Array of geometries from the collection.
-    def to_a
-      (0..(self.num_geometries - 1)).to_a.collect do |p|
-        self.get_geometry_n(p)
-      end
-    end
-
-    # Iterates the collection through the given block.
-    def each
-      (0..(self.num_geometries - 1)).to_a.each do |p|
-        yield self.get_geometry_n(p)
-      end
-      nil
-    end
-
-    # Returns the first geometry from the collection.
-    def first
-      self.get_geometry_n(0) if self.num_geometries > 0
-    end
-
-    # Returns the last geometry from the collection.
-    def last
-      self.get_geometry_n(self.num_geometries - 1) if self.num_geometries > 0
-    end
-
-    # Returns the nth geometry from the collection.
-    def [] n
-      self.get_geometry_n(n) if n < self.num_geometries
-    end
-    alias :at :[]
 
     # Returns a Hash suitable for converting to JSON.
     def to_jsonable options = {}
