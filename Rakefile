@@ -11,7 +11,7 @@ $:.push 'lib'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "zoocasa-geos-extensions"
+    gem.name = "geos-extensions"
     gem.version = "0.0.1"
     gem.summary = "Extensions for the GEOS library."
     gem.description = gem.summary
