@@ -27,7 +27,7 @@ module Geos
     #   and such. That would be a little more involved but it would be
     #   nice if Rails was aware of such things.
     module GeometryColumns
-      GEOMETRY_COLUMN_OUTPUT_FORMATS = %{ geos wkt wkb ewkt ewkb wkb_bin ewkb_bin }.freeze
+      GEOMETRY_COLUMN_OUTPUT_FORMATS = %w{ geos wkt wkb ewkt ewkb wkb_bin ewkb_bin }.freeze
 
       class InvalidGeometry < ::ActiveRecord::ActiveRecordError
         def initialize(geom)
@@ -167,7 +167,7 @@ module Geos
               EOF
               self.class_eval(src, __FILE__, line)
 
-              GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == :geos }.each do |f|
+              GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == 'geos' }.each do |f|
                 src, line = <<-EOF, __LINE__ + 1
                   def #{k.name}_#{f}
                     @#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f} rescue nil
