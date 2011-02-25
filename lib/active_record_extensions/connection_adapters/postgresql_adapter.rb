@@ -20,7 +20,7 @@ module ActiveRecord
             "Geometry column load for #{table_name}"
           )
 
-          returning(PostgreSQLGeometryColumn.new(c.name)) do |g|
+          PostgreSQLGeometryColumn.new(c.name).tap do |g|
             # since we're too stupid at the moment to understand
             # PostgreSQL schemas, let's just go with this:
             if res.ntuples == 1
