@@ -50,7 +50,7 @@ module Geos
     #   as we'll assume the SRID of the column to be whatever the SRID of
     #   the geometry is.
     module GeospatialScopes
-      SCOPE_METHOD = if Rails.version >= '3.0'
+      SCOPE_METHOD = if ::ActiveRecord::VERSION::MAJOR >= 3
         'scope'
       else
         'named_scope'
