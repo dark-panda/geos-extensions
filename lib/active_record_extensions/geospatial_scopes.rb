@@ -83,13 +83,21 @@ module Geos
                 :use_index => true
               }.merge(args.extract_options!)
 
-              geom = Geos.read(args.first)
-              column_name = ::ActiveRecord::Base.connection.quote_table_name(options[:column])
+              column_name = self.connection.quote_table_name(options[:column])
               column_srid = self.srid_for(options[:column])
-              geom_srid = if geom.srid == 0
+
+              geom = if args.first.is_a?(String) && args.first =~ /^SRID=default;/
+                args.first.sub(/default/, (column_srid || -1).to_s)
+              else
+                args.first
+              end
+
+              geos = Geos.read(geom)
+
+              geom_srid = if geos.srid == 0
                 -1
               else
-                geom.srid
+                geos.srid
               end
 
               function = if options[:use_index]
@@ -111,7 +119,7 @@ module Geos
               {
                 :conditions => [
                   conditions,
-                  geom.to_ewkb
+                  geos.to_ewkb
                 ]
               }
             }
