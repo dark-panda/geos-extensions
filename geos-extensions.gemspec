@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{geos-extensions}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = %q{2011-02-24}
+  s.date = %q{2011-02-27}
   s.description = %q{Extensions for the GEOS library.}
   s.email = %q{code@zoocasa.com}
   s.extra_rdoc_files = [
@@ -29,6 +29,9 @@ Gem::Specification.new do |s|
     "lib/geos_helper.rb",
     "lib/google_maps.rb",
     "lib/google_maps/polyline_encoder.rb",
+    "test/fixtures/foos.yml",
+    "test/geometry_columns_test.rb",
+    "test/geospatial_scopes_test.rb",
     "test/reader_test.rb",
     "test/test_helper.rb",
     "test/writer_test.rb"
@@ -38,6 +41,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.5.2}
   s.summary = %q{Extensions for the GEOS library.}
   s.test_files = [
+    "test/geometry_columns_test.rb",
+    "test/geospatial_scopes_test.rb",
     "test/reader_test.rb",
     "test/test_helper.rb",
     "test/writer_test.rb"
