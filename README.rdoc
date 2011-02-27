@@ -94,6 +94,15 @@ We've also included some Rails integration for PostGIS, including:
         :limit => 10
       )
 
-We wrote this code for Rails 2.3 and are currently testing on Rails
-3, but it appears that everything is working as expected and is
-working with Arel. (Things are looking good so far!)
+=== Running ActiveRecord Tests
+
+ActiveRecord unit tests can be run by setting the TEST_ACTIVERECORD
+environment variable when running `rake test`. The test database name
+is geos_extensions_unit_tests and requires PostGIS to be installed. The
+test scripts will try to find your postgis.sql and spatial_ref_sys.sql
+files, but if it needs a hint, set the POSTGIS_PATH environment variable
+to the directory the files are in to create the database properly. You
+can also set the database up manually before running the tests -- just
+make sure the database has PostGIS installed with the spatial_ref_sys
+table populated and you'll be fine.
+
