@@ -198,7 +198,7 @@ module Geos
       writer = WktWriter.new
       ret = ''
       ret << "SRID=#{self.srid};" if options[:include_srid]
-      ret << writer.write(self)
+      ret << writer.write(self, options)
       ret
     end
 
