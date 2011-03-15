@@ -124,8 +124,8 @@ module Geos
                 def #{k.name}=(geom)
                   geos = case geom
                     when /^SRID=default;/
-                      if #{k.srid.inspect}
-                        geom = geom.sub(/default/, #{k.srid.inspect}.to_s)
+                      if srid = self.class.srid_for(#{k.name.inspect})
+                        geom = geom.sub(/default/, srid.to_s)
                         Geos.from_wkt(geom)
                       else
                         raise SRIDNotFound.new(self.table_name, #{k.name})
