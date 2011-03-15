@@ -128,7 +128,7 @@ module Geos
                         geom = geom.sub(/default/i, srid.to_s)
                         Geos.from_wkt(geom)
                       else
-                        raise SRIDNotFound.new(self.table_name, #{k.name})
+                        raise SRIDNotFound.new(self.class.table_name, #{k.name.inspect})
                       end
                     else
                       Geos.read(geom)
