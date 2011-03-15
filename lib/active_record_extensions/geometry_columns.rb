@@ -62,6 +62,12 @@ module Geos
             @geometry_columns
           end
 
+          # Force a reload of available geometry columns.
+          def geometry_columns!
+            @geometry_columns = nil
+            geometry_columns
+          end
+
           # Grabs a geometry column based on name.
           def geometry_column_by_name(name)
             @geometry_column_by_name ||= self.geometry_columns.inject(HashWithIndifferentAccess.new) do |memo, obj|
