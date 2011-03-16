@@ -87,7 +87,7 @@ module Geos
               column_srid = self.srid_for(options[:column])
 
               geom = if args.first.is_a?(String) && args.first =~ /^SRID=default;/
-                args.first.sub(/default/, (column_srid || -1).to_s)
+                args.first.sub(/default/, column_srid.to_s)
               else
                 args.first
               end
