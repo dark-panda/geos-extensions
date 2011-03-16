@@ -126,6 +126,35 @@ if ENV['TEST_ACTIVERECORD']
       assert_saneness_of_point(foo.the_other_geom_geos)
     end
 
+    def test_create_with_no_srid_converting_to_4326
+      foo = Foo.create!(
+        :name => 'test_ewkt_create_with_no_srid_converting_to_4326',
+        :the_other_geom => POINT_WKT
+      )
+
+      foo.reload
+      assert_saneness_of_point(foo.the_other_geom_geos)
+    end
+
+    def test_create_with_no_srid_converting_to_minus_1
+      foo = Foo.create!(
+        :name => 'test_ewkt_create_with_no_srid_converting_to_minus_1',
+        :the_geom => POINT_EWKT
+      )
+
+      foo.reload
+      assert_saneness_of_point(foo.the_geom_geos)
+    end
+
+    def test_create_with_converting_from_900913_to_4326
+      assert_raise(Geos::ActiveRecord::GeometryColumns::CantConvertSRID) do
+        foo = Foo.create!(
+          :name => 'test_create_with_converting_from_900913_to_4326',
+          :the_other_geom => "SRID=900913; #{POINT_WKT}"
+        )
+      end
+    end
+
     def test_ewkt_create_with_srid_default
       foo = Foo.create!(
         :name => 'test_ewkt_create_with_srid_default',
