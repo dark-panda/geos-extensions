@@ -163,7 +163,6 @@ if ENV['TEST_ACTIVERECORD']
 
       foo.reload
       assert_saneness_of_point(foo.the_other_geom_geos)
-      foo.the_other_geom_geos
     end
 
     def test_ewkb_create
