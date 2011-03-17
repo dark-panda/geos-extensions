@@ -196,9 +196,17 @@ module Geos
     # option to create a PostGIS-style EWKT output.
     def to_wkt(options = {})
       writer = WktWriter.new
+
+      # Older versions of the Geos library don't allow for options here.
+      args = if WktWriter.instance_method(:write).arity < -1
+        [ options ]
+      else
+        []
+      end
+
       ret = ''
       ret << "SRID=#{self.srid};" if options[:include_srid]
-      ret << writer.write(self, options)
+      ret << writer.write(self, *args)
       ret
     end
 

@@ -283,5 +283,19 @@ class GeosWriterTests < Test::Unit::TestCase
         out.read
       )
     end
+
+    def test_to_wkt_handles_binary_geos_arity
+      if @point.to_wkt(:rounding_precision => 0) =~ /^POINT\s*\((\d+(\.\d+)?)\s*(\d+(\.\d+)?)\)$/
+        lng, lat = $1.to_f, $3.to_f
+      end
+
+      if defined?(Geos::FFIGeos)
+        assert_equal(lng, 10.0, 0.000001)
+        assert_equal(lat, 10.0, 0.000001)
+      else
+        assert_equal(lng, 10.00, 0.000001)
+        assert_equal(lat, 10.01, 0.000001)
+      end
+    end
   end
 end
