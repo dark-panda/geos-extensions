@@ -84,5 +84,179 @@ if ENV['TEST_ACTIVERECORD']
       assert_equal([1, 2, 3], Foo.st_disjoint('SRID=4269; POINT(100 100)', :column => :the_other_geom).all.collect(&:id).sort)
       assert_equal([3], Foo.st_contains('SRID=4269; POINT(7 7)', :column => :the_other_geom).all.collect(&:id).sort)
     end
+
+    def test_order_by_distance
+      assert_equal([3, 1, 2], Foo.order_by_distance('POINT(1 1)').all.collect(&:id))
+    end
+
+    def test_order_by_distance_desc
+      assert_equal([2, 1, 3], Foo.order_by_distance('POINT(1 1)', :desc => true).all.collect(&:id))
+    end
+
+    def test_order_by_distance_sphere
+      assert_equal([3, 1, 2], Foo.order_by_distance_sphere('POINT(1 1)').all.collect(&:id))
+    end
+
+    def test_order_by_distance_sphere_desc
+      assert_equal([2, 1, 3], Foo.order_by_distance_sphere('POINT(1 1)', :desc => true).all.collect(&:id))
+    end
+
+    def test_order_by_maxdistance
+      assert_equal([1, 3, 2], Foo.order_by_maxdistance('POINT(1 1)').all.collect(&:id))
+    end
+
+    def test_order_by_maxdistance_desc
+      assert_equal([2, 3, 1], Foo.order_by_maxdistance('POINT(1 1)', :desc => true).all.collect(&:id))
+    end
+
+    def test_order_by_ndims
+      assert_equal([1, 2, 3], Foo.order_by_ndims.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_ndims_desc
+      assert_equal([1, 2, 3], Foo.order_by_ndims(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_npoints
+      assert_equal([1, 2, 3], Foo.order_by_npoints.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_npoints_desc
+      assert_equal([3, 1, 2], Foo.order_by_npoints(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_nrings
+      assert_equal([1, 2, 3], Foo.order_by_nrings.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_nrings_desc
+      assert_equal([3, 1, 2], Foo.order_by_nrings(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numgeometries
+      assert_equal([1, 2, 3], Foo.order_by_numgeometries.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numgeometries_desc
+      assert_equal([1, 2, 3], Foo.order_by_numgeometries(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numinteriorring
+      assert_equal([3, 1, 2], Foo.order_by_numinteriorring.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numinteriorring_desc
+      assert_equal([1, 2, 3], Foo.order_by_numinteriorring(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numinteriorrings
+      assert_equal([3, 1, 2], Foo.order_by_numinteriorrings.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numinteriorrings_desc
+      assert_equal([1, 2, 3], Foo.order_by_numinteriorrings(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numpoints
+      assert_equal([1, 2, 3], Foo.order_by_numpoints.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_numpoints_desc
+      assert_equal([1, 2, 3], Foo.order_by_numpoints(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length3d
+      assert_equal([1, 2, 3], Foo.order_by_length3d.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length3d_desc
+      assert_equal([1, 2, 3], Foo.order_by_length3d(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length
+      assert_equal([1, 2, 3], Foo.order_by_length.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length_desc
+      assert_equal([1, 2, 3], Foo.order_by_length(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length2d
+      assert_equal([1, 2, 3], Foo.order_by_length2d.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length2d_desc
+      assert_equal([1, 2, 3], Foo.order_by_length2d(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length3d_spheroid
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length3d_spheroid_desc
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+    end
+
+
+    def test_order_by_length2d_spheroid
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length2d_spheroid_desc
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length_spheroid
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+    end
+
+    def test_order_by_length_spheroid_desc
+      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter
+      assert_equal([1, 2, 3], Foo.order_by_perimeter.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter_desc
+      assert_equal([3, 1, 2], Foo.order_by_perimeter(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter2d
+      assert_equal([1, 2, 3], Foo.order_by_perimeter2d.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter2d_desc
+      assert_equal([3, 1, 2], Foo.order_by_perimeter2d(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter3d
+      assert_equal([1, 2, 3], Foo.order_by_perimeter3d.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_perimeter3d_desc
+      assert_equal([3, 1, 2], Foo.order_by_perimeter3d(:desc => true).order('id').all.collect(&:id))
+    end
+
+    def test_order_by_hausdorffdistance
+      assert_equal([1, 3, 2], Foo.order_by_hausdorffdistance('POINT(1 1)').all.collect(&:id))
+    end
+
+    def test_order_by_hausdorffdistance_desc
+      assert_equal([2, 3, 1], Foo.order_by_hausdorffdistance('POINT(1 1)', :desc => true).all.collect(&:id))
+    end
+
+    def test_order_by_hausdorffdistance_with_densify_frac
+      assert_equal([1, 3, 2], Foo.order_by_hausdorffdistance('POINT(1 1)', 0.314).all.collect(&:id))
+    end
+
+
+    def test_order_by_distance_spheroid
+      assert_equal([2, 3, 1], Foo.order_by_distance_spheroid('POINT(10 10)', 'SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+    end
+
+    def test_order_by_distance_spheroid_desc
+      assert_equal([1, 3, 2], Foo.order_by_distance_spheroid('POINT(10 10)', 'SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+    end
   end
 end
