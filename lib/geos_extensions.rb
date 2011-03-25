@@ -651,6 +651,12 @@ module Geos
   end
 
 
+  class LineString
+    def to_jsonable(options = {})
+      self.coord_seq.to_jsonable(options)
+    end
+  end
+
   class Polygon
     # Returns a GPolyline of the exterior ring of the Polygon. This does
     # not take into consideration any interior rings the Polygon may
