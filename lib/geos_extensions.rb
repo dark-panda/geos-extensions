@@ -736,6 +736,7 @@ module Geos
     def to_jsonable options = {}
       options = {
         :encoded => true,
+        :level => 3,
         :interior_rings => false
       }.merge options
 
@@ -751,7 +752,8 @@ module Geos
           :type => 'polygon',
           :encoded => true,
           :polylines => [ Geos::GoogleMaps::PolylineEncoder.encode(
-              self.exterior_ring.coord_seq.to_a
+              self.exterior_ring.coord_seq.to_a,
+              options[:level]
             ).merge(:bounds => {
               :sw => self.lower_left.to_a,
               :ne => self.upper_right.to_a
@@ -762,7 +764,10 @@ module Geos
 
         if options[:interior_rings] && self.num_interior_rings > 0
           (0..(self.num_interior_rings) - 1).to_a.each do |n|
-            ret[:polylines] << Geos::GoogleMaps::PolylineEncoder.encode(self.interior_ring_n(n).coord_seq.to_a)
+            ret[:polylines] << Geos::GoogleMaps::PolylineEncoder.encode(
+              self.interior_ring_n(n).coord_seq.to_a,
+              options[:level]
+            )
           end
         end
         ret
