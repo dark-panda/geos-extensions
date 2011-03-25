@@ -1,6 +1,4 @@
 
-GEOS_EXTENSIONS_BASE = File.join(File.dirname(__FILE__))
-
 begin
   if !ENV['USE_BINARY_GEOS']
     require 'ffi-geos'
@@ -12,9 +10,11 @@ require 'geos' unless defined?(Geos)
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
-  autoload :Helper, File.join(GEOS_EXTENSIONS_BASE, 'geos_helper')
-  autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, 'active_record_extensions')
-  autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, 'google_maps')
+  GEOS_EXTENSIONS_BASE = File.join(File.dirname(__FILE__))
+
+  autoload :Helper, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geos_helper })
+  autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
+  autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps })
 
   REGEXP_WKT = /^(?:SRID=(-?[0-9]+);)?(\s*[PLMCG].+)/i
   REGEXP_WKB_HEX = /^[A-Fa-f0-9\s]+$/
