@@ -33,7 +33,7 @@ end
 
 desc 'Build docs'
 Rake::RDocTask.new do |t|
-  require 'rdoc/rdoc'
+  require 'rdoc'
   t.main = 'README.rdoc'
   t.title = "Geos Extensions #{version}"
   t.rdoc_dir = 'doc'
