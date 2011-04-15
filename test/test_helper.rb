@@ -25,6 +25,7 @@ require File.join(File.dirname(__FILE__), %w{ .. lib geos_extensions })
 
 puts "Ruby version #{RUBY_VERSION} - #{RbConfig::CONFIG['RUBY_INSTALL_NAME']}"
 puts "GEOS version #{Geos::GEOS_VERSION}"
+puts "GEOS extensions version #{Geos::GEOS_EXTENSIONS_VERSION}"
 if defined?(Geos::FFIGeos)
   puts "Using #{Geos::FFIGeos.geos_library_paths.join(', ')}"
 end

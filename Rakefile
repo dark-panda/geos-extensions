@@ -8,11 +8,12 @@ require 'rake/rdoctask'
 
 $:.push 'lib'
 
+version = File.read('VERSION') rescue ''
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "geos-extensions"
-    gem.version = "0.0.7"
     gem.summary = "Extensions for the GEOS library."
     gem.description = gem.summary
     gem.email = "code@zoocasa.com"
@@ -34,6 +35,7 @@ desc 'Build docs'
 Rake::RDocTask.new do |t|
   require 'rdoc/rdoc'
   t.main = 'README.rdoc'
+  t.title = "Geos Extensions #{version}"
   t.rdoc_dir = 'doc'
   t.rdoc_files.include('README.rdoc', 'MIT-LICENSE', 'lib/**/*.rb')
 end
