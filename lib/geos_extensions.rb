@@ -11,7 +11,7 @@ require 'geos' unless defined?(Geos)
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
   GEOS_EXTENSIONS_BASE = File.join(File.dirname(__FILE__))
-  GEOS_EXTENSIONS_VERSION = File.read(File.join(GEOS_EXTENSIONS_BASE, %w{ .. VERSION })) rescue nil
+  GEOS_EXTENSIONS_VERSION = File.read(File.join(GEOS_EXTENSIONS_BASE, %w{ .. VERSION })).strip rescue nil
 
   autoload :Helper, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geos_helper })
   autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
