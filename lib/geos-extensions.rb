@@ -5,7 +5,7 @@ if defined?(ActiveRecord)
   require File.join(Geos::GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
 end
 
-if defined?(Rails)
+if defined?(Rails) && Rails::VERSION::MAJOR >= 3
   require File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ .. rails railtie })
 end
 
