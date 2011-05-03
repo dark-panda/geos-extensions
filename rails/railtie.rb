@@ -1,5 +1,7 @@
 
 require "rails/railtie"
+require File.join(File.dirname(__FILE__), *%w{ models geometry_column })
+require File.join(File.dirname(__FILE__), *%w{ models spatial_ref_sys })
 
 module Geos
   class Railtie < ::Rails::Railtie
