@@ -181,8 +181,8 @@ module Geos
 
               GEOMETRY_COLUMN_OUTPUT_FORMATS.reject { |f| f == 'geos' }.each do |f|
                 src, line = <<-EOF, __LINE__ + 1
-                  def #{k.name}_#{f}
-                    @#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f} rescue nil
+                  def #{k.name}_#{f}(*args)
+                    @#{k.name}_#{f} ||= self.#{k.name}_geos.to_#{f}(*args) rescue nil
                   end
                 EOF
                 self.class_eval(src, __FILE__, line)
