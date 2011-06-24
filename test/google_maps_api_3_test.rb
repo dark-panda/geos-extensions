@@ -8,11 +8,11 @@ rescue LoadError
   # do nothing
 end
 
-class GoogleMapsApi2Tests < Test::Unit::TestCase
+class GoogleMapsApi3Tests < Test::Unit::TestCase
   include TestHelper
 
   def setup
-    Geos::GoogleMaps.use_api(2)
+    Geos::GoogleMaps.use_api(3)
 
     @point = Geos.read(POINT_EWKB)
     @polygon = Geos.read(POLYGON_EWKB)
@@ -20,7 +20,7 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
 
   def test_to_g_lat_lng
     assert_equal("new google.maps.LatLng(10.01, 10.0)", @point.to_g_lat_lng)
-    assert_equal("new GLatLng(10.01, 10.0)", @point.to_g_lat_lng(:short_class => true))
+    assert_equal("new google.maps.LatLng(10.01, 10.0, true)", @point.to_g_lat_lng(:no_wrap => true))
   end
 
   def test_to_jsonable
@@ -53,11 +53,6 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
       )
 
       assert_equal(
-        "new GPolygon([new GLatLng(0.0, 0.0), new GLatLng(1.0, 1.0), new GLatLng(2.5, 2.5), new GLatLng(5.0, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null, null, null)",
-        @polygon.to_g_polygon({}, :short_class => true)
-      )
-
-      assert_equal(
         "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, '#b00b1e', null, {\"mouseOutTolerence\":5})",
         @polygon.to_g_polygon(
           :stroke_color => '#b00b1e',
@@ -78,11 +73,6 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
       )
 
       assert_equal(
-        "new GPolyline([new GLatLng(0.0, 0.0), new GLatLng(1.0, 1.0), new GLatLng(2.5, 2.5), new GLatLng(5.0, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null)",
-        @polygon.to_g_polyline({}, :short_class => true)
-      )
-
-      assert_equal(
         "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, {\"mouseOutTolerence\":5})",
         @polygon.to_g_polyline(
           :color => '#b00b1e',
@@ -99,72 +89,42 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
       marker = @point.to_g_marker
 
       lat, lng, json = if marker =~ /^new\s+
-        google\.maps\.Marker\(
+        google\.maps\.Marker\(\{
+          "position":\s*
           new\s+google\.maps\.LatLng\(
-            (\d+\.\d+)\s*,\s*
+            (\d+\.\d+),\s*
             (\d+\.\d+)
-          \),\s*
-            ((\{\}))
-        \)
+          \)
+        \}\)
         /x
         [ $1, $2, $3 ]
       end
 
       assert_in_delta(lng.to_f, 10.00, 0.000001)
       assert_in_delta(lat.to_f, 10.01, 0.000001)
-      assert_equal(
-        {},
-        JSON.load(json)
-      )
-    end
-
-    def test_to_g_marker_short_class
-      marker = @point.to_g_marker({}, :short_class => true)
-
-      lat, lng, json = if marker =~ /^new\s+
-        GMarker\(
-          new\s+GLatLng\(
-            (\d+\.\d+)\s*,\s*
-            (\d+\.\d+)
-          \),\s*
-            (\{\})
-        \)
-        /x
-        [ $1, $2, $3 ]
-      end
-
-      assert_in_delta(lng.to_f, 10.00, 0.000001)
-      assert_in_delta(lat.to_f, 10.01, 0.000001)
-      assert_equal(
-        {},
-        JSON.load(json)
-      )
     end
 
 
     def test_to_g_marker_with_options
-      marker = @point.to_g_marker(
-        :bounce_gravity => 1,
-        :bouncy => true
-      )
+      marker = @point.to_g_marker({
+        :raise_on_drag => true,
+        :cursor => 'test'
+      }, {
+        :escape => %w{ position }
+      })
 
-      lat, lng, json = if marker =~ /^new\s+
-        google\.maps\.Marker\(
-          new\s+google\.maps\.LatLng\(
-            (\d+\.\d+)\s*,\s*
-            (\d+\.\d+)
-          \),\s*
-            (\{[^}]+\})
-        \)
-        /x
-        [ $1, $2, $3 ]
+      json = if marker =~ /^new\s+
+        google\.maps\.Marker\((
+          \{[^}]+\}
+        )/x
+        $1
       end
 
-      assert_in_delta(lng.to_f, 10.00, 0.000001)
-      assert_in_delta(lat.to_f, 10.01, 0.000001)
       assert_equal(
-        { "bounceGravity" => 1, "bouncy" => true },
-        JSON.load(json)
+        { "raiseOnDrag" => true, "cursor" => 'test' },
+        JSON.load(json).reject { |k, v|
+          %w{ position }.include?(k)
+        }
       )
     end
 

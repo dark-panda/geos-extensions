@@ -9,3 +9,5 @@ if defined?(Rails) && Rails::VERSION::MAJOR >= 3
   require File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ .. rails railtie })
 end
 
+Geos::GoogleMaps.use_api(2)
+

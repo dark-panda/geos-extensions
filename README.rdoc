@@ -31,7 +31,7 @@ ZGEL contains a number of enhancements to the GEOS Ruby library:
   JavaScript output formats that we use for our applications. There are
   also similar methods for outputting to WKT and WKB such as
   Geos::Geometry#to_wkt, #to_kml, #to_georss and a number of methods to
-  output to Google Maps API v2-style JavaScript.
+  output to Google Maps API-style JavaScript.
 
 * a bunch of helper methods to quickly grab some information from
   geometries like Geos::Point#lat and Geos::Point#lng.
@@ -117,6 +117,30 @@ We've also included some Rails integration for PostGIS, including:
       all(
         :limit => 10
       )
+
+=== Google Maps API Output
+
+Starting with version 0.1.0, ZGEL supports both Google Maps API
+version 2 and version 3 style outputs. By default and for the sake of
+backwards compatibility, API version 2 output will remain the default
+but as Google has deprecated API version 2, so shall we at some point
+in the future. To switch between API versions, use the
+Geos::GoogleMaps.use_api(version) method:
+
+  g = Geos.read('point(0 0)')
+  Geos::GoogleMaps.use_api(2)
+  puts g.to_g_marker
+  Geos::GoogleMaps.use_api(3)
+  puts g.to_g_marker
+
+Outputs
+
+  new google.maps.Marker(new google.maps.LatLng(0.0, 0.0), {})
+  new google.maps.Marker({"position": new google.maps.LatLng(0.0, 0.0)})
+
+At an unspecified point in the future, we'll likely make Google Maps
+API version 3 the default, but for the time being, we'll stick with
+version 2 since switching between the two is pretty painless.
 
 === Running ActiveRecord Tests
 

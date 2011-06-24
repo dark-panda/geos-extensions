@@ -1,61 +1,58 @@
 
-module Geos::GoogleMaps::Api2
+module Geos::GoogleMaps::Api3
   module Geometry
-    # Returns a new GLatLngBounds object with the proper GLatLngs in place
+    UNESCAPED_MARKER_OPTIONS = %w{
+      icon
+      map
+      position
+      shadow
+      shape
+    }.freeze
+
+    # Returns a new LatLngBounds object with the proper GLatLngs in place
     # for determining the geometry bounds.
-    def to_g_lat_lng_bounds_api2(options = {})
-      klass = if options[:short_class]
-        'GLatLngBounds'
-      else
-        'google.maps.LatLngBounds'
-      end
-
-      "new #{klass}(#{self.lower_left.to_g_lat_lng_api2(options)}, #{self.upper_right.to_g_lat_lng_api2(options)})"
+    def to_g_lat_lng_bounds_api3(options = {})
+      "new google.maps.LatLngBounds(#{self.lower_left.to_g_lat_lng_api3(options)}, #{self.upper_right.to_g_lat_lng_api3(options)})"
     end
 
-    # Returns a String in Google Maps' GLatLngBounds#toString() format.
-    def to_g_lat_lng_bounds_string_api2(precision = 10)
-      "((#{self.lower_left.to_g_url_value_api2(precision)}), (#{self.upper_right.to_g_url_value_api2(precision)}))"
+    # Returns a String in Google Maps' LatLngBounds#toString() format.
+    def to_g_lat_lng_bounds_string_api3(precision = 10)
+      "((#{self.lower_left.to_g_url_value_api3(precision)}), (#{self.upper_right.to_g_url_value_api3(precision)}))"
     end
 
-    # Returns a new GPolyline.
-    def to_g_polyline_api2(polyline_options = {}, options = {})
-      self.coord_seq.to_g_polyline_api2(polyline_options, options)
+    # Returns a new Polyline.
+    def to_g_polyline_api3(polyline_options = {}, options = {})
+      self.coord_seq.to_g_polyline_api3(polyline_options, options)
     end
 
-    # Returns a new GPolygon.
-    def to_g_polygon_api2(polygon_options = {}, options = {})
-      self.coord_seq.to_g_polygon_api2(polygon_options, options)
+    # Returns a new Polygon.
+    def to_g_polygon_api3(polygon_options = {}, options = {})
+      self.coord_seq.to_g_polygon_api3(polygon_options, options)
     end
 
-    # Returns a new GMarker at the centroid of the geometry. The options
-    # Hash works the same as the Google Maps API GMarkerOptions class does,
+    # Returns a new Marker at the centroid of the geometry. The options
+    # Hash works the same as the Google Maps API MarkerOptions class does,
     # but allows for underscored Ruby-like options which are then converted
     # to the appropriate camel-cased Javascript options.
-    def to_g_marker_api2(marker_options = {}, options = {})
-      klass = if options[:short_class]
-        'GMarker'
-      else
-        'google.maps.Marker'
-      end
+    def to_g_marker_api3(marker_options = {}, options = {})
+      options = {
+        :escape => [],
+        :lat_lng_options => {}
+      }.merge(options)
 
       opts = Geos::Helper.camelize_keys(marker_options)
+      opts[:position] = self.centroid.to_g_lat_lng(options[:lat_lng_options])
+      json = Geos::Helper.escape_json(opts, UNESCAPED_MARKER_OPTIONS - options[:escape])
 
-      "new #{klass}(#{self.centroid.to_g_lat_lng(options)}, #{opts.to_json})"
+      "new google.maps.Marker(#{json})"
     end
   end
 
   module CoordinateSequence
     # Returns a Ruby Array of GLatLngs.
-    def to_g_lat_lng_api2(options = {})
-      klass = if options[:short_class]
-        'GLatLng'
-      else
-        'google.maps.LatLng'
-      end
-
+    def to_g_lat_lng_api3(options = {})
       self.to_a.collect do |p|
-        "new #{klass}(#{p[1]}, #{p[0]})"
+        "new google.maps.LatLng(#{p[1]}, #{p[0]})"
       end
     end
 
@@ -66,7 +63,7 @@ module Geos::GoogleMaps::Api2
     # The options Hash follows the Google Maps API arguments to the
     # GPolyline constructor and include :color, :weight, :opacity and
     # :options. 'null' is used in place of any unset options.
-    def to_g_polyline_api2(polyline_options = {}, options = {})
+    def to_g_polyline_api3(polyline_options = {}, options = {})
       klass = if options[:short_class]
         'GPolyline'
       else
@@ -95,7 +92,7 @@ module Geos::GoogleMaps::Api2
     # GPolygon constructor and include :stroke_color, :stroke_weight,
     # :stroke_opacity, :fill_color, :fill_opacity and :options. 'null' is
     # used in place of any unset options.
-    def to_g_polygon_api2(polygon_options = {}, options = {})
+    def to_g_polygon_api3(polygon_options = {}, options = {})
       klass = if options[:short_class]
         'GPolygon'
       else
@@ -114,31 +111,23 @@ module Geos::GoogleMaps::Api2
         (polygon_options[:fill_opacity] || 'null'),
         (poly_opts ? poly_opts.to_json : 'null')
       ].join(', ')
-      "new #{klass}([#{self.to_g_lat_lng_api2(options).join(', ')}], #{args})"
+      "new #{klass}([#{self.to_g_lat_lng_api3(options).join(', ')}], #{args})"
     end
   end
 
   module Point
-    # Returns a new GLatLng.
-    def to_g_lat_lng_api2(options = {})
-      klass = if options[:short_class]
-        'GLatLng'
-      else
-        'google.maps.LatLng'
+    # Returns a new LatLng.
+    def to_g_lat_lng_api3(options = {})
+      no_wrap = if options[:no_wrap]
+        ', true'
       end
 
-      "new #{klass}(#{self.lat}, #{self.lng})"
+      "new google.maps.LatLng(#{self.lat}, #{self.lng}#{no_wrap})"
     end
 
-    # Returns a new GPoint
-    def to_g_point_api2(options = {})
-      klass = if options[:short_class]
-        'GPoint'
-      else
-        'google.maps.Point'
-      end
-
-      "new #{klass}(#{self.x}, #{self.y})"
+    # Returns a new Point
+    def to_g_point_api3(options = {})
+      "new google.maps.Point(#{self.x}, #{self.y})"
     end
   end
 
@@ -146,32 +135,32 @@ module Geos::GoogleMaps::Api2
     # Returns a GPolyline of the exterior ring of the Polygon. This does
     # not take into consideration any interior rings the Polygon may
     # have.
-    def to_g_polyline_api2(polyline_options = {}, options = {})
-      self.exterior_ring.to_g_polyline_api2(polyline_options, options)
+    def to_g_polyline_api3(polyline_options = {}, options = {})
+      self.exterior_ring.to_g_polyline_api3(polyline_options, options)
     end
 
     # Returns a GPolygon of the exterior ring of the Polygon. This does
     # not take into consideration any interior rings the Polygon may
     # have.
-    def to_g_polygon_api2(polygon_options = {}, options = {})
-      self.exterior_ring.to_g_polygon_api2(polygon_options, options)
+    def to_g_polygon_api3(polygon_options = {}, options = {})
+      self.exterior_ring.to_g_polygon_api3(polygon_options, options)
     end
   end
 
   module GeometryCollection
     # Returns a Ruby Array of GPolylines for each geometry in the
     # collection.
-    def to_g_polyline_api2(polyline_options = {}, options = {})
+    def to_g_polyline_api3(polyline_options = {}, options = {})
       self.collect do |p|
-        p.to_g_polyline_api2(polyline_options, options)
+        p.to_g_polyline_api3(polyline_options, options)
       end
     end
 
     # Returns a Ruby Array of GPolygons for each geometry in the
     # collection.
-    def to_g_polygon_api2(polygon_options = {}, options = {})
+    def to_g_polygon_api3(polygon_options = {}, options = {})
       self.collect do |p|
-        p.to_g_polygon_api2(polygon_options, options)
+        p.to_g_polygon_api3(polygon_options, options)
       end
     end
   end
