@@ -41,9 +41,9 @@ module Geos::Helper
     else
       lower_case_and_underscored_word.to_s[0..0].downcase + camelize(lower_case_and_underscored_word, true)[1..-1]
     end
-    end
+  end
 
-    def self.xml_options(*args) #:nodoc:
+  def self.xml_options(*args) #:nodoc:
     xml = if Builder::XmlMarkup === args.first
       args.first
     else
