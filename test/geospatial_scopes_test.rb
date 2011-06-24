@@ -67,6 +67,15 @@ if ENV['TEST_ACTIVERECORD']
       ids_tester(:st_dwithin, [ 'POINT(5 5)', 10 ], [ 1, 2, 3 ])
     end
 
+    def test_allow_null
+      begin
+        foo = Foo.create(:name => 'four')
+        ids_tester(:st_contains, [ 'POINT(3 3)', { :allow_null => true } ], [ 3, foo.id ])
+      ensure
+        Foo.find_by_name('four').destroy
+      end
+    end
+
     def test_with_column
       assert_equal([1, 2, 3], Foo.st_disjoint('POINT(100 100)', :column => :the_other_geom).all.collect(&:id).sort)
     end

@@ -71,6 +71,11 @@ module Geos
     # * :wkb_options - in order to facilitate some conversions, geometries
     #   are converted to WKB. The default is `{:include_srid => true}` to
     #   force the geometry to use PostGIS's Extended WKB.
+    # * :allow_null - relationship scopes have the option of treating NULL
+    #   geometry values as TRUE, i.e.
+    #
+    #     ST_within(the_geom, ...) OR the_geom IS NULL
+    #
     # * :desc - the order_by scopes have an additional :desc option to alllow
     #   for DESC ordering.
     # * :nulls - the order_by scopes also allow you to specify whether you
@@ -208,7 +213,11 @@ module Geos
                   end
 
                   ret << ', ?' * function_options[:additional_args]
-                  ret << %{)#{options[:append]}}
+                  ret << ')'
+
+                  if options[:allow_null]
+                    ret << " OR #{self.quoted_table_name}.#{column_name} IS NULL"
+                  end
                 end
               end
 
