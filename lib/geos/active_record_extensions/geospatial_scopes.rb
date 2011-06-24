@@ -73,6 +73,8 @@ module Geos
     #   force the geometry to use PostGIS's Extended WKB.
     # * :desc - the order_by scopes have an additional :desc option to alllow
     #   for DESC ordering.
+    # * :nulls - the order_by scopes also allow you to specify whether you
+    #   want NULL values to be sorted first or last.
     #
     # == SRID Detection
     #
