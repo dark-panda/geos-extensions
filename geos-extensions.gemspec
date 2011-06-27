@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{geos-extensions}
-  s.version = "0.0.7"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = %q{2011-03-21}
+  s.date = %q{2011-06-27}
   s.description = %q{Extensions for the GEOS library.}
   s.email = %q{code@zoocasa.com}
   s.extra_rdoc_files = [
@@ -19,36 +19,36 @@ Gem::Specification.new do |s|
     "MIT-LICENSE",
     "README.rdoc",
     "Rakefile",
+    "VERSION",
+    "app/models/geos/geometry_column.rb",
+    "app/models/geos/spatial_ref_sys.rb",
     "geos-extensions.gemspec",
-    "lib/active_record_extensions.rb",
-    "lib/active_record_extensions/connection_adapters/postgresql_adapter.rb",
-    "lib/active_record_extensions/geometry_columns.rb",
-    "lib/active_record_extensions/geospatial_scopes.rb",
     "lib/geos-extensions.rb",
+    "lib/geos/active_record_extensions.rb",
+    "lib/geos/active_record_extensions/connection_adapters/postgresql_adapter.rb",
+    "lib/geos/active_record_extensions/geometry_columns.rb",
+    "lib/geos/active_record_extensions/geospatial_scopes.rb",
+    "lib/geos/geos_helper.rb",
+    "lib/geos/google_maps.rb",
+    "lib/geos/google_maps/api_2.rb",
+    "lib/geos/google_maps/api_3.rb",
+    "lib/geos/google_maps/polyline_encoder.rb",
+    "lib/geos/rails/engine.rb",
     "lib/geos_extensions.rb",
-    "lib/geos_helper.rb",
-    "lib/google_maps.rb",
-    "lib/google_maps/polyline_encoder.rb",
-    "rails/railtie.rb",
-    "rails/tasks/test.rake",
+    "lib/tasks/test.rake",
     "test/fixtures/foos.yml",
     "test/geometry_columns_test.rb",
     "test/geospatial_scopes_test.rb",
+    "test/google_maps_api_2_test.rb",
+    "test/google_maps_api_3_test.rb",
     "test/reader_test.rb",
     "test/test_helper.rb",
     "test/writer_test.rb"
   ]
   s.homepage = %q{http://github.com/zoocasa/geos-extensions}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.rubygems_version = %q{1.7.2}
   s.summary = %q{Extensions for the GEOS library.}
-  s.test_files = [
-    "test/geometry_columns_test.rb",
-    "test/geospatial_scopes_test.rb",
-    "test/reader_test.rb",
-    "test/test_helper.rb",
-    "test/writer_test.rb"
-  ]
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
