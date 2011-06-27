@@ -83,6 +83,30 @@ We've also included some Rails integration for PostGIS, including:
   * st_within
   * st_dwithin
 
+  Ordering scopes are also included:
+
+  * order_by_ndims
+  * order_by_npoints
+  * order_by_nrings
+  * order_by_numgeometries
+  * order_by_numinteriorring
+  * order_by_numinteriorrings
+  * order_by_numpoints
+  * order_by_length3d
+  * order_by_length
+  * order_by_length2d
+  * order_by_perimeter
+  * order_by_perimeter2d
+  * order_by_perimeter3d
+  * order_by_distance
+  * order_by_distance_sphere
+  * order_by_maxdistance
+  * order_by_hausdorffdistance
+  * order_by_distance_spheroid
+  * order_by_length2d_spheroid
+  * order_by_length3d_spheroid
+  * order_by_length_spheroid
+
   These let you chain together scopes to build geospatial queries:
 
     neighbourhood = Neighbourhood.find(12345)
@@ -105,4 +129,3 @@ to the directory the files are in to create the database properly. You
 can also set the database up manually before running the tests -- just
 make sure the database has PostGIS installed with the spatial_ref_sys
 table populated and you'll be fine.
-
