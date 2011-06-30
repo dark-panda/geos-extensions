@@ -109,4 +109,17 @@ class GeosReaderTests < Test::Unit::TestCase
       assert_saneness_of_polygon(polygon)
     end
   end
+
+  def test_read_wkt_with_newlines
+    geom = Geos.read(<<-EOF)
+    POLYGON((
+      0 0,
+      10 10,
+      0 10,
+      0 0
+    ))
+    EOF
+
+    assert_equal('POLYGON ((0 0, 10 10, 0 10, 0 0))', geom.to_wkt(:trim => true))
+  end
 end
