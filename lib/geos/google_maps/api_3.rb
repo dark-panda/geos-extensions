@@ -1,6 +1,9 @@
 
-module Geos::GoogleMaps::Api3
-  module Geometry
+module Geos::GoogleMaps
+  module Api3
+  end
+
+  module Api3Constants
     UNESCAPED_MARKER_OPTIONS = %w{
       icon
       map
@@ -9,6 +12,20 @@ module Geos::GoogleMaps::Api3
       shape
     }.freeze
 
+    UNESCAPED_POLY_OPTIONS = %w{
+      clickable
+      fillOpacity
+      geodesic
+      map
+      path
+      paths
+      strokeOpacity
+      strokeWeight
+      zIndex
+    }.freeze
+  end
+
+  module Api3::Geometry
     # Returns a new LatLngBounds object with the proper LatLngs in place
     # for determining the geometry bounds.
     def to_g_lat_lng_bounds_api3(options = {})
@@ -42,25 +59,13 @@ module Geos::GoogleMaps::Api3
 
       opts = Geos::Helper.camelize_keys(marker_options)
       opts[:position] = self.centroid.to_g_lat_lng(options[:lat_lng_options])
-      json = Geos::Helper.escape_json(opts, UNESCAPED_MARKER_OPTIONS - options[:escape])
+      json = Geos::Helper.escape_json(opts, Geos::GoogleMaps::Api3Constants::UNESCAPED_MARKER_OPTIONS - options[:escape])
 
       "new google.maps.Marker(#{json})"
     end
   end
 
-  module CoordinateSequence
-    UNESCAPED_POLY_OPTIONS = %w{
-      clickable
-      fillOpacity
-      geodesic
-      map
-      path
-      paths
-      strokeOpacity
-      strokeWeight
-      zIndex
-    }.freeze
-
+  module Api3::CoordinateSequence
     # Returns a Ruby Array of LatLngs.
     def to_g_lat_lng_api3(options = {})
       self.to_a.collect do |p|
@@ -89,7 +94,7 @@ module Geos::GoogleMaps::Api3
 
       opts = Geos::Helper.camelize_keys(polyline_options)
       opts[:path] = "[#{self.to_g_lat_lng_api3(options[:lat_lng_options]).join(', ')}]"
-      json = Geos::Helper.escape_json(opts, UNESCAPED_POLY_OPTIONS - options[:escape])
+      json = Geos::Helper.escape_json(opts, Geos::GoogleMaps::Api3Constants::UNESCAPED_POLY_OPTIONS - options[:escape])
 
       "new google.maps.Polyline(#{json})"
     end
@@ -115,13 +120,13 @@ module Geos::GoogleMaps::Api3
 
       opts = Geos::Helper.camelize_keys(polygon_options)
       opts[:paths] = "[#{self.to_g_lat_lng_api3(options[:lat_lng_options]).join(', ')}]"
-      json = Geos::Helper.escape_json(opts, UNESCAPED_POLY_OPTIONS - options[:escape])
+      json = Geos::Helper.escape_json(opts, Geos::GoogleMaps::Api3Constants::UNESCAPED_POLY_OPTIONS - options[:escape])
 
       "new google.maps.Polygon(#{json})"
     end
   end
 
-  module Point
+  module Api3::Point
     # Returns a new LatLng.
     def to_g_lat_lng_api3(options = {})
       no_wrap = if options[:no_wrap]
@@ -137,7 +142,7 @@ module Geos::GoogleMaps::Api3
     end
   end
 
-  module Polygon
+  module Api3::Polygon
     # Returns a Polyline of the exterior ring of the Polygon. This does
     # not take into consideration any interior rings the Polygon may
     # have.
@@ -153,7 +158,7 @@ module Geos::GoogleMaps::Api3
     end
   end
 
-  module GeometryCollection
+  module Api3::GeometryCollection
     # Returns a Ruby Array of Polylines for each geometry in the
     # collection.
     def to_g_polyline_api3(polyline_options = {}, options = {})
@@ -161,13 +166,38 @@ module Geos::GoogleMaps::Api3
         p.to_g_polyline_api3(polyline_options, options)
       end
     end
+    alias :to_g_polylines_api3 :to_g_polyline_api3
 
     # Returns a Ruby Array of Polygons for each geometry in the
-    # collection.
+    # collection. If the :single option is set, a single Polygon object will
+    # be returned with all of the geometries set in the Polygon's "path"
+    # attribute. You can also use to_g_polygon_single for the same effect.
     def to_g_polygon_api3(polygon_options = {}, options = {})
-      self.collect do |p|
-        p.to_g_polygon_api3(polygon_options, options)
+      if options[:single]
+        self.to_g_polygon_single_api3(polygon_options, options)
+      else
+        self.collect do |p|
+          p.to_g_polygon_api3(polygon_options, options)
+        end
       end
+    end
+
+    # Behaves the same as to_g_polygon_api3 with the :single option set, where
+    # a single Google Maps Polygon will be returned with all of the Polygons
+    # set in the Polygon's "path" attribute.
+    def to_g_polygon_single_api3(polygon_options = {}, options = {})
+      options = {
+        :escape => [],
+        :lat_lng_options => {}
+      }.merge(options)
+
+      opts = Geos::Helper.camelize_keys(polygon_options)
+      opts[:paths] = %{[#{self.collect { |p|
+        "[#{p.exterior_ring.coord_seq.to_g_lat_lng_api3(options[:lat_lng_options]).join(', ')}]"
+      }.join(', ')}]}
+      json = Geos::Helper.escape_json(opts, Geos::GoogleMaps::Api3Constants::UNESCAPED_POLY_OPTIONS - options[:escape])
+
+      "new google.maps.Polygon(#{json})"
     end
   end
 end

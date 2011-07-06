@@ -64,6 +64,60 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
       )
     end
 
+    def test_to_g_polygon_with_multi_polygon
+      multi_polygon = Geos.read(
+        'MULTIPOLYGON(
+          ((0 0, 0 5, 5 5, 5 0, 0 0)),
+          ((10 10, 10 15, 15 15, 15 10, 10 10)),
+          ((20 20, 20 25, 25 25, 25 20, 20 20))
+        )'
+      )
+      options = {
+        :stroke_color => '#b00b1e',
+        :stroke_weight => 5,
+        :stroke_opacity => 0.5,
+        :fill_color => '#b00b1e',
+        :map => 'map'
+      }
+
+      assert_equal(
+        ["new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
+ "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
+ "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})"],
+        multi_polygon.to_g_polygon(
+          :stroke_color => '#b00b1e',
+          :stroke_weight => 5,
+          :stroke_opacity => 0.5,
+          :fill_color => '#b00b1e',
+          :map => 'map'
+        )
+      )
+
+      assert_equal(
+        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [[new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)], [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)], [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)]], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
+        multi_polygon.to_g_polygon({
+          :stroke_color => '#b00b1e',
+          :stroke_weight => 5,
+          :stroke_opacity => 0.5,
+          :fill_color => '#b00b1e',
+          :map => 'map'
+        }, {
+          :single => true
+        })
+      )
+
+      assert_equal(
+        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [[new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)], [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)], [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)]], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
+        multi_polygon.to_g_polygon_single(
+          :stroke_color => '#b00b1e',
+          :stroke_weight => 5,
+          :stroke_opacity => 0.5,
+          :fill_color => '#b00b1e',
+          :map => 'map'
+        )
+      )
+    end
+
     def test_to_g_polyline
       assert_equal(
         "new google.maps.Polyline({\"path\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
