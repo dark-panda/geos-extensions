@@ -48,44 +48,40 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
   if defined?(JSON)
     def test_to_g_polygon
       assert_equal(
-        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null, null, null)",
+        %{new google.maps.Polygon({"paths": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})},
         @polygon.to_g_polygon
       )
 
       assert_equal(
-        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, '#b00b1e', null, {\"mouseOutTolerence\":5})",
+        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"paths\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], \"fillColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
         @polygon.to_g_polygon(
           :stroke_color => '#b00b1e',
           :stroke_weight => 5,
           :stroke_opacity => 0.5,
           :fill_color => '#b00b1e',
-          :polygon_options => {
-            :mouse_out_tolerence => 5
-          }
+          :map => 'map'
         )
       )
     end
 
     def test_to_g_polyline
       assert_equal(
-        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null)",
+        "new google.maps.Polyline({\"path\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
         @polygon.to_g_polyline
       )
 
       assert_equal(
-        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, {\"mouseOutTolerence\":5})",
+        "new google.maps.Polyline({\"path\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], \"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"map\": map, \"strokeOpacity\": 0.5})",
         @polygon.to_g_polyline(
-          :color => '#b00b1e',
-          :weight => 5,
-          :opacity => 0.5,
-          :polyline_options => {
-            :mouse_out_tolerence => 5
-          }
+          :stroke_color => '#b00b1e',
+          :stroke_weight => 5,
+          :stroke_opacity => 0.5,
+          :map => 'map'
         )
       )
     end
 
-    def test_to_g_marker_long
+    def test_to_g_marker
       marker = @point.to_g_marker
 
       lat, lng, json = if marker =~ /^new\s+
