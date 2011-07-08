@@ -11,6 +11,17 @@ module ActiveRecord
       end
     end
 
+    class PostgreSQLColumn < Column
+      def simplified_type_with_geometry_type(field_type)
+        if field_type == 'geometry'
+          :geometry
+        else
+          simplified_type_without_geometry_type(field_type)
+        end
+      end
+      alias_method_chain :simplified_type, :geometry_type
+    end
+
     class PostgreSQLAdapter < AbstractAdapter
       # Returns the geometry columns for the table.
       def geometry_columns(table_name, name = nil)
