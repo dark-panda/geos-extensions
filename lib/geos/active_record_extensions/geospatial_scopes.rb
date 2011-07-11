@@ -270,6 +270,19 @@ module Geos
               ]
             }
           })
+
+          send(SCOPE_METHOD, :st_geometry_type, lambda { |*args|
+            assert_arguments_length(args, 1)
+            options = args.extract_options!
+            types = args
+
+            {
+              :conditions => [
+                "#{build_function_call('GeometryType', nil, options)} IN (?)",
+                types
+              ]
+            }
+          })
         end
 
         ZERO_ARGUMENT_MEASUREMENTS.each do |measurement|

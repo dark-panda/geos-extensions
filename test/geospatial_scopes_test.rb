@@ -67,6 +67,12 @@ if ENV['TEST_ACTIVERECORD']
       ids_tester(:st_dwithin, [ 'POINT(5 5)', 10 ], [ 1, 2, 3 ])
     end
 
+    def test_geometry_type
+      ids_tester(:st_geometry_type, 'ST_Point', [ 1, 2 ])
+      ids_tester(:st_geometry_type, [ 'ST_Point', 'ST_Polygon' ], [ 1, 2, 3 ])
+      ids_tester(:st_geometry_type, [ 'ST_MultiLineString' ], [])
+    end
+
     def test_allow_null
       begin
         foo = Foo.create(:name => 'four')
