@@ -235,7 +235,7 @@ module Geos
                 end
               end
 
-              def assert_arguments_length(args, min, max)
+              def assert_arguments_length(args, min, max = (1.0 / 0.0))
                 raise ArgumentError.new("wrong number of arguments (#{args.length} for #{min}-#{max})") unless
                   args.length.between?(min, max)
               end
