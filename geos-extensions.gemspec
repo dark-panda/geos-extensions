@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{geos-extensions}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{J Smith}]
-  s.date = %q{2011-07-06}
+  s.date = %q{2011-07-11}
   s.description = %q{Extensions for the GEOS library.}
   s.email = %q{code@zoocasa.com}
   s.extra_rdoc_files = [
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
     "lib/geos/rails/engine.rb",
     "lib/geos_extensions.rb",
     "lib/tasks/test.rake",
+    "test/adapter_test.rb",
     "test/fixtures/foos.yml",
     "test/geometry_columns_test.rb",
     "test/geospatial_scopes_test.rb",
