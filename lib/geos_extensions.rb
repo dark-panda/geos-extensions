@@ -295,30 +295,6 @@ module Geos
     alias :w :left
     alias :west :left
 
-    # Spit out Google's JSON geocoder Point format. The extra 0 is added
-    # on as Google's format seems to like including the Z coordinate.
-    def to_g_json_point
-      {
-        :coordinates => (self.centroid.to_a << 0)
-      }
-    end
-
-    # Spit out Google's JSON geocoder ExtendedData LatLonBox format.
-    def to_g_lat_lon_box
-      {
-        :north => self.north,
-        :east => self.east,
-        :south => self.south,
-        :west => self.west
-      }
-    end
-
-    # Spit out Google's toUrlValue format.
-    def to_g_url_value(precision = 6)
-      c = self.centroid
-      "#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
-    end
-
     # Spits out a bounding box the way Flickr likes it. You can set the
     # precision of the rounding using the :precision option. In order to
     # ensure that the box is indeed a box and not merely a point, the

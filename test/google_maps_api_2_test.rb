@@ -23,6 +23,11 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
     assert_equal("new GLatLng(10.01, 10.0)", @point.to_g_lat_lng(:short_class => true))
   end
 
+  def test_to_g_lat_lng_bounds_string
+    assert_equal('((10.0100000000,10.0000000000), (10.0100000000,10.0000000000))', @point.to_g_lat_lng_bounds_string)
+    assert_equal('((0.0000000000,0.0000000000), (5.0000000000,5.0000000000))', @polygon.to_g_lat_lng_bounds_string)
+  end
+
   def test_to_jsonable
     assert_equal({
       :type => "point",

@@ -1,6 +1,30 @@
 
 module Geos::GoogleMaps::Api2
   module Geometry
+    # Spit out Google's JSON geocoder Point format. The extra 0 is added
+    # on as Google's format seems to like including the Z coordinate.
+    def to_g_json_point_api2
+      {
+        :coordinates => (self.centroid.to_a << 0)
+      }
+    end
+
+    # Spit out Google's JSON geocoder ExtendedData LatLonBox format.
+    def to_g_lat_lon_box_api2
+      {
+        :north => self.north,
+        :east => self.east,
+        :south => self.south,
+        :west => self.west
+      }
+    end
+
+    # Spit out Google's toUrlValue format.
+    def to_g_url_value_api2(precision = 6)
+      c = self.centroid
+      "#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
+    end
+
     # Returns a new GLatLngBounds object with the proper GLatLngs in place
     # for determining the geometry bounds.
     def to_g_lat_lng_bounds_api2(options = {})
@@ -15,7 +39,7 @@ module Geos::GoogleMaps::Api2
 
     # Returns a String in Google Maps' GLatLngBounds#toString() format.
     def to_g_lat_lng_bounds_string_api2(precision = 10)
-      "((#{self.lower_left.to_g_url_value_api2(precision)}), (#{self.upper_right.to_g_url_value_api2(precision)}))"
+      "((#{self.lower_left.to_g_url_value(precision)}), (#{self.upper_right.to_g_url_value(precision)}))"
     end
 
     # Returns a new GPolyline.
