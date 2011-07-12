@@ -28,6 +28,11 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
     assert_equal('((0.0000000000,0.0000000000), (5.0000000000,5.0000000000))', @polygon.to_g_lat_lng_bounds_string)
   end
 
+  def test_to_g_geocoder_bounds_api3
+    assert_equal('10.010000,10.000000|10.010000,10.000000', @point.to_g_geocoder_bounds)
+    assert_equal('0.000000,0.000000|5.000000,5.000000', @polygon.to_g_geocoder_bounds)
+  end
+
   def test_to_jsonable
     assert_equal({
       :type => "point",

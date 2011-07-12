@@ -56,6 +56,11 @@ module Geos::GoogleMaps
       "new google.maps.LatLngBounds(#{self.lower_left.to_g_lat_lng_api3(options)}, #{self.upper_right.to_g_lat_lng_api3(options)})"
     end
 
+    # Returns a bounds parameter for the Google Maps API 3 geocoder service.
+    def to_g_geocoder_bounds_api3(precision = 6)
+      "#{self.lower_left.to_g_url_value_api3(precision)}|#{self.upper_right.to_g_url_value_api3(precision)}"
+    end
+
     # Returns a String in Google Maps' LatLngBounds#toString() format.
     def to_g_lat_lng_bounds_string_api3(precision = 10)
       "((#{self.lower_left.to_g_url_value(precision)}), (#{self.upper_right.to_g_url_value(precision)}))"
