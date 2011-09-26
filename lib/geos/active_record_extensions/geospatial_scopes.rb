@@ -81,6 +81,9 @@ module Geos
     # * :nulls - the order_by scopes also allow you to specify whether you
     #   want NULL values to be sorted first or last.
     #
+    # Because it's quite common to only want to flip the ordering to DESC,
+    # you can also just pass :desc on its own rather than as an options Hash.
+    #
     # == SRID Detection
     #
     # * if the geometry itself has an SRID, we'll compare it to the
@@ -178,10 +181,19 @@ module Geos
                 end
               end
 
-              def default_options(options)
+              def default_options(*args)
+                options = args.extract_options!
+
+                desc = if args.first == :desc
+                  true
+                else
+                  options[:desc]
+                end
+
                 {
                   :column => 'the_geom',
-                  :use_index => true
+                  :use_index => true,
+                  :desc => desc
                 }.merge(options || {})
               end
 
@@ -222,11 +234,17 @@ module Geos
                 end
               end
 
-              def additional_ordering(options = nil)
-                options ||= {}
+              def additional_ordering(*args)
+                options = args.extract_options!
+
+                desc = if args.first == :desc
+                  true
+                else
+                  options[:desc]
+                end
 
                 ''.tap do |ret|
-                    if options[:desc]
+                    if desc
                       ret << ' DESC'
                     end
 

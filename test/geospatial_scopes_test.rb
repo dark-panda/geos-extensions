@@ -281,5 +281,9 @@ if ENV['TEST_ACTIVERECORD']
     def test_order_by_distance_spheroid_desc
       assert_equal([1, 3, 2], Foo.order_by_distance_spheroid('POINT(10 10)', 'SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
     end
+
+    def test_order_by_area_with_desc_symbol
+      assert_equal([3, 1, 2], Foo.order_by_area(:desc).order('id').all.collect(&:id))
+    end
   end
 end
