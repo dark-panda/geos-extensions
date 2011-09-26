@@ -124,6 +124,14 @@ if ENV['TEST_ACTIVERECORD']
       assert_equal([2, 3, 1], Foo.order_by_maxdistance('POINT(1 1)', :desc => true).all.collect(&:id))
     end
 
+    def test_order_by_area
+      assert_equal([1, 2, 3], Foo.order_by_area.order('id').all.collect(&:id))
+    end
+
+    def test_order_by_area_desc
+      assert_equal([3, 1, 2], Foo.order_by_area(:desc => true).order('id').all.collect(&:id))
+    end
+
     def test_order_by_ndims
       assert_equal([1, 2, 3], Foo.order_by_ndims.order('id').all.collect(&:id))
     end

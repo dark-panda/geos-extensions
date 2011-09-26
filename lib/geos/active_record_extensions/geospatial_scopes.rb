@@ -117,6 +117,7 @@ module Geos
       }.freeze
 
       ZERO_ARGUMENT_MEASUREMENTS = %w{
+        area
         ndims
         npoints
         nrings
