@@ -22,6 +22,7 @@ module Geos
     # * st_touches
     # * st_within
     # * st_dwithin
+    # * st_dfullywithin
     #
     # The first argument to each of these methods can be a Geos::Geometry-based
     # object or anything readable by Geos.read along with an optional
@@ -140,6 +141,11 @@ module Geos
         distance
         distance_sphere
         maxdistance
+      }
+
+      ONE_GEOMETRY_ARGUMENT_AND_ONE_ARGUMENT_RELATIONSHIPS = %w{
+        dwithin
+        dfullywithin
       }
 
       ONE_ARGUMENT_MEASUREMENTS = %w{
@@ -277,19 +283,24 @@ module Geos
           base.class_eval(src, __FILE__, line)
         end
 
-        base.class_eval do
-          send(SCOPE_METHOD, :st_dwithin, lambda { |*args|
-            assert_arguments_length(args, 2, 3)
-            geom, distance, options = args
+        ONE_GEOMETRY_ARGUMENT_AND_ONE_ARGUMENT_RELATIONSHIPS.each do |relationship|
+          src, line = <<-EOF, __LINE__ + 1
+            #{SCOPE_METHOD} :st_#{relationship}, lambda { |*args|
+              assert_arguments_length(args, 2, 3)
+              geom, distance, options = args
 
-            {
-              :conditions => [
-                build_function_call('dwithin', geom, options, :additional_args => 1),
-                distance
-              ]
+              {
+                :conditions => [
+                  build_function_call('#{relationship}', geom, options, :additional_args => 1),
+                  distance
+                ]
+              }
             }
-          })
+          EOF
+          base.class_eval(src, __FILE__, line)
+        end
 
+        base.class_eval do
           send(SCOPE_METHOD, :st_geometry_type, lambda { |*args|
             assert_arguments_length(args, 1)
             options = args.extract_options!

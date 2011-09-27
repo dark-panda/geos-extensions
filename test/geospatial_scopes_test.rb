@@ -67,6 +67,10 @@ if ENV['TEST_ACTIVERECORD']
       ids_tester(:st_dwithin, [ 'POINT(5 5)', 10 ], [ 1, 2, 3 ])
     end
 
+    def test_dfullywithin
+      ids_tester(:st_dfullywithin, [ 'POINT(5 5)', 10 ], [ 1, 2 ])
+    end
+
     def test_geometry_type
       ids_tester(:st_geometry_type, 'ST_Point', [ 1, 2 ])
       ids_tester(:st_geometry_type, [ 'ST_Point', 'ST_Polygon' ], [ 1, 2, 3 ])
