@@ -45,6 +45,10 @@ if ENV['TEST_ACTIVERECORD']
   ActiveRecord::Base.establish_connection 'arunit'
   ARBC = ActiveRecord::Base.connection
 
+  if postgresql_version = ARBC.query('SELECT version()').flatten.to_s
+    puts "PostgreSQL info from version(): #{postgresql_version}"
+  end
+
   puts "Checking for PostGIS install"
   2.times do
     begin
