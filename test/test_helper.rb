@@ -48,8 +48,8 @@ if ENV['TEST_ACTIVERECORD']
   puts "Checking for PostGIS install"
   2.times do
     begin
-      if postgis_version = ARBC.query('SELECT postgis_version()').to_s
-        puts "PostGIS info from postgis_version(): #{postgis_version}"
+      if postgis_version = ARBC.query('SELECT postgis_full_version()').flatten.to_s
+        puts "PostGIS info from postgis_full_version(): #{postgis_version}"
         break
       end
     rescue ActiveRecord::StatementInvalid
