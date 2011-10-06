@@ -27,7 +27,7 @@ end
 
 desc 'Test GEOS interface'
 Rake::TestTask.new(:test) do |t|
-  t.pattern = 'test/**/*_test.rb'
+  t.test_files = 'test/**/*_tests.rb'
   t.verbose = false
 end
 
