@@ -272,7 +272,7 @@ module Geos
       if defined?(@top)
         @top
       else
-        @top = self.upper_right.to_a[1]
+        @top = self.upper_right.y
       end
     end
     alias :n :top
@@ -283,7 +283,7 @@ module Geos
       if defined?(@right)
         @right
       else
-        @right = self.upper_right.to_a[0]
+        @right = self.upper_right.x
       end
     end
     alias :e :right
@@ -294,7 +294,7 @@ module Geos
       if defined?(@bottom)
         @bottom
       else
-        @bottom = self.lower_left.to_a[1]
+        @bottom = self.lower_left.y
       end
     end
     alias :s :bottom
@@ -305,7 +305,7 @@ module Geos
       if defined?(@left)
         @left
       else
-        @left = self.lower_left.to_a[0]
+        @left = self.lower_left.x
       end
     end
     alias :w :left
@@ -409,21 +409,31 @@ module Geos
 
 
   class Point
-    # Returns the Y coordinate of the Point, which is actually the
-    # latitude.
-    def lat
+    # Returns the Y coordinate of the Point.
+    def y
       self.to_a[1]
     end
-    alias :latitude :lat
-    alias :y :lat
 
-    # Returns the X coordinate of the Point, which is actually the
-    # longitude.
-    def lng
+    %w{
+      latitude lat north south n s
+    }.each do |name|
+      self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
+        alias #{name} :y
+      EOF
+    end
+
+    # Returns the X coordinate of the Point.
+    def x
       self.to_a[0]
     end
-    alias :longitude :lng
-    alias :x :lng
+
+    %w{
+      longitude lng east west e w
+    }.each do |name|
+      self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
+        alias #{name} :x
+      EOF
+    end
 
     # Returns the Z coordinate of the Point.
     def z
@@ -456,16 +466,14 @@ module Geos
     # Optimize some unnecessary code away:
     %w{
       upper_left upper_right lower_right lower_left
-      top bottom right left
-      n s e w
       ne nw se sw
+      northwest northeast southeast southwest
     }.each do |name|
-      src, line = <<-EOF, __LINE__ + 1
+      self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
         def #{name}
           self
         end
       EOF
-      self.class_eval(src, __FILE__, line)
     end
 
     # Build some XmlMarkup for KML. You can set KML options for extrude and
