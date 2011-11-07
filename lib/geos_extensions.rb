@@ -221,7 +221,7 @@ module Geos
 
     # Returns a Point for the envelope's upper left coordinate.
     def upper_left
-      if @upper_left
+      if defined?(@upper_left)
         @upper_left
       else
         cs = self.envelope.exterior_ring.coord_seq
@@ -233,11 +233,11 @@ module Geos
 
     # Returns a Point for the envelope's upper right coordinate.
     def upper_right
-      if @upper_right
+      if defined?(@upper_right)
         @upper_right
       else
         cs = self.envelope.exterior_ring.coord_seq
-        @upper_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
+        @upper_right = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
       end
     end
     alias :ne :upper_right
@@ -245,11 +245,11 @@ module Geos
 
     # Returns a Point for the envelope's lower right coordinate.
     def lower_right
-      if @lower_right
+      if defined?(@lower_right)
         @lower_right
       else
         cs = self.envelope.exterior_ring.coord_seq
-        @lower_right ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
+        @lower_right = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
       end
     end
     alias :se :lower_right
@@ -257,11 +257,11 @@ module Geos
 
     # Returns a Point for the envelope's lower left coordinate.
     def lower_left
-      if @lower_left
+      if defined?(@lower_left)
         @lower_left
       else
         cs = self.envelope.exterior_ring.coord_seq
-        @lower_left ||= Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
+        @lower_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
       end
     end
     alias :sw :lower_left
@@ -269,28 +269,44 @@ module Geos
 
     # Northern-most Y coordinate.
     def top
-      @top ||= self.upper_right.to_a[1]
+      if defined?(@top)
+        @top
+      else
+        @top = self.upper_right.to_a[1]
+      end
     end
     alias :n :top
     alias :north :top
 
     # Eastern-most X coordinate.
     def right
-      @right ||= self.upper_right.to_a[0]
+      if defined?(@right)
+        @right
+      else
+        @right = self.upper_right.to_a[0]
+      end
     end
     alias :e :right
     alias :east :right
 
     # Southern-most Y coordinate.
     def bottom
-      @bottom ||= self.lower_left.to_a[1]
+      if defined?(@bottom)
+        @bottom
+      else
+        @bottom = self.lower_left.to_a[1]
+      end
     end
     alias :s :bottom
     alias :south :bottom
 
     # Western-most X coordinate.
     def left
-      @left ||= self.lower_left.to_a[0]
+      if defined?(@left)
+        @left
+      else
+        @left = self.lower_left.to_a[0]
+      end
     end
     alias :w :left
     alias :west :left
@@ -425,11 +441,15 @@ module Geos
     # The Z coordinate will only be present for Points which have a Z
     # dimension.
     def to_a
-      cs = self.coord_seq
-      @to_a ||= if self.has_z?
-        [ cs.get_x(0), cs.get_y(0), cs.get_z(0) ]
+      if defined?(@to_a)
+        @to_a
       else
-        [ cs.get_x(0), cs.get_y(0) ]
+        cs = self.coord_seq
+        @to_a = if self.has_z?
+          [ cs.get_x(0), cs.get_y(0), cs.get_z(0) ]
+        else
+          [ cs.get_x(0), cs.get_y(0) ]
+        end
       end
     end
 
