@@ -12,6 +12,10 @@ module Geos
         # The level parameter is the zoom level you're encoding at. See the
         # Google Maps API reference for details on that.
         def encode(points, level = 3)
+          if points.is_a?(Geos::LineString)
+            points = points.coord_seq
+          end
+
           encoded_points = String.new
           encoded_levels = String.new
 
