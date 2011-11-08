@@ -39,6 +39,25 @@ module Geos
           { :points => encoded_points, :levels => encoded_levels }
         end
 
+        def decode(encoded)
+          retval = []
+          index = 0
+          lat = 0
+          lng = 0
+
+          while (index < encoded.length)
+            shift = 0
+            result = 0
+
+            index, lat = decode_number(encoded, lat, index)
+            index, lng = decode_number(encoded, lng, index)
+
+            retval.push([ lng * 1e-5, lat * 1e-5])
+          end
+
+          retval
+        end
+
         protected
 
         # Encodes a signed number into the Google Maps encoded polyline format.
@@ -46,6 +65,25 @@ module Geos
           signed = n << 1
           signed = ~(signed) if n < 0
           encode_number signed
+        end
+
+        # Decodes a lat or lng value based on the index and the previous
+        # value.
+        def decode_number(encoded, last, index) #:nodoc:
+          shift = 0
+          result = 0
+
+          begin
+            b = encoded[index].ord - 63
+            index += 1
+            result = result | ((b & 0x1f) << shift)
+            shift += 5
+          end while (b >= 0x20)
+
+          [
+            index,
+            last + ((result & 1) != 0 ? ~(result >> 1) : (result >> 1))
+          ]
         end
 
         # Encodes a number into the Google Maps encoded polyline format.
