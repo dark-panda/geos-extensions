@@ -115,8 +115,8 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
         [ $1, $2, $3 ]
       end
 
-      assert_in_delta(lng.to_f, 10.00, 0.000001)
-      assert_in_delta(lat.to_f, 10.01, 0.000001)
+      assert_in_delta(10.00, lng.to_f, 0.000001)
+      assert_in_delta(10.01, lat.to_f, 0.000001)
       assert_equal(
         {},
         JSON.load(json)
@@ -138,8 +138,8 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
         [ $1, $2, $3 ]
       end
 
-      assert_in_delta(lng.to_f, 10.00, 0.000001)
-      assert_in_delta(lat.to_f, 10.01, 0.000001)
+      assert_in_delta(10.00, lng.to_f, 0.000001)
+      assert_in_delta(10.01, lat.to_f, 0.000001)
       assert_equal(
         {},
         JSON.load(json)
@@ -165,8 +165,8 @@ class GoogleMapsApi2Tests < Test::Unit::TestCase
         [ $1, $2, $3 ]
       end
 
-      assert_in_delta(lng.to_f, 10.00, 0.000001)
-      assert_in_delta(lat.to_f, 10.01, 0.000001)
+      assert_in_delta(10.00, lng.to_f, 0.000001)
+      assert_in_delta(10.01, lat.to_f, 0.000001)
       assert_equal(
         { "bounceGravity" => 1, "bouncy" => true },
         JSON.load(json)

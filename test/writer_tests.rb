@@ -33,8 +33,8 @@ class GeosWriterTests < Test::Unit::TestCase
       lng, lat = $1.to_f, $2.to_f
     end
 
-    assert_in_delta(lng, 10.00, 0.000001)
-    assert_in_delta(lat, 10.01, 0.000001)
+    assert_in_delta(10.00, lng, 0.000001)
+    assert_in_delta(10.01, lat, 0.000001)
   end
 
   def test_to_ewkb_bin
@@ -52,8 +52,8 @@ class GeosWriterTests < Test::Unit::TestCase
       lng, lat = $1.to_f, $2.to_f
     end
 
-    assert_in_delta(lng, 10.00, 0.000001)
-    assert_in_delta(lat, 10.01, 0.000001)
+    assert_in_delta(10.00, lng, 0.000001)
+    assert_in_delta(10.01, lat, 0.000001)
   end
 
   def test_to_flickr_bbox
