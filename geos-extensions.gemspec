@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{geos-extensions}
-  s.version = "0.1.3"
+  s.name = "geos-extensions"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{J Smith}]
-  s.date = %q{2011-07-12}
-  s.description = %q{Extensions for the GEOS library.}
-  s.email = %q{code@zoocasa.com}
+  s.authors = ["J Smith"]
+  s.date = "2011-11-09"
+  s.description = "Extensions for the GEOS library."
+  s.email = "code@zoocasa.com"
   s.extra_rdoc_files = [
     "README.rdoc"
   ]
@@ -36,20 +36,22 @@ Gem::Specification.new do |s|
     "lib/geos/rails/engine.rb",
     "lib/geos_extensions.rb",
     "lib/tasks/test.rake",
-    "test/adapter_test.rb",
+    "test/adapter_tests.rb",
     "test/fixtures/foos.yml",
-    "test/geometry_columns_test.rb",
-    "test/geospatial_scopes_test.rb",
-    "test/google_maps_api_2_test.rb",
-    "test/google_maps_api_3_test.rb",
-    "test/reader_test.rb",
+    "test/geometry_columns_tests.rb",
+    "test/geospatial_scopes_tests.rb",
+    "test/google_maps_api_2_tests.rb",
+    "test/google_maps_api_3_tests.rb",
+    "test/google_maps_polyline_encoder_tests.rb",
+    "test/misc_tests.rb",
+    "test/reader_tests.rb",
     "test/test_helper.rb",
-    "test/writer_test.rb"
+    "test/writer_tests.rb"
   ]
-  s.homepage = %q{http://github.com/zoocasa/geos-extensions}
-  s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.5}
-  s.summary = %q{Extensions for the GEOS library.}
+  s.homepage = "http://github.com/zoocasa/geos-extensions"
+  s.require_paths = ["lib"]
+  s.rubygems_version = "1.8.11"
+  s.summary = "Extensions for the GEOS library."
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
