@@ -17,28 +17,23 @@ module Geos
   autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
   autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps })
 
+  REGEXP_FLOAT = /(-?\d+(?:\.\d+)?)/
+  REGEXP_LAT_LNG = /#{REGEXP_FLOAT}\s*,\s*#{REGEXP_FLOAT}/
+
   REGEXP_WKT = /^\s*(?:SRID=(-?[0-9]+);)?(\s*[PLMCG].+)/im
   REGEXP_WKB_HEX = /^[A-Fa-f0-9\s]+$/
+
   REGEXP_G_LAT_LNG_BOUNDS = /^
     \(
-      \(
-        (-?\d+(?:\.\d+)?) # sw lat or x
-        \s*,\s*
-        (-?\d+(?:\.\d+)?) # sw lng or y
-      \)
+      \(#{REGEXP_LAT_LNG}\) # sw
       \s*,\s*
-      \(
-        (-?\d+(?:\.\d+)?) # ne lat or x
-        \s*,\s*
-        (-?\d+(?:\.\d+)?) # ne lng or y
-      \)
+      \(#{REGEXP_LAT_LNG}\) # ne
     \)
   $/x
+
   REGEXP_G_LAT_LNG = /^
     \(?
-      (-?\d+(?:\.\d+)?) # lat or x
-      \s*,\s*
-      (-?\d+(?:\.\d+)?) # lng or y
+      #{REGEXP_LAT_LNG}
     \)?
   $/x
 
