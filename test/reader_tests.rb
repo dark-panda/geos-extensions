@@ -76,10 +76,20 @@ class GeosReaderTests < Test::Unit::TestCase
     bounds = Geos.from_g_lat_lng(BOUNDS_G_LAT_LNG)
 
     assert_kind_of(Geos::Polygon, bounds)
-    assert_equal([ 0, 0 ], bounds.sw.to_a)
-    assert_equal([ 5, 5 ], bounds.ne.to_a)
-    assert_equal([ 0, 5 ], bounds.nw.to_a)
-    assert_equal([ 5, 0 ], bounds.se.to_a)
+    assert_equal([ 0.1, 0.1 ], bounds.sw.to_a)
+    assert_equal([ 5.2, 5.2 ], bounds.ne.to_a)
+    assert_equal([ 0.1, 5.2 ], bounds.nw.to_a)
+    assert_equal([ 5.2, 0.1 ], bounds.se.to_a)
+  end
+
+  def test_from_g_lat_lng_bounds_url_value
+    bounds = Geos.from_g_lat_lng(BOUNDS_G_LAT_LNG_URL_VALUE)
+
+    assert_kind_of(Geos::Polygon, bounds)
+    assert_equal([ 0.1, 0.1 ], bounds.sw.to_a)
+    assert_equal([ 5.2, 5.2 ], bounds.ne.to_a)
+    assert_equal([ 0.1, 5.2 ], bounds.nw.to_a)
+    assert_equal([ 5.2, 0.1 ], bounds.se.to_a)
   end
 
   def test_read

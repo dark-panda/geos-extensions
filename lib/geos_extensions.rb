@@ -29,6 +29,12 @@ module Geos
       \s*,\s*
       \(#{REGEXP_LAT_LNG}\) # ne
     \)
+  $
+    |
+  ^
+    #{REGEXP_LAT_LNG} # sw
+    \s*,\s*
+    #{REGEXP_LAT_LNG} # ne
   $/x
 
   REGEXP_G_LAT_LNG = /^
@@ -103,7 +109,7 @@ module Geos
     geom = case geometry
       when REGEXP_G_LAT_LNG_BOUNDS
         coords = Array.new
-        $~.captures.each_slice(2) { |f|
+        $~.captures.compact.each_slice(2) { |f|
           coords << f.collect(&:to_f)
         }
 

@@ -138,7 +138,8 @@ module TestHelper
 
   POLYGON_WITH_INTERIOR_RING = "POLYGON((0 0, 5 0, 5 5, 0 5, 0 0),(4 4, 4 1, 1 1, 1 4, 4 4))"
 
-  BOUNDS_G_LAT_LNG = "((0, 0), (5, 5))"
+  BOUNDS_G_LAT_LNG = "((0.1, 0.1), (5.2, 5.2))"
+  BOUNDS_G_LAT_LNG_URL_VALUE = '0.1,0.1,5.2,5.2'
 
   def assert_saneness_of_point(point)
     assert_kind_of(Geos::Point, point)
