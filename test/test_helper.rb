@@ -138,6 +138,24 @@ module TestHelper
 
   POLYGON_WITH_INTERIOR_RING = "POLYGON((0 0, 5 0, 5 5, 0 5, 0 0),(4 4, 4 1, 1 1, 1 4, 4 4))"
 
+  LINESTRING_WKT = "LINESTRING (0 0, 5 5, 5 10, 10 10)"
+
+  GEOMETRYCOLLECTION_WKT = 'GEOMETRYCOLLECTION (
+    MULTIPOLYGON (
+      ((0 0, 1 0, 1 1, 0 1, 0 0)),
+      (
+        (10 10, 10 14, 14 14, 14 10, 10 10),
+        (11 11, 11 12, 12 12, 12 11, 11 11)
+      )
+    ),
+    POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)),
+    POLYGON ((0 0, 5 0, 5 5, 0 5, 0 0), (4 4, 4 1, 1 1, 1 4, 4 4)),
+    MULTILINESTRING ((0 0, 2 3), (10 10, 3 4)),
+    LINESTRING (0 0, 2 3),
+    MULTIPOINT ((0 0), (2 3)),
+    POINT (9 0)
+  )'
+
   BOUNDS_G_LAT_LNG = "((0.1, 0.1), (5.2, 5.2))"
   BOUNDS_G_LAT_LNG_URL_VALUE = '0.1,0.1,5.2,5.2'
 

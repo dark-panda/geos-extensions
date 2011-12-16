@@ -329,6 +329,10 @@ module Geos
         (self.north * precision).ceil / precision
       ].join(',')
     end
+
+    def to_geojson(options = {})
+      self.to_geojsonable(options).to_json
+    end
   end
 
 
@@ -405,6 +409,17 @@ module Geos
           :points => self.to_a
         }
       end
+    end
+
+    def to_geojsonable(options = {})
+      {
+        :type => 'LineString',
+        :coordinates => self.to_a
+      }
+    end
+
+    def to_geojson(options = {})
+      self.to_geojsonable(options).to_json
     end
   end
 
@@ -509,12 +524,23 @@ module Geos
         { :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0) }
       end
     end
+
+    def to_geojsonable(options = {})
+      {
+        :type => 'Point',
+        :coordinates => self.to_a
+      }
+    end
   end
 
 
   class LineString
     def to_jsonable(options = {})
       self.coord_seq.to_jsonable(options)
+    end
+
+    def to_geojsonable(options = {})
+      self.coord_seq.to_geojsonable(options)
     end
   end
 
@@ -646,6 +672,29 @@ module Geos
         ret
       end
     end
+
+    # Options:
+    #
+    # * :interior_rings - whether to include any interior rings in the output.
+    #   The default is true.
+    def to_geojsonable(options = {})
+      options = {
+        :interior_rings => true
+      }.merge(options)
+
+      ret = {
+        :type => 'Polygon',
+        :coordinates => [ self.exterior_ring.coord_seq.to_a ]
+      }
+
+      if options[:interior_rings] && self.num_interior_rings > 0
+        ret[:coordinates].concat self.interior_rings.collect { |r|
+          r.coord_seq.to_a
+        }
+      end
+
+      ret
+    end
   end
 
 
@@ -694,6 +743,58 @@ module Geos
     # and gml XML namespaces in your document.
     def to_georss *args
       self.exterior_ring.to_georss(*args)
+    end
+
+    def to_geojsonable(options = {})
+      {
+        :type => 'GeometryCollection',
+        :geometries => self.to_a.collect { |g| g.to_geojsonable(options) }
+      }
+    end
+  end
+
+  class MultiPolygon < GeometryCollection
+    def to_geojsonable(options = {})
+      options = {
+        :interior_rings => true
+      }.merge(options)
+
+      {
+        :type => 'MultiPolygon',
+        :coordinates => self.to_a.collect { |polygon|
+          coords = [ polygon.exterior_ring.coord_seq.to_a ]
+
+          if options[:interior_rings] && polygon.num_interior_rings > 0
+            coords.concat polygon.interior_rings.collect { |r|
+              r.coord_seq.to_a
+            }
+          end
+
+          coords
+        }
+      }
+    end
+  end
+
+  class MultiLineString < GeometryCollection
+    def to_geojsonable(options = {})
+      {
+        :type => 'MultiLineString',
+        :coordinates => self.to_a.collect { |linestring|
+          linestring.coord_seq.to_a
+        }
+      }
+    end
+  end
+
+  class MultiPoint < GeometryCollection
+    def to_geojsonable(options = {})
+      {
+        :type => 'MultiPoint',
+        :coordinates => self.to_a.collect { |point|
+          point.to_a
+        }
+      }
     end
   end
 end
