@@ -17,7 +17,7 @@ module Geos
   autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
   autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps })
 
-  REGEXP_FLOAT = /(-?\d+(?:\.\d+)?)/
+  REGEXP_FLOAT = /(-?\d*(?:\.\d+)?|-?\d*(?:\.\d+?)[eE][-+]?\d+)/
   REGEXP_LAT_LNG = /#{REGEXP_FLOAT}\s*,\s*#{REGEXP_FLOAT}/
 
   REGEXP_WKT = /^\s*(?:SRID=(-?[0-9]+);)?(\s*[PLMCG].+)/im

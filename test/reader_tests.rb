@@ -132,4 +132,9 @@ class GeosReaderTests < Test::Unit::TestCase
 
     assert_equal('POLYGON ((0 0, 10 10, 0 10, 0 0))', geom.to_wkt(:trim => true))
   end
+
+  def test_read_e_notation
+    assert_equal('POINT (60081.5 -0.000858307)', Geos.read('-8.58307e-04, 6.00815E+4').to_wkt(:trim => true))
+    assert_equal('POINT (60081.5 -0.000858307)', Geos.read('-8.58307e-04, 6.00815e4').to_wkt(:trim => true))
+  end
 end
