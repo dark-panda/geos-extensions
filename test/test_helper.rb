@@ -46,22 +46,22 @@ if ENV['TEST_ACTIVERECORD']
   ActiveRecord::Base.establish_connection 'arunit'
   ARBC = ActiveRecord::Base.connection
 
-  if postgresql_version = ARBC.query('SELECT version()').flatten.to_s
+  if postgresql_version = ARBC.select_rows('SELECT version()').first.first
     puts "PostgreSQL info from version(): #{postgresql_version}"
   end
 
   puts "Checking for PostGIS install"
   2.times do
     begin
-      if postgis_version = ARBC.query('SELECT postgis_full_version()').flatten.to_s
+      if postgis_version = ARBC.select_rows('SELECT postgis_full_version()').first.first
         puts "PostGIS info from postgis_full_version(): #{postgis_version}"
         break
       end
     rescue ActiveRecord::StatementInvalid
       puts "Trying to install PostGIS. If this doesn't work, you'll have to do this manually!"
 
-      plpgsql = ARBC.query(%{SELECT count(*) FROM pg_language WHERE lanname = 'plpgsql'}).to_s
-      if plpgsql == '0'
+      plpgsql = ARBC.select_rows(%{SELECT count(*) FROM pg_language WHERE lanname = 'plpgsql'}).first.first.to_i
+      if plpgsql == 0
         ARBC.execute(%{CREATE LANGUAGE plpgsql})
       end
 

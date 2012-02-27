@@ -11,7 +11,7 @@ module ActiveRecord
       end
     end
 
-    class PostgreSQLColumn < Column
+    class PostgreSQLColumn
       def simplified_type_with_geometry_type(field_type)
         if field_type == 'geometry'
           :geometry
@@ -22,27 +22,22 @@ module ActiveRecord
       alias_method_chain :simplified_type, :geometry_type
     end
 
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Returns the geometry columns for the table.
       def geometry_columns(table_name, name = nil)
         return [] if !table_exists?(table_name)
 
         columns(table_name, name).select { |c| c.sql_type == 'geometry' }.collect do |c|
-          res = execute(
-            "SELECT * FROM geometry_columns WHERE f_table_name = #{quote(table_name)} AND f_geometry_column = #{quote(c.name)}",
+          res = select_rows(
+            "SELECT srid, coord_dimension FROM geometry_columns WHERE f_table_name = #{quote(table_name)} AND f_geometry_column = #{quote(c.name)}",
             "Geometry column load for #{table_name}"
           )
 
           PostgreSQLGeometryColumn.new(c.name).tap do |g|
             # since we're too stupid at the moment to understand
             # PostgreSQL schemas, let's just go with this:
-            if res.ntuples == 1
-              coord_dimension_idx, srid_idx =
-                res.fields.index('coord_dimension'),
-                res.fields.index('srid')
-
-              g.srid = res.getvalue(0, srid_idx).to_i
-              g.coord_dimension = res.getvalue(0, coord_dimension_idx).to_i
+            if res.length == 1
+              g.srid, g.coord_dimension = res.first.collect(&:to_i)
             end
           end
         end
