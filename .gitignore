@@ -12,3 +12,4 @@ doc/
 *.patch
 .vimrc_local
 debug.log
+test/local_database.yml

@@ -19,6 +19,10 @@ if ENV['TEST_ACTIVERECORD']
   require 'active_record'
   require 'active_record/fixtures'
   require 'logger'
+
+  if ActiveRecord::VERSION::STRING < '3.0'
+    require 'fake_arel'
+  end
 end
 
 require File.join(File.dirname(__FILE__), %w{ .. lib geos_extensions })
@@ -35,13 +39,27 @@ end
 if ENV['TEST_ACTIVERECORD']
   ActiveRecord::Base.logger = Logger.new("debug.log")
   ActiveRecord::Base.configurations = {
-    'arunit' => {
-      :adapter => 'postgresql',
-      :database => 'geos_extensions_unit_tests',
-      :min_messages => 'warning',
-      :schema_search_path => 'public'
-    }
+    'arunit' => {}
   }
+
+  %w{
+    database.yml
+    local_database.yml
+  }.each do |file|
+    file = File.join('test', file)
+
+    next unless File.exists?(file)
+
+    configuration = YAML.load(File.read(file))
+
+    if configuration['arunit']
+      ActiveRecord::Base.configurations['arunit'].merge!(configuration['arunit'])
+    end
+
+    if defined?(JRUBY_VERSION) && configuration['jdbc']
+      ActiveRecord::Base.configurations['arunit'].merge!(configuration['jdbc'])
+    end
+  end
 
   ActiveRecord::Base.establish_connection 'arunit'
   ARBC = ActiveRecord::Base.connection
