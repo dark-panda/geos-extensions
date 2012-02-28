@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "geos-extensions"
-  s.version = "0.1.5"
+  s.version = "0.1.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = "2011-12-02"
+  s.date = "2012-02-28"
   s.description = "Extensions for the GEOS library."
   s.email = "code@zoocasa.com"
   s.extra_rdoc_files = [
@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
     "lib/geos_extensions.rb",
     "lib/tasks/test.rake",
     "test/adapter_tests.rb",
+    "test/database.yml",
     "test/fixtures/foos.yml",
     "test/geometry_columns_tests.rb",
     "test/geospatial_scopes_tests.rb",
@@ -50,7 +51,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/zoocasa/geos-extensions"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.11"
+  s.rubygems_version = "1.8.16"
   s.summary = "Extensions for the GEOS library."
 
   if s.respond_to? :specification_version then
