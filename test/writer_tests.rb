@@ -133,42 +133,209 @@ class GeosWriterTests < Test::Unit::TestCase
       coord_seq = Geos.read(POLYGON_WKT).exterior_ring.coord_seq
       json = coord_seq.to_geojson
 
-      assert_equal(%{{"type":"LineString","coordinates":[[0.0,0.0],[1.0,1.0],[2.5,2.5],[5.0,5.0],[0.0,0.0]]}}, json)
+      assert_equal({
+        "type" => "LineString",
+        "coordinates" => [
+          [0.0, 0.0],
+          [1.0, 1.0],
+          [2.5, 2.5],
+          [5.0, 5.0],
+          [0.0, 0.0]
+        ]
+      }, JSON.load(json))
     end
 
     def test_to_geojson_polygon
       polygon = Geos.read(POLYGON_WKT)
       json = polygon.to_geojson
 
-      assert_equal(%{{"type":"Polygon","coordinates":[[[0.0,0.0],[1.0,1.0],[2.5,2.5],[5.0,5.0],[0.0,0.0]]]}}, json)
+      assert_equal({
+        "type" => "Polygon",
+        "coordinates" => [
+          [
+            [0.0, 0.0],
+            [1.0, 1.0],
+            [2.5, 2.5],
+            [5.0, 5.0],
+            [0.0, 0.0]
+          ]
+        ]
+      }, JSON.load(json))
     end
 
     def test_to_geojson_polygon_with_interior_ring
       polygon = Geos.read(POLYGON_WITH_INTERIOR_RING)
 
-      assert_equal(%{{"type":"Polygon","coordinates":[[[0.0,0.0],[5.0,0.0],[5.0,5.0],[0.0,5.0],[0.0,0.0]],[[4.0,4.0],[4.0,1.0],[1.0,1.0],[1.0,4.0],[4.0,4.0]]]}}, polygon.to_geojson)
+      assert_equal({
+        "type" => "Polygon",
+        "coordinates" => [
+          [
+            [0.0, 0.0],
+            [5.0, 0.0],
+            [5.0, 5.0],
+            [0.0, 5.0],
+            [0.0, 0.0]
+          ], [
+            [4.0, 4.0],
+            [4.0, 1.0],
+            [1.0, 1.0],
+            [1.0, 4.0],
+            [4.0, 4.0]
+          ]
+        ]
+      }, JSON.load(polygon.to_geojson))
 
-      assert_equal(%{{"type":"Polygon","coordinates":[[[0.0,0.0],[5.0,0.0],[5.0,5.0],[0.0,5.0],[0.0,0.0]]]}}, polygon.to_geojson(:interior_rings => false))
+      assert_equal({
+        "type" => "Polygon",
+        "coordinates" => [
+          [
+            [0.0, 0.0],
+            [5.0, 0.0],
+            [5.0, 5.0],
+            [0.0, 5.0],
+            [0.0, 0.0]
+          ]
+        ]
+      }, JSON.load(polygon.to_geojson(:interior_rings => false)))
     end
 
     def test_to_geojson_point
       point = Geos.read(POINT_WKT)
 
-      assert_equal(%{{"type":"Point","coordinates":[10.0,10.01]}}, point.to_geojson)
+      assert_equal({
+        "type" => "Point",
+        "coordinates" => [10.0, 10.01]
+      }, JSON.load(point.to_geojson))
     end
 
     def test_to_geojson_line_string
       linestring = Geos.read(LINESTRING_WKT)
 
-      assert_equal(%{{"type":"LineString","coordinates":[[0.0,0.0],[5.0,5.0],[5.0,10.0],[10.0,10.0]]}}, linestring.to_geojson)
+      assert_equal({
+        "type" => "LineString",
+        "coordinates" => [
+          [0.0, 0.0],
+          [5.0, 5.0],
+          [5.0, 10.0],
+          [10.0, 10.0]
+        ]}, JSON.load(linestring.to_geojson))
     end
 
     def test_to_geojson_geometry_collection
       collection = Geos.read(GEOMETRYCOLLECTION_WKT)
 
-      assert_equal(%{{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[0.0,0.0],[1.0,0.0],[1.0,1.0],[0.0,1.0],[0.0,0.0]]],[[[10.0,10.0],[10.0,14.0],[14.0,14.0],[14.0,10.0],[10.0,10.0]],[[11.0,11.0],[11.0,12.0],[12.0,12.0],[12.0,11.0],[11.0,11.0]]]]},{"type":"Polygon","coordinates":[[[0.0,0.0],[1.0,0.0],[1.0,1.0],[0.0,1.0],[0.0,0.0]]]},{"type":"Polygon","coordinates":[[[0.0,0.0],[5.0,0.0],[5.0,5.0],[0.0,5.0],[0.0,0.0]],[[4.0,4.0],[4.0,1.0],[1.0,1.0],[1.0,4.0],[4.0,4.0]]]},{"type":"MultiLineString","coordinates":[[[0.0,0.0],[2.0,3.0]],[[10.0,10.0],[3.0,4.0]]]},{"type":"LineString","coordinates":[[0.0,0.0],[2.0,3.0]]},{"type":"MultiPoint","coordinates":[[0.0,0.0],[2.0,3.0]]},{"type":"Point","coordinates":[9.0,0.0]}]}}, collection.to_geojson)
+      assert_equal({
+        "type" => "GeometryCollection",
+        "geometries" =>  [ {
+          "type" => "MultiPolygon",
+          "coordinates" =>  [
+            [
+              [
+                [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]
+              ]
+            ], [
+              [
+                [10.0, 10.0], [10.0, 14.0], [14.0, 14.0], [14.0, 10.0], [10.0, 10.0]
+              ], [
+                [11.0, 11.0], [11.0, 12.0], [12.0, 12.0], [12.0, 11.0], [11.0, 11.0]
+              ]
+            ]
+          ]
+        }, {
+          "type" => "Polygon",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]
+            ]
+          ]
+        }, {
+          "type" => "Polygon",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [5.0, 0.0], [5.0, 5.0], [0.0, 5.0], [0.0, 0.0]
+            ], [
+              [4.0, 4.0], [4.0, 1.0], [1.0, 1.0], [1.0, 4.0], [4.0, 4.0]
+            ]
+          ]
+        }, {
+          "type" => "MultiLineString",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [2.0, 3.0]
+            ], [
+              [10.0, 10.0], [3.0, 4.0]
+            ]
+          ]
+        }, {
+          "type" => "LineString",
+          "coordinates" => [
+            [0.0, 0.0], [2.0, 3.0]
+          ]
+        }, {
+          "type" => "MultiPoint",
+          "coordinates" => [
+            [0.0, 0.0], [2.0, 3.0]
+          ]
+        }, {
+          "type" => "Point",
+          "coordinates" => [9.0, 0.0]
+        }
+      ] }, JSON.load(collection.to_geojson))
 
-      assert_equal(%{{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","coordinates":[[[[0.0,0.0],[1.0,0.0],[1.0,1.0],[0.0,1.0],[0.0,0.0]]],[[[10.0,10.0],[10.0,14.0],[14.0,14.0],[14.0,10.0],[10.0,10.0]]]]},{"type":"Polygon","coordinates":[[[0.0,0.0],[1.0,0.0],[1.0,1.0],[0.0,1.0],[0.0,0.0]]]},{"type":"Polygon","coordinates":[[[0.0,0.0],[5.0,0.0],[5.0,5.0],[0.0,5.0],[0.0,0.0]]]},{"type":"MultiLineString","coordinates":[[[0.0,0.0],[2.0,3.0]],[[10.0,10.0],[3.0,4.0]]]},{"type":"LineString","coordinates":[[0.0,0.0],[2.0,3.0]]},{"type":"MultiPoint","coordinates":[[0.0,0.0],[2.0,3.0]]},{"type":"Point","coordinates":[9.0,0.0]}]}}, collection.to_geojson(:interior_rings => false))
+      assert_equal({
+        "type" => "GeometryCollection",
+        "geometries" => [ {
+          "type" => "MultiPolygon",
+          "coordinates" => [
+            [
+              [
+                [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]
+              ]
+            ], [
+              [
+                [10.0, 10.0], [10.0, 14.0], [14.0, 14.0], [14.0, 10.0], [10.0, 10.0]
+              ]
+            ]
+          ]
+        }, {
+          "type" => "Polygon",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]
+            ]
+          ]
+        }, {
+          "type" => "Polygon",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [5.0, 0.0], [5.0, 5.0], [0.0, 5.0], [0.0, 0.0]
+            ]
+          ]
+        }, {
+          "type" => "MultiLineString",
+          "coordinates" => [
+            [
+              [0.0, 0.0], [2.0, 3.0]
+            ],
+            [
+              [10.0, 10.0], [3.0, 4.0]
+            ]
+          ]
+        }, {
+          "type" => "LineString",
+          "coordinates" => [
+            [0.0, 0.0], [2.0, 3.0]
+          ]
+        }, {
+          "type" => "MultiPoint",
+          "coordinates" => [
+            [0.0, 0.0], [2.0, 3.0]
+          ]
+        }, {
+          "type" => "Point",
+          "coordinates" => [9.0, 0.0]
+        } ]
+      }, JSON.load(collection.to_geojson(:interior_rings => false)))
     end
   end
 end

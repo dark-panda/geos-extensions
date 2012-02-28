@@ -56,22 +56,41 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
   end
 
   if defined?(JSON)
-    def test_to_g_polygon
-      assert_equal(
-        %{new google.maps.Polygon({"paths": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})},
-        @polygon.to_g_polygon
-      )
+    def poly_tester(type, expected, poly)
+      json = poly.gsub(/new google.maps.LatLng\(([^)]+)\)/, '[ \1 ]').gsub(/"map":\s*map/, %{"map": "map"})
 
-      assert_equal(
-        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
-        @polygon.to_g_polygon(
-          :stroke_color => '#b00b1e',
-          :stroke_weight => 5,
-          :stroke_opacity => 0.5,
-          :fill_color => '#b00b1e',
-          :map => 'map'
-        )
-      )
+      assert(json =~ /^new google.maps.#{type}\((.+)\)$/)
+
+      assert_equal(expected, JSON.load($~[1]))
+    end
+
+    def test_to_g_polygon
+      poly_tester('Polygon', {
+        "paths" => [
+          [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
+        ]
+      }, @polygon.to_g_polygon)
+
+      poly_tester('Polygon', {
+        'strokeColor' => '#b00b1e',
+        'strokeWeight' => 5,
+        'strokeOpacity' => 0.5,
+        'fillColor' => '#b00b1e',
+        'map' => 'map',
+        'paths' => [
+          [ 0.0, 0.0 ],
+          [ 1.0, 1.0 ],
+          [ 2.5, 2.5 ],
+          [ 5.0, 5.0 ],
+          [ 0.0, 0.0 ]
+        ]
+      }, @polygon.to_g_polygon(
+        :stroke_color => '#b00b1e',
+        :stroke_weight => 5,
+        :stroke_opacity => 0.5,
+        :fill_color => '#b00b1e',
+        :map => 'map'
+      ))
     end
 
     def test_to_g_polygon_with_multi_polygon
@@ -82,6 +101,7 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
           ((20 20, 20 25, 25 25, 25 20, 20 20))
         )'
       )
+
       options = {
         :stroke_color => '#b00b1e',
         :stroke_weight => 5,
@@ -90,59 +110,83 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
         :map => 'map'
       }
 
-      assert_equal(
-        ["new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
- "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)]})",
- "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)]})"],
-        multi_polygon.to_g_polygon(
-          :stroke_color => '#b00b1e',
-          :stroke_weight => 5,
-          :stroke_opacity => 0.5,
-          :fill_color => '#b00b1e',
-          :map => 'map'
-        )
-      )
+      expected = [ {
+        "paths" => [[0.0, 0.0], [5.0, 0.0], [5.0, 5.0], [0.0, 5.0], [0.0, 0.0]],
+        "strokeColor" => "#b00b1e",
+        "strokeOpacity" => 0.5,
+        "fillColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "map" => "map"
+      }, {
+        "paths" =>  [[10.0, 10.0], [15.0, 10.0], [15.0, 15.0], [10.0, 15.0], [10.0, 10.0]],
+        "strokeColor" => "#b00b1e",
+        "strokeOpacity" => 0.5,
+        "fillColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "map" => "map"
+      }, {
+        "paths" => [[20.0, 20.0], [25.0, 20.0], [25.0, 25.0], [20.0, 25.0], [20.0, 20.0]],
+        "strokeColor" => "#b00b1e",
+        "strokeOpacity" => 0.5,
+        "fillColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "map" => "map"
+      } ]
 
-      assert_equal(
-        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [[new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)], [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)], [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)]]})",
-        multi_polygon.to_g_polygon({
-          :stroke_color => '#b00b1e',
-          :stroke_weight => 5,
-          :stroke_opacity => 0.5,
-          :fill_color => '#b00b1e',
-          :map => 'map'
-        }, {
-          :single => true
-        })
-      )
+      multi_polygon.to_g_polygon(options).each_with_index do |polygon, i|
+        poly_tester('Polygon', expected[i], polygon)
+      end
 
-      assert_equal(
-        "new google.maps.Polygon({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"fillColor\": \"#b00b1e\", \"map\": map, \"paths\": [[new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(5.0, 0.0), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 5.0), new google.maps.LatLng(0.0, 0.0)], [new google.maps.LatLng(10.0, 10.0), new google.maps.LatLng(15.0, 10.0), new google.maps.LatLng(15.0, 15.0), new google.maps.LatLng(10.0, 15.0), new google.maps.LatLng(10.0, 10.0)], [new google.maps.LatLng(20.0, 20.0), new google.maps.LatLng(25.0, 20.0), new google.maps.LatLng(25.0, 25.0), new google.maps.LatLng(20.0, 25.0), new google.maps.LatLng(20.0, 20.0)]]})",
-        multi_polygon.to_g_polygon_single(
-          :stroke_color => '#b00b1e',
-          :stroke_weight => 5,
-          :stroke_opacity => 0.5,
-          :fill_color => '#b00b1e',
-          :map => 'map'
-        )
-      )
+      poly_tester("Polygon", {
+        "paths" => [
+          [[0.0, 0.0], [5.0, 0.0], [5.0, 5.0], [0.0, 5.0], [0.0, 0.0]],
+          [[10.0, 10.0], [15.0, 10.0], [15.0, 15.0], [10.0, 15.0], [10.0, 10.0]],
+          [[20.0, 20.0], [25.0, 20.0], [25.0, 25.0], [20.0, 25.0], [20.0, 20.0]]
+        ],
+        "strokeColor" => "#b00b1e",
+        "strokeOpacity" => 0.5,
+        "fillColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "map" => "map"
+      }, multi_polygon.to_g_polygon(options, {
+        :single => true
+      }))
+
+      poly_tester("Polygon", {
+        "paths" => [
+          [[0.0, 0.0], [5.0, 0.0], [5.0, 5.0], [0.0, 5.0], [0.0, 0.0]],
+          [[10.0, 10.0], [15.0, 10.0], [15.0, 15.0], [10.0, 15.0], [10.0, 10.0]],
+          [[20.0, 20.0], [25.0, 20.0], [25.0, 25.0], [20.0, 25.0], [20.0, 20.0]]
+        ],
+        "strokeColor" => "#b00b1e",
+        "strokeOpacity" => 0.5,
+        "fillColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "map" => "map"
+      }, multi_polygon.to_g_polygon_single(options))
     end
 
     def test_to_g_polyline
-      assert_equal(
-        "new google.maps.Polyline({\"path\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
-        @polygon.to_g_polyline
-      )
+      poly_tester("Polyline", {
+        "path" => [
+          [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
+        ]
+      }, @polygon.to_g_polyline)
 
-      assert_equal(
-        "new google.maps.Polyline({\"strokeColor\": \"#b00b1e\", \"strokeWeight\": 5, \"strokeOpacity\": 0.5, \"map\": map, \"path\": [new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)]})",
-        @polygon.to_g_polyline(
-          :stroke_color => '#b00b1e',
-          :stroke_weight => 5,
-          :stroke_opacity => 0.5,
-          :map => 'map'
-        )
-      )
+      poly_tester("Polyline", {
+        "strokeColor" => "#b00b1e",
+        "strokeWeight" => 5,
+        "strokeOpacity" => 0.5,
+        "map" => "map",
+        "path" => [
+          [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
+        ]
+      }, @polygon.to_g_polyline(
+        :stroke_color => '#b00b1e',
+        :stroke_weight => 5,
+        :stroke_opacity => 0.5,
+        :map => 'map'
+      ))
     end
 
     def test_to_g_marker
