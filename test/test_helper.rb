@@ -2,7 +2,7 @@
 require 'rubygems'
 require 'test/unit'
 
-if ENV['TEST_ACTIVERECORD']
+if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
   ACTIVERECORD_GEM_VERSION = ENV['ACTIVERECORD_GEM_VERSION'] || '~> 3.2.0'
   gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
@@ -36,7 +36,7 @@ if defined?(Geos::FFIGeos)
   puts "Using #{Geos::FFIGeos.geos_library_paths.join(', ')}"
 end
 
-if ENV['TEST_ACTIVERECORD']
+if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
   ActiveRecord::Base.logger = Logger.new("debug.log")
   ActiveRecord::Base.configurations = {
     'arunit' => {}
