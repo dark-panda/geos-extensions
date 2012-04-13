@@ -124,29 +124,33 @@ module Geos
             create_these.each do |k|
               src, line = <<-EOF, __LINE__ + 1
                 def #{k.name}=(geom)
-                  column_srid = self.class.srid_for(#{k.name.inspect})
-
-                  if geom =~ /^SRID=default;/i
-                    geom = geom.sub(/default/i, column_srid.to_s)
-                  end
-
-                  geos = Geos.read(geom)
-
-                  geom_srid = if geos.srid == 0
-                    -1
+                  if !geom
+                    self['#{k.name}'] = nil
                   else
-                    geos.srid
-                  end
+                    column_srid = self.class.srid_for(#{k.name.inspect})
 
-                  if column_srid != geom_srid
-                    if column_srid == -1 || geom_srid == -1
-                      geos.srid = column_srid
-                    else
-                      raise CantConvertSRID.new(self.class.table_name, #{k.name.inspect}, geom_srid, column_srid)
+                    if geom =~ /^SRID=default;/i
+                      geom = geom.sub(/default/i, column_srid.to_s)
                     end
-                  end
 
-                  self['#{k.name}'] = geos.to_ewkb
+                    geos = Geos.read(geom)
+
+                    geom_srid = if geos.srid == 0
+                      -1
+                    else
+                      geos.srid
+                    end
+
+                    if column_srid != geom_srid
+                      if column_srid == -1 || geom_srid == -1
+                        geos.srid = column_srid
+                      else
+                        raise CantConvertSRID.new(self.class.table_name, #{k.name.inspect}, geom_srid, column_srid)
+                      end
+                    end
+
+                    self['#{k.name}'] = geos.to_ewkb
+                  end
 
                   GEOMETRY_COLUMN_OUTPUT_FORMATS.each do |f|
                     instance_variable_set("@#{k.name}_\#{f}", nil)
