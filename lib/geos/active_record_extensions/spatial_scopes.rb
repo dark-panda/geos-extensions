@@ -87,17 +87,23 @@ module Geos
     #
     # == SRID Detection
     #
+    # * the default SRID according to the SQL-MM standard is 0, but versions
+    #   of PostGIS prior to 2.0 would return -1. We do some detection here
+    #   and set the value of Geos::ActiveRecord.UNKNOWN_SRIDS[type]
+    #   accordingly.
     # * if the geometry itself has an SRID, we'll compare it to the
     #   geometry of the column. If they differ, we'll use ST_Transform
     #   to transform the geometry to the proper SRID for comparison. If
     #   they're the same, no conversion is necessary.
     # * if no SRID is specified in the geometry, we'll use ST_SetSRID
     #   to set the SRID to the column's SRID.
-    # * in cases where the column has been defined with an SRID of -1
-    #   (PostGIS's default), no transformation is done, but we'll set the
-    #   SRID of the geometry to -1 to perform the query using ST_SetSRID,
-    #   as we'll assume the SRID of the column to be whatever the SRID of
-    #   the geometry is.
+    # * in cases where the column has been defined with an SRID of
+    #   UNKNOWN_SRIDS[type], no transformation is done, but we'll set the SRID
+    #   of the geometry to UNKNOWN_SRIDS[type] to perform the query using
+    #   ST_SetSRID, as we'll assume the SRID of the column to be whatever
+    #   the SRID of the geometry is.
+    # * when using geography types, the SRID is never transformed since
+    #   it's assumed that all of your geometries will be in 4326.
     module SpatialScopes
       SCOPE_METHOD = if ::ActiveRecord::VERSION::MAJOR >= 3
         'scope'
@@ -164,7 +170,7 @@ module Geos
             protected
               def set_srid_or_transform(column_srid, geom_srid, geos, type)
                 sql = if type != :geography && column_srid != geom_srid
-                  if column_srid == -1 || geom_srid == -1
+                  if column_srid == Geos::ActiveRecord.UNKNOWN_SRIDS[type] || geom_srid == Geos::ActiveRecord.UNKNOWN_SRIDS[type]
                     %{ST_SetSRID(?::#{type}, #{column_srid})}
                   else
                     %{ST_Transform(?::#{type}, #{column_srid})}
@@ -183,9 +189,9 @@ module Geos
                 Geos.read(geom)
               end
 
-              def read_geom_srid(geos)
-                if geos.srid == 0
-                  -1
+              def read_geom_srid(geos, column_type = :geometry)
+                if geos.srid == 0 || geos.srid == -1
+                  Geos::ActiveRecord.UNKNOWN_SRIDS[column_type]
                 else
                   geos.srid
                 end
@@ -231,7 +237,7 @@ module Geos
                     column_srid = self.srid_for(options[:column])
 
                     geos = read_geos(geom, column_srid)
-                    geom_srid = read_geom_srid(geos)
+                    geom_srid = read_geom_srid(geos, column_type)
 
                     ret << %{, #{self.set_srid_or_transform(column_srid, geom_srid, geos, column_type)}}
                   end

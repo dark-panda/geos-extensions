@@ -19,7 +19,7 @@ if ENV['TEST_ACTIVERECORD']
     end
 
     def test_srid_for
-      assert_equal(-1, Foo.srid_for(:the_geom))
+      assert_equal(Geos::ActiveRecord.UNKNOWN_SRID, Foo.srid_for(:the_geom))
       assert_equal(4326, Foo.srid_for(:the_other_geom))
     end
 

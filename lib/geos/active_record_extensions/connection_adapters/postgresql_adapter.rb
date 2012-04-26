@@ -124,6 +124,28 @@ module Geos
         {}.freeze
       end
     end
+
+    def self.UNKNOWN_SRIDS
+      return @UNKNOWN_SRIDS if defined?(@UNKNOWN_SRIDS)
+
+      @UNKNOWN_SRIDS = if self.POSTGIS[:lib] >= '2.0'
+        {
+          :geography => 0,
+          :geometry  => 0
+        }.freeze
+      else
+        {
+          :geography =>  0,
+          :geometry  => -1
+        }.freeze
+      end
+    end
+
+    def self.UNKNOWN_SRID
+      return @UNKNOWN_SRID if defined?(@UNKNOWN_SRID)
+
+      @UNKNOWN_SRID = self.UNKNOWN_SRIDS[:geometry]
+    end
   end
 end
 

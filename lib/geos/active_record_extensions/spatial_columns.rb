@@ -129,13 +129,14 @@ module Geos
           end
 
           # Quickly grab the SRID for a geometry column.
-          def srid_for(column)
-            self.spatial_column_by_name(column).try(:srid) || -1
+          def srid_for(column_name)
+            column = self.spatial_column_by_name(column_name)
+            column.try(:srid) || Geos::ActiveRecord.UNKNOWN_SRID
           end
 
           # Quickly grab the number of dimensions for a geometry column.
-          def coord_dimension_for(column)
-            self.spatial_column_by_name(column).coord_dimension
+          def coord_dimension_for(column_name)
+            self.spatial_column_by_name(column_name).coord_dimension
           end
 
         protected
@@ -202,14 +203,14 @@ module Geos
                     geos = Geos.read(geom)
 
                     if column.spatial_type != :geography
-                      geom_srid = if geos.srid == 0
-                        -1
+                      geom_srid = if geos.srid == 0 || geos.srid == -1
+                        Geos::ActiveRecord.UNKNOWN_SRIDS[column.spatial_type]
                       else
                         geos.srid
                       end
 
                       if column.srid != geom_srid
-                        if column.srid == -1 || geom_srid == -1 || column.srid == 0 || geom_srid == 0
+                        if column.srid == Geos::ActiveRecord.UNKNOWN_SRIDS[column.spatial_type] || geom_srid == Geos::ActiveRecord.UNKNOWN_SRIDS[column.spatial_type]
                           geos.srid = column.srid
                         else
                           raise CantConvertSRID.new(self.class.table_name, #{k.name.inspect}, geom_srid, column.srid)

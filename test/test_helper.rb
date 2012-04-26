@@ -104,7 +104,7 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
       t.text :name
     end
 
-    ARBC.execute(%{SELECT AddGeometryColumn('public', 'foos', 'the_geom', -1, 'GEOMETRY', 2)})
+    ARBC.execute(%{SELECT AddGeometryColumn('public', 'foos', 'the_geom', #{Geos::ActiveRecord.UNKNOWN_SRID}, 'GEOMETRY', 2)})
     ARBC.execute(%{SELECT AddGeometryColumn('public', 'foos', 'the_other_geom', 4326, 'GEOMETRY', 2)})
   end
 
