@@ -81,7 +81,13 @@ if ENV['TEST_ACTIVERECORD']
     end
 
     def test_order_by_length_desc
-      assert_equal([3, 1, 2], FooGeography.order_by_length(:desc => true).order('id').all.collect(&:id))
+      expected = if Geos::ActiveRecord::POSTGIS[:lib] >= '2.0'
+        [1, 2, 3]
+      else
+        [3, 1, 2]
+      end
+
+      assert_equal(expected, FooGeography.order_by_length(:desc => true).order('id').where('true = true').all.collect(&:id))
     end
 
     def test_order_by_area_with_desc_symbol
