@@ -193,7 +193,8 @@ module Geos
       end
 
       FUNCTION_ALIASES = {
-        'order_by_max_distance' => 'order_by_maxdistance'
+        'order_by_max_distance' => 'order_by_maxdistance',
+        'st_geometrytype' => 'st_geometry_type'
       }
 
       COMPATIBILITY_FUNCTION_ALIASES = if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
