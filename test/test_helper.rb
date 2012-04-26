@@ -108,6 +108,15 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
     ARBC.execute(%{SELECT AddGeometryColumn('public', 'foos', 'the_other_geom', 4326, 'GEOMETRY', 2)})
   end
 
+  if !ARBC.table_exists?('foo3ds')
+    ActiveRecord::Migration.create_table(:foo3ds) do |t|
+      t.text :name
+    end
+
+    ARBC.execute(%{SELECT AddGeometryColumn('public', 'foo3ds', 'the_geom', #{Geos::ActiveRecord.UNKNOWN_SRID}, 'GEOMETRY', 3)})
+    ARBC.execute(%{SELECT AddGeometryColumn('public', 'foo3ds', 'the_other_geom', 4326, 'GEOMETRY', 3)})
+  end
+
   if !ARBC.table_exists?('foo_geographies')
     ActiveRecord::Migration.create_table(:foo_geographies) do |t|
       t.text :name
@@ -117,6 +126,12 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
   end
 
   class Foo < ActiveRecord::Base
+    include Geos::ActiveRecord::SpatialColumns
+    include Geos::ActiveRecord::SpatialScopes
+    create_spatial_column_accessors!
+  end
+
+  class Foo3d < ActiveRecord::Base
     include Geos::ActiveRecord::SpatialColumns
     include Geos::ActiveRecord::SpatialScopes
     create_spatial_column_accessors!

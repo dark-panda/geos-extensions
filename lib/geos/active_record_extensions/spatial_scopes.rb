@@ -135,12 +135,10 @@ module Geos
         numinteriorring
         numinteriorrings
         numpoints
-        length3d
         length
         length2d
         perimeter
         perimeter2d
-        perimeter3d
       }
 
       ONE_GEOMETRY_ARGUMENT_MEASUREMENTS = %w{
@@ -156,13 +154,70 @@ module Geos
 
       ONE_ARGUMENT_MEASUREMENTS = %w{
         length2d_spheroid
-        length3d_spheroid
         length_spheroid
       }
+
+      # Some functions were renamed in PostGIS 2.0.
+      if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
+        RELATIONSHIPS.concat(%w{
+          3dintersects
+        })
+
+        ZERO_ARGUMENT_MEASUREMENTS.concat(%w{
+          3dlength
+          3dperimeter
+        })
+
+        ONE_ARGUMENT_MEASUREMENTS.concat(%w{
+          3dlength_spheroid
+        })
+
+        ONE_GEOMETRY_ARGUMENT_MEASUREMENTS.concat(%w{
+          3ddistance
+          3dmaxdistance
+        })
+
+        ONE_GEOMETRY_ARGUMENT_AND_ONE_ARGUMENT_RELATIONSHIPS.concat(%w{
+          3ddwithin
+          3ddfullywithin
+        })
+      else
+        ZERO_ARGUMENT_MEASUREMENTS.concat(%w{
+          length3d
+          perimeter3d
+        })
+
+        ONE_ARGUMENT_MEASUREMENTS.concat(%w{
+          length3d_spheroid
+        })
+      end
 
       FUNCTION_ALIASES = {
         'order_by_max_distance' => 'order_by_maxdistance'
       }
+
+      COMPATIBILITY_FUNCTION_ALIASES = if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
+        {
+          'order_by_length3d' => 'order_by_3dlength',
+          'order_by_perimeter3d' => 'order_by_3dperimeter',
+          'order_by_length3d_spheroid' => 'order_by_3dlength_spheroid'
+        }
+      else
+        {
+          'order_by_3dlength' => 'order_by_length3d',
+          'order_by_3dperimeter' => 'order_by_perimeter3d',
+          'order_by_3dlength_spheroid' => 'order_by_length3d_spheroid'
+        }
+      end
+
+      if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
+        FUNCTION_ALIASES.merge!({
+          'st_3d_dwithin' => 'st_3ddwithin',
+          'st_3d_dfully_within' => 'st_3ddfullywithin',
+          'order_by_3d_distance' => 'order_by_3ddistance',
+          'order_by_3d_max_distance' => 'order_by_3dmaxdistance'
+        })
+      end
 
       def self.included(base)
         base.class_eval do
@@ -420,7 +475,9 @@ module Geos
           })
 
           class << base
-            FUNCTION_ALIASES.each do |k, v|
+            aliases = COMPATIBILITY_FUNCTION_ALIASES.merge(FUNCTION_ALIASES)
+
+            aliases.each do |k, v|
               alias_method(k, v)
             end
           end

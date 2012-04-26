@@ -8,7 +8,7 @@ if ENV['TEST_ACTIVERECORD']
     include ActiveRecord::TestFixtures
 
     self.fixture_path = File.join(File.dirname(__FILE__), 'fixtures')
-    fixtures :foos
+    fixtures :foos, :foo3ds
 
     def ids_tester(method, args, ids = [], klass = Foo)
       geoms = klass.send(method, *Array(args)).all
@@ -221,24 +221,35 @@ if ENV['TEST_ACTIVERECORD']
     end
 
     def test_order_by_length3d_spheroid_desc
-      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+      expected = if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
+        [3, 1, 2]
+      else
+        [1, 2, 3]
+      end
+
+      assert_equal(expected, Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
     end
 
-
     def test_order_by_length2d_spheroid
-      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+      assert_equal([1, 2, 3], Foo.order_by_length2d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
     end
 
     def test_order_by_length2d_spheroid_desc
-      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+      assert_equal([3, 1, 2], Foo.order_by_length2d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
     end
 
     def test_order_by_length_spheroid
-      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
+      assert_equal([1, 2, 3], Foo.order_by_length_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
     end
 
     def test_order_by_length_spheroid_desc
-      assert_equal([1, 2, 3], Foo.order_by_length3d_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
+      expected = if Geos::ActiveRecord.POSTGIS[:lib] >= '2.0'
+        [3, 1, 2]
+      else
+        [1, 2, 3]
+      end
+
+      assert_equal(expected, Foo.order_by_length_spheroid('SPHEROID["WGS 84", 6378137, 298.257223563]', :desc => true).order('id').all.collect(&:id))
     end
 
     def test_order_by_perimeter
@@ -277,7 +288,6 @@ if ENV['TEST_ACTIVERECORD']
       assert_equal([1, 3, 2], Foo.order_by_hausdorffdistance('POINT(1 1)', 0.314).all.collect(&:id))
     end
 
-
     def test_order_by_distance_spheroid
       assert_equal([2, 3, 1], Foo.order_by_distance_spheroid('POINT(10 10)', 'SPHEROID["WGS 84", 6378137, 298.257223563]').order('id').all.collect(&:id))
     end
@@ -288,6 +298,36 @@ if ENV['TEST_ACTIVERECORD']
 
     def test_order_by_area_with_desc_symbol
       assert_equal([3, 1, 2], Foo.order_by_area(:desc).order('id').all.collect(&:id))
+    end
+
+    if Foo3d.respond_to?(:st_3dintersects)
+      def test_3dintersects
+        ids_tester(:st_3dintersects, 'LINESTRING(-5 -5 -5, 10 10 10)', [ 1, 3 ], Foo3d)
+      end
+    end
+
+    if Foo3d.respond_to?(:order_by_3ddistance)
+      def test_3ddistance
+        assert_equal([3, 2, 1], Foo3d.order_by_3ddistance('POINT(10 10)').order('id').all.collect(&:id))
+      end
+    end
+
+    if Foo3d.respond_to?(:order_by_3dmaxdistance)
+      def test_3dmaxdistance
+        assert_equal([2, 1, 3], Foo3d.order_by_3dmaxdistance('POINT(10 10)').order('id').all.collect(&:id))
+      end
+    end
+
+    if Foo3d.respond_to?(:st_3ddwithin)
+      def test_3ddwithin
+        ids_tester(:st_3ddwithin, [ 'LINESTRING(-5 -5 -5, 10 10 10)', 10 ], [ 1, 2, 3 ], Foo3d)
+      end
+    end
+
+    if Foo3d.respond_to?(:st_3ddfullywithin)
+      def test_3ddfullywithin
+        ids_tester(:st_3ddfullywithin, [ 'LINESTRING(-10 -10 -10, 10 10 10)', 100 ], [ 1, 2, 3 ], Foo3d)
+      end
     end
   end
 end
