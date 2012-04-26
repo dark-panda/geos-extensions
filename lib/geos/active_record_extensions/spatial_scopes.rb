@@ -98,7 +98,7 @@ module Geos
     #   SRID of the geometry to -1 to perform the query using ST_SetSRID,
     #   as we'll assume the SRID of the column to be whatever the SRID of
     #   the geometry is.
-    module GeospatialScopes
+    module SpatialScopes
       SCOPE_METHOD = if ::ActiveRecord::VERSION::MAJOR >= 3
         'scope'
       else
@@ -118,7 +118,7 @@ module Geos
         overlaps
         touches
         within
-      }.freeze
+      }
 
       ZERO_ARGUMENT_MEASUREMENTS = %w{
         area
@@ -154,19 +154,23 @@ module Geos
         length_spheroid
       }
 
+      FUNCTION_ALIASES = {
+        'order_by_max_distance' => 'order_by_maxdistance'
+      }
+
       def self.included(base)
         base.class_eval do
           class << self
             protected
-              def set_srid_or_transform(column_srid, geom_srid, geos)
-                sql = if column_srid != geom_srid
+              def set_srid_or_transform(column_srid, geom_srid, geos, type)
+                sql = if type != :geography && column_srid != geom_srid
                   if column_srid == -1 || geom_srid == -1
-                    %{ST_SetSRID(?, #{column_srid})}
+                    %{ST_SetSRID(?::#{type}, #{column_srid})}
                   else
-                    %{ST_Transform(?, #{column_srid})}
+                    %{ST_Transform(?::#{type}, #{column_srid})}
                   end
                 else
-                  %{?}
+                  %{?::#{type}}
                 end
 
                 sanitize_sql([ sql, geos.to_ewkb ])
@@ -223,12 +227,13 @@ module Geos
                   ret << "#{function_name(function, options[:use_index])}(#{self.quoted_table_name}.#{column_name}"
 
                   if geom
+                    column_type = self.spatial_column_by_name(options[:column]).spatial_type
                     column_srid = self.srid_for(options[:column])
 
                     geos = read_geos(geom, column_srid)
                     geom_srid = read_geom_srid(geos)
 
-                    ret << %{, #{self.set_srid_or_transform(column_srid, geom_srid, geos)}}
+                    ret << %{, #{self.set_srid_or_transform(column_srid, geom_srid, geos, column_type)}}
                   end
 
                   ret << ', ?' * function_options[:additional_args]
@@ -407,8 +412,16 @@ module Geos
               ])
             }
           })
+
+          class << base
+            FUNCTION_ALIASES.each do |k, v|
+              alias_method(k, v)
+            end
+          end
         end
       end
     end
+
+    GeospatialScopes = SpatialScopes
   end
 end

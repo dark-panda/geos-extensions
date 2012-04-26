@@ -3,15 +3,15 @@ $: << File.dirname(__FILE__)
 require 'test_helper'
 
 if ENV['TEST_ACTIVERECORD']
-  class GeospatialScopesTests < ActiveRecord::TestCase
+  class SpatialScopesTests < ActiveRecord::TestCase
     include TestHelper
     include ActiveRecord::TestFixtures
 
     self.fixture_path = File.join(File.dirname(__FILE__), 'fixtures')
     fixtures :foos
 
-    def ids_tester(method, args, ids = [])
-      geoms = Foo.send(method, *Array(args)).all
+    def ids_tester(method, args, ids = [], klass = Foo)
+      geoms = klass.send(method, *Array(args)).all
       assert_equal(ids.sort, geoms.collect(&:id).sort)
     end
 
@@ -120,11 +120,11 @@ if ENV['TEST_ACTIVERECORD']
       assert_equal([2, 1, 3], Foo.order_by_distance_sphere('POINT(1 1)', :desc => true).all.collect(&:id))
     end
 
-    def test_order_by_maxdistance
+    def test_order_by_max_distance
       assert_equal([1, 3, 2], Foo.order_by_maxdistance('POINT(1 1)').all.collect(&:id))
     end
 
-    def test_order_by_maxdistance_desc
+    def test_order_by_max_distance_desc
       assert_equal([2, 3, 1], Foo.order_by_maxdistance('POINT(1 1)', :desc => true).all.collect(&:id))
     end
 

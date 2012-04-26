@@ -108,10 +108,24 @@ if ENV['TEST_ACTIVERECORD']
     ARBC.execute(%{SELECT AddGeometryColumn('public', 'foos', 'the_other_geom', 4326, 'GEOMETRY', 2)})
   end
 
+  if !ARBC.table_exists?('foo_geographies')
+    ActiveRecord::Migration.create_table(:foo_geographies) do |t|
+      t.text :name
+      t.column :the_geom, :geography
+      t.column :the_other_geom, 'geography(Geometry, 4326)'
+    end
+  end
+
   class Foo < ActiveRecord::Base
-    include Geos::ActiveRecord::GeometryColumns
-    include Geos::ActiveRecord::GeospatialScopes
-    create_geometry_column_accessors!
+    include Geos::ActiveRecord::SpatialColumns
+    include Geos::ActiveRecord::SpatialScopes
+    create_spatial_column_accessors!
+  end
+
+  class FooGeography < ActiveRecord::Base
+    include Geos::ActiveRecord::SpatialColumns
+    include Geos::ActiveRecord::SpatialScopes
+    create_spatial_column_accessors!
   end
 end
 

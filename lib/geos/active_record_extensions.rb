@@ -3,8 +3,10 @@ require File.join(Geos::GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions
 
 module Geos
   module ActiveRecord
-    autoload :GeometryColumns, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions geometry_columns })
-    autoload :GeospatialScopes, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions geospatial_scopes })
+    autoload :SpatialColumns, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions spatial_columns })
+    autoload :GeometryColumns, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions spatial_columns })
+    autoload :SpatialScopes, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions spatial_scopes })
+    autoload :GeospatialScopes, File.join(Geos::GEOS_EXTENSIONS_BASE, %w{ geos active_record_extensions spatial_scopes })
   end
 end
 
