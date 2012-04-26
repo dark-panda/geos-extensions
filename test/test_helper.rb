@@ -71,7 +71,7 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
   puts "Checking for PostGIS install"
   2.times do
     begin
-      if postgis_version = ARBC.select_rows('SELECT postgis_full_version()').first.first
+      if postgis_version = Geos::ActiveRecord.POSTGIS[:lib]
         puts "PostGIS info from postgis_full_version(): #{postgis_version}"
         break
       end
