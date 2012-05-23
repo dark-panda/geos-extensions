@@ -1,4 +1,6 @@
 
+require 'active_record/connection_adapters/postgresql_adapter'
+
 module ActiveRecord
   module ConnectionAdapters
     # Allows access to the name, srid and coord_dimensions of a PostGIS
