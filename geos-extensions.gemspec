@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "geos-extensions"
-  s.version = "0.1.6"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = "2012-02-28"
+  s.date = "2012-05-23"
   s.description = "Extensions for the GEOS library."
   s.email = "code@zoocasa.com"
   s.extra_rdoc_files = [
@@ -26,8 +26,8 @@ Gem::Specification.new do |s|
     "lib/geos-extensions.rb",
     "lib/geos/active_record_extensions.rb",
     "lib/geos/active_record_extensions/connection_adapters/postgresql_adapter.rb",
-    "lib/geos/active_record_extensions/geometry_columns.rb",
-    "lib/geos/active_record_extensions/geospatial_scopes.rb",
+    "lib/geos/active_record_extensions/spatial_columns.rb",
+    "lib/geos/active_record_extensions/spatial_scopes.rb",
     "lib/geos/geos_helper.rb",
     "lib/geos/google_maps.rb",
     "lib/geos/google_maps/api_2.rb",
@@ -38,20 +38,24 @@ Gem::Specification.new do |s|
     "lib/tasks/test.rake",
     "test/adapter_tests.rb",
     "test/database.yml",
+    "test/fixtures/foo3ds.yml",
+    "test/fixtures/foo_geographies.yml",
     "test/fixtures/foos.yml",
+    "test/geography_columns_tests.rb",
     "test/geometry_columns_tests.rb",
-    "test/geospatial_scopes_tests.rb",
     "test/google_maps_api_2_tests.rb",
     "test/google_maps_api_3_tests.rb",
     "test/google_maps_polyline_encoder_tests.rb",
     "test/misc_tests.rb",
     "test/reader_tests.rb",
+    "test/spatial_scopes_geographies_tests.rb",
+    "test/spatial_scopes_tests.rb",
     "test/test_helper.rb",
     "test/writer_tests.rb"
   ]
   s.homepage = "http://github.com/zoocasa/geos-extensions"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.16"
+  s.rubygems_version = "1.8.24"
   s.summary = "Extensions for the GEOS library."
 
   if s.respond_to? :specification_version then
