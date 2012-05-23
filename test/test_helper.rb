@@ -127,19 +127,16 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
 
   class Foo < ActiveRecord::Base
     include Geos::ActiveRecord::SpatialColumns
-    include Geos::ActiveRecord::SpatialScopes
     create_spatial_column_accessors!
   end
 
   class Foo3d < ActiveRecord::Base
     include Geos::ActiveRecord::SpatialColumns
-    include Geos::ActiveRecord::SpatialScopes
     create_spatial_column_accessors!
   end
 
   class FooGeography < ActiveRecord::Base
     include Geos::ActiveRecord::SpatialColumns
-    include Geos::ActiveRecord::SpatialScopes
     create_spatial_column_accessors!
   end
 end
