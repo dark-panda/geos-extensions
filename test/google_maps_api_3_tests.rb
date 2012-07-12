@@ -192,7 +192,7 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
     def test_to_g_marker
       marker = @point.to_g_marker
 
-      lat, lng, json = if marker =~ /^new\s+
+      lat, lng = if marker =~ /^new\s+
         google\.maps\.Marker\(\{
           "position":\s*
           new\s+google\.maps\.LatLng\(
@@ -201,7 +201,7 @@ class GoogleMapsApi3Tests < Test::Unit::TestCase
           \)
         \}\)
         /x
-        [ $1, $2, $3 ]
+        [ $1, $2 ]
       end
 
       assert_in_delta(10.00, lng.to_f, 0.000001)

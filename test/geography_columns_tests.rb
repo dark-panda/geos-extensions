@@ -147,7 +147,7 @@ if ENV['TEST_ACTIVERECORD']
     end
 
     def test_create_with_converting_from_900913_to_4326
-      foo = FooGeography.create!(
+      FooGeography.create!(
         :name => 'test_create_with_converting_from_900913_to_4326',
         :the_other_geom => "SRID=900913; #{POINT_WKT}"
       )

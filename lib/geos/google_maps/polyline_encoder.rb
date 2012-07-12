@@ -46,9 +46,6 @@ module Geos
           lng = 0
 
           while (index < encoded.length)
-            shift = 0
-            result = 0
-
             index, lat = decode_number(encoded, lat, index)
             index, lng = decode_number(encoded, lng, index)
 
@@ -99,4 +96,3 @@ module Geos
     end
   end
 end
-

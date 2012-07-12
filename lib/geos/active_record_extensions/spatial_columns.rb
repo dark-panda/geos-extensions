@@ -104,19 +104,22 @@ module Geos
 
           %w{ geometry geography }.each do |m|
             src, line = <<-EOF, __LINE__ + 1
+              undef :#{m}_columns
               def #{m}_columns
-                if @#{m}_columns.nil?
+                if !defined?(@#{m}_columns) || @#{m}_columns.nil?
                   @#{m}_columns = connection.#{m}_columns(self.table_name)
                   @#{m}_columns.freeze
                 end
                 @#{m}_columns
               end
 
+              undef :#{m}_columns!
               def #{m}_columns!
                 @#{m}_columns = nil
                 #{m}_columns
               end
 
+              undef :#{m}_column_by_name
               def #{m}_column_by_name(name)
                 @#{m}_column_by_name ||= self.#{m}_columns.inject(HashWithIndifferentAccess.new) do |memo, obj|
                   memo[obj.name] = obj

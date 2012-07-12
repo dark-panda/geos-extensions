@@ -148,7 +148,7 @@ if ENV['TEST_ACTIVERECORD']
 
     def test_create_with_converting_from_900913_to_4326
       assert_raise(Geos::ActiveRecord::GeometryColumns::CantConvertSRID) do
-        foo = Foo.create!(
+        Foo.create!(
           :name => 'test_create_with_converting_from_900913_to_4326',
           :the_other_geom => "SRID=900913; #{POINT_WKT}"
         )

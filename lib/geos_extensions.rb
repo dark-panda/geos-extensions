@@ -373,7 +373,7 @@ module Geos
     # Build some XmlMarkup for GeoRSS GML. You should include the
     # appropriate georss and gml XML namespaces in your document.
     def to_georss *args
-      xml, options = Geos::Helper.xml_options(*args)
+      xml = Geos::Helper.xml_options(*args)[0]
 
       xml.georss(:where) do
         xml.gml(:LineString) do
@@ -509,7 +509,7 @@ module Geos
     # Build some XmlMarkup for GeoRSS. You should include the
     # appropriate georss and gml XML namespaces in your document.
     def to_georss *args
-      xml, options = Geos::Helper.xml_options(*args)
+      xml = Geos::Helper.xml_options(*args)[0]
       xml.georss(:where) do
         xml.gml(:Point) do
           xml.gml(:pos, "#{self.lat} #{self.lng}")
@@ -585,7 +585,7 @@ module Geos
     # Build some XmlMarkup for GeoRSS. You should include the
     # appropriate georss and gml XML namespaces in your document.
     def to_georss *args
-      xml, options = Geos::Helper.xml_options(*args)
+      xml = Geos::Helper.xml_options(*args)[0]
 
       xml.georss(:where) do
         xml.gml(:Polygon) do
