@@ -10,10 +10,16 @@ extend the GEOS Ruby bindings module. From http://geos.refractions.net/ ...
   predicate functions and spatial operators, as well as specific JTS
   enhanced topology functions.
 
-The GEOS bindings for Ruby can be installed by installing the GEOS library
-itself using the --enable-ruby switch during configure or can often be
-installed via package managers. There is also an FFI-based Ruby gem being
-written available at https://github.com/dark-panda/ffi-geos .
+The GEOS bindings for Ruby come in two flavours these days: the native
+version bundled with the GEOS source itself and an FFI version. The
+native bindings seem to be rather abandoned these days while the FFI
+bindings are actively maintained by... well, the author of this gem,
+actually. We're going to effectively deprecate the use of the native
+bindings for the purposes of this gem and recommend that the FFI bindings
+be used instead and as such the ffi-geos gem will now become a dependency
+in the geos-extensions gemspec.
+
+The ffi-geos gem is available at https://github.com/dark-panda/ffi-geos .
 
 ZGEL contains a number of enhancements to the GEOS Ruby library:
 
