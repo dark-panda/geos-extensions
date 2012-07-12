@@ -25,7 +25,8 @@ version = Geos::Extensions::VERSION
 desc 'Test GEOS interface'
 Rake::TestTask.new(:test) do |t|
   t.test_files = FileList['test/**/*_tests.rb']
-  t.verbose = false
+  t.verbose = !!ENV['VERBOSE_TESTS']
+  t.warning = !!ENV['WARNINGS']
 end
 
 desc 'Build docs'
