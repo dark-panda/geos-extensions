@@ -141,4 +141,11 @@ class GeosReaderTests < Test::Unit::TestCase
   def test_no_leading_digits
     assert_equal('POINT (0.01 0.02)', Geos.read('.02, .01').to_wkt(:trim => true))
   end
+
+  def test_from_box2d
+    assert_equal('POLYGON ((10 54, 123 54, 123 79, 10 79, 10 54))',
+      Geos.read('BOX(123.456 78.9, 9.876 54.321)').to_wkt(:rounding_precision => 0))
+
+    assert_equal('POINT (0 0)', Geos.read('BOX(0 0, 0 0)').to_wkt(:trim => true))
+  end
 end

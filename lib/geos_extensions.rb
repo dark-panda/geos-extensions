@@ -45,6 +45,14 @@ module Geos
     \)?
   $/x
 
+  REGEXP_BOX2D = /^
+    BOX\s*\(\s*
+      #{REGEXP_FLOAT}\s+#{REGEXP_FLOAT}
+      \s*,\s*
+      #{REGEXP_FLOAT}\s+#{REGEXP_FLOAT}
+    \s*\)
+  $/mix
+
   def self.wkb_reader_singleton
     Thread.current[:geos_extensions_wkb_reader] ||= WkbReader.new
   end
@@ -75,6 +83,8 @@ module Geos
         Geos.from_wkb(geom)
       when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
         Geos.from_g_lat_lng(geom, options)
+      when REGEXP_BOX2D
+        Geos.from_box2d(geom)
       when String
         Geos.from_wkb(geom.unpack('H*').first.upcase)
       when nil
@@ -146,6 +156,23 @@ module Geos
   # non-false expression for the points parameter.
   def self.from_g_point(geometry, options = {})
     self.from_g_lat_lng(geometry, options.merge(:points => true))
+  end
+
+  # Creates a Geometry from a PostGIS-style BOX string.
+  def self.from_box2d(geometry)
+    if geometry =~ REGEXP_BOX2D
+      coords = []
+      $~.captures.compact.each_slice(2) { |f|
+        coords << f.collect(&:to_f)
+      }
+
+      Geos.from_wkt("LINESTRING(%s, %s)" % [
+        coords[0].join(' '),
+        coords[1].join(' ')
+      ]).envelope
+    else
+      raise "Invalid BOX2D"
+    end
   end
 
   # This is our base module that we use for some generic methods used all
