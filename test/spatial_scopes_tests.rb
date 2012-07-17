@@ -86,6 +86,10 @@ if ENV['TEST_ACTIVERECORD']
       end
     end
 
+    def test_nil_relationship
+      assert_equal([ 1, 2, 3 ], Foo.st_within(nil).all.collect(&:id).sort)
+    end
+
     def test_with_column
       assert_equal([1, 2, 3], Foo.st_disjoint('POINT(100 100)', :column => :the_other_geom).all.collect(&:id).sort)
     end

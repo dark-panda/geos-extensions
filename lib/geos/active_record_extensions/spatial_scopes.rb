@@ -339,12 +339,14 @@ module Geos
             #{SCOPE_METHOD} :st_#{relationship}, lambda { |*args|
               assert_arguments_length(args, 1, 2)
 
-              {
-                :conditions => build_function_call(
-                  '#{relationship}',
-                  *args
-                )
-              }
+              unless args.first.nil?
+                {
+                  :conditions => build_function_call(
+                    '#{relationship}',
+                    *args
+                  )
+                }
+              end
             }
           EOF
           base.class_eval(src, __FILE__, line)
