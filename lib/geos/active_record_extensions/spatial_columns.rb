@@ -162,11 +162,6 @@ module Geos
           # You can specify which spatial columns you want to apply
           # these accessors using the :only and :except options.
           def create_spatial_column_accessors!(options = nil)
-            options = {
-              :geometry_columns => true,
-              :geography_columns => true
-            }
-
             create_these = []
 
             if options.nil?
