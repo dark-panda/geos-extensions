@@ -37,7 +37,7 @@ if defined?(Geos::FFIGeos)
 end
 
 if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
-  ActiveRecord::Base.logger = Logger.new("debug.log")
+  ActiveRecord::Base.logger = Logger.new("debug.log") if ENV['ENABLE_LOGGER']
   ActiveRecord::Base.configurations = {
     'arunit' => {}
   }
