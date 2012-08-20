@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency("activerecord", [">= 2.3"])
-  s.add_dependency("ffi", ["~> 1.0.0"])
   s.add_dependency("ffi-geos", ["~> 0.0.4"])
   if RUBY_PLATFORM == "java"
     s.add_dependency("activerecord-jdbcpostgresql-adapter")
