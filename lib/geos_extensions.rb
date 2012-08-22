@@ -454,9 +454,11 @@ module Geos
 
 
   class Point
-    # Returns the Y coordinate of the Point.
-    def y
-      self.to_a[1]
+    unless method_defined?(:y)
+      # Returns the Y coordinate of the Point.
+      def y
+        self.to_a[1]
+      end
     end
 
     %w{
@@ -467,9 +469,11 @@ module Geos
       EOF
     end
 
-    # Returns the X coordinate of the Point.
-    def x
-      self.to_a[0]
+    unless method_defined?(:x)
+      # Returns the X coordinate of the Point.
+      def x
+        self.to_a[0]
+      end
     end
 
     %w{
@@ -480,12 +484,14 @@ module Geos
       EOF
     end
 
-    # Returns the Z coordinate of the Point.
-    def z
-      if self.has_z?
-        self.to_a[2]
-      else
-        nil
+    unless method_defined?(:z)
+      # Returns the Z coordinate of the Point.
+      def z
+        if self.has_z?
+          self.to_a[2]
+        else
+          nil
+        end
       end
     end
 
