@@ -240,7 +240,17 @@ module Geos
       end
 
       ret = ''
-      ret << "SRID=#{self.srid};" if options[:include_srid]
+
+      if options[:include_srid]
+        srid = if options[:srid]
+          options[:srid]
+        else
+          self.srid
+        end
+
+        ret << "SRID=#{srid};"
+      end
+
       ret << writer.write(self, *args)
       ret
     end

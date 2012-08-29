@@ -56,6 +56,26 @@ class GeosWriterTests < Test::Unit::TestCase
     assert_in_delta(10.01, lat, 0.000001)
   end
 
+  def test_to_ewkt_with_srid_option
+    if @point.to_ewkt(:srid => 900913) =~ /^SRID=900913;\s*POINT\s*\((\d+\.\d+)\s*(\d+\.\d+)\)$/
+      lng, lat = $1.to_f, $2.to_f
+    end
+
+    assert_in_delta(10.00, lng, 0.000001)
+    assert_in_delta(10.01, lat, 0.000001)
+
+    assert_equal(4326, @point.srid)
+
+    if @point.to_ewkt(:srid => :default) =~ /^SRID=default;\s*POINT\s*\((\d+\.\d+)\s*(\d+\.\d+)\)$/
+      lng, lat = $1.to_f, $2.to_f
+    end
+
+    assert_in_delta(10.00, lng, 0.000001)
+    assert_in_delta(10.01, lat, 0.000001)
+
+    assert_equal(4326, @point.srid)
+  end
+
   def test_to_flickr_bbox
     assert_equal('0.0,0.0,5.0,5.0', @polygon.to_flickr_bbox)
   end
