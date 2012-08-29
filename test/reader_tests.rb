@@ -13,6 +13,17 @@ class GeosReaderTests < Test::Unit::TestCase
     assert_saneness_of_polygon(polygon)
   end
 
+  def test_from_wkb_bin_with_srid_option
+    point = Geos.from_wkb_bin(POINT_EWKB_BIN, :srid => 900913)
+    polygon = Geos.from_wkb_bin(POLYGON_EWKB_BIN, :srid => 900913)
+
+    assert_saneness_of_point(point)
+    assert_saneness_of_polygon(polygon)
+
+    assert_equal(900913, point.srid)
+    assert_equal(900913, polygon.srid)
+  end
+
   def test_from_wkb
     point = Geos.from_wkb(POINT_WKB)
     polygon = Geos.from_wkb(POLYGON_WKB)
@@ -21,12 +32,34 @@ class GeosReaderTests < Test::Unit::TestCase
     assert_saneness_of_polygon(polygon)
   end
 
+  def test_from_wkb_with_srid_option
+    point = Geos.from_wkb(POINT_EWKB, :srid => 900913)
+    polygon = Geos.from_wkb(POLYGON_EWKB, :srid => 900913)
+
+    assert_saneness_of_point(point)
+    assert_saneness_of_polygon(polygon)
+
+    assert_equal(900913, point.srid)
+    assert_equal(900913, polygon.srid)
+  end
+
   def test_from_wkt
     point = Geos.from_wkt(POINT_WKT)
     polygon = Geos.from_wkt(POLYGON_WKT)
 
     assert_saneness_of_point(point)
     assert_saneness_of_polygon(polygon)
+  end
+
+  def test_from_wkt_with_srid_option
+    point = Geos.from_wkt(POINT_EWKT, :srid => 900913)
+    polygon = Geos.from_wkt(POLYGON_EWKT, :srid => 900913)
+
+    assert_saneness_of_point(point)
+    assert_saneness_of_polygon(polygon)
+
+    assert_equal(900913, point.srid)
+    assert_equal(900913, polygon.srid)
   end
 
   def test_from_ewkb_bin

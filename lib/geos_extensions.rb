@@ -63,13 +63,17 @@ module Geos
 
   # Returns some kind of Geometry object from the given WKB in
   # binary.
-  def self.from_wkb_bin(wkb)
-    self.wkb_reader_singleton.read(wkb)
+  def self.from_wkb_bin(wkb, options = {})
+    geom = self.wkb_reader_singleton.read(wkb)
+    geom.srid = options[:srid].to_i if options[:srid]
+    geom
   end
 
   # Returns some kind of Geometry object from the given WKB in hex.
-  def self.from_wkb(wkb)
-    self.wkb_reader_singleton.read_hex(wkb)
+  def self.from_wkb(wkb, options = {})
+    geom = self.wkb_reader_singleton.read_hex(wkb)
+    geom.srid = options[:srid].to_i if options[:srid]
+    geom
   end
 
   # Tries its best to return a Geometry object.
@@ -78,15 +82,15 @@ module Geos
       when Geos::Geometry
         geom
       when REGEXP_WKT
-        Geos.from_wkt(geom)
+        Geos.from_wkt(geom, options)
       when REGEXP_WKB_HEX
-        Geos.from_wkb(geom)
+        Geos.from_wkb(geom, options)
       when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
         Geos.from_g_lat_lng(geom, options)
       when REGEXP_BOX2D
         Geos.from_box2d(geom)
       when String
-        Geos.from_wkb(geom.unpack('H*').first.upcase)
+        Geos.from_wkb(geom.unpack('H*').first.upcase, options)
       when nil
         nil
       else
@@ -102,10 +106,10 @@ module Geos
 
   # Returns some kind of Geometry object from the given WKT. This method
   # will also accept PostGIS-style EWKT and its various enhancements.
-  def self.from_wkt(wkt)
+  def self.from_wkt(wkt, options = {})
     srid, raw_wkt = wkt.scan(REGEXP_WKT).first
     geom = self.wkt_reader_singleton.read(raw_wkt.upcase)
-    geom.srid = srid.to_i if srid
+    geom.srid = (options[:srid] || srid).to_i if options[:srid] || srid
     geom
   end
 
