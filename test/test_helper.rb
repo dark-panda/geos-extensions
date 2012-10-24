@@ -139,6 +139,14 @@ if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
     include Geos::ActiveRecord::SpatialColumns
     create_spatial_column_accessors!
   end
+
+  module ActiveRecordTestHelper
+    def setup
+      if ActiveRecord::Base.logger
+        ActiveRecord::Base.logger.debug("Beginning tests for #{self.class.name}##{self.method_name}")
+      end
+    end
+  end
 end
 
 module TestHelper

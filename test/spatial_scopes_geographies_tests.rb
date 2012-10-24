@@ -5,6 +5,7 @@ require 'test_helper'
 if ENV['TEST_ACTIVERECORD']
   class SpatialScopesGeographiesTests < ActiveRecord::TestCase
     include TestHelper
+    include ActiveRecordTestHelper
     include ActiveRecord::TestFixtures
 
     self.fixture_path = File.join(File.dirname(__FILE__), 'fixtures')

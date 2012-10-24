@@ -5,6 +5,7 @@ require 'test_helper'
 if ENV['TEST_ACTIVERECORD']
   class AdapterTests < ActiveRecord::TestCase
     include TestHelper
+    include ActiveRecordTestHelper
     include ActiveRecord::TestFixtures
 
     def test_simplified_type
