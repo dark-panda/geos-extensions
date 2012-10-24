@@ -1,6 +1,6 @@
 
 require 'rubygems'
-require 'test/unit'
+require 'turn/autorun'
 
 if ENV['TEST_ACTIVERECORD'] || defined?(IRB)
   ACTIVERECORD_GEM_VERSION = ENV['ACTIVERECORD_GEM_VERSION'] || '~> 3.2.0'
@@ -219,5 +219,13 @@ module TestHelper
       [ 5, 5 ],
       [ 0, 0 ]
     ], cs.to_a)
+  end
+end
+
+if ENV['autotest']
+  module Turn::Colorize
+    def self.color_supported?
+      true
+    end
   end
 end
