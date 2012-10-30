@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class GeosMiscTests < Test::Unit::TestCase
+class GeosMiscTests < MiniTest::Unit::TestCase
   include TestHelper
 
   def initialize(*args)

@@ -8,7 +8,7 @@ rescue LoadError
   # do nothing
 end
 
-class GoogleMapsApi2Tests < Test::Unit::TestCase
+class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
   include TestHelper
 
   def setup
