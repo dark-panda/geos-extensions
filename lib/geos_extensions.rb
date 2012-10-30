@@ -16,7 +16,6 @@ module Geos
   GEOS_EXTENSIONS_VERSION = Geos::Extensions::VERSION
 
   autoload :Helper, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geos_helper })
-  autoload :ActiveRecord, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos active_record_extensions })
   autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps })
 
   REGEXP_FLOAT = /(-?\d*(?:\.\d+)?|-?\d*(?:\.\d+?)[eE][-+]?\d+)/

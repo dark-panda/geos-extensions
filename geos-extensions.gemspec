@@ -20,13 +20,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/zoocasa/geos-extensions"
   s.require_paths = ["lib"]
 
-  s.add_dependency("activerecord", [">= 2.3"])
   s.add_dependency("ffi-geos", ["~> 0.0.4"])
-  if RUBY_PLATFORM == "java"
-    s.add_dependency("activerecord-jdbcpostgresql-adapter")
-  else
-    s.add_dependency("pg")
-  end
   s.add_dependency("rdoc")
   s.add_dependency("rake", ["~> 0.9"])
   s.add_dependency("minitest")

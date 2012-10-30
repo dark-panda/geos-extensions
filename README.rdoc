@@ -46,84 +46,6 @@ ZGEL contains a number of enhancements to the GEOS Ruby library:
 
 * Geos::GeometryCollection has been made an Enumerable.
 
-We've also included some Rails integration for PostGIS, including:
-
-* automatic detection of geometry columns and just-in-time conversions
-  for input and output to and from WKB when using PostGIS. This allows
-  you to do stuff like this with your ActiveRecord models:
-
-    m = MyModel.find(12345)
-    m.the_geom # => spits out the untouched geometry value as a string in WKB
-    m.the_geom_geos # => spits out the geometry wrapped in a Geos::Geometry object
-    m.the_geom = 'POINT(0 0)' # => setters will automatically make
-    conversions from any of the formats that the Geos.read can recognize,
-    so Google Maps formats, WKT, WKB, etc. are all converted
-    automatically.
-    m.the_geom_wkt # => automatically converts to a WKT string
-    m.the_geom_wkb_bin # => automatically converts to WKB in binary
-
-  There's also some funky SRID handling code that will automatically
-  look in the geometry_columns table to make conversions for you when
-  necessary. Saving WKT as "SRID=default; POINT(0 0)" for instance will
-  automatically set the SRID when saving the ActiveRecord, or the SRID
-  can be specified manually.
-
-* multiple geometry columns are supported and detected for
-  automatically. These column accessors are all generated dynamically at
-  run time.
-
-* automatic generation of named scopes for ActiveRecord models. The
-  usual suspects are supported:
-
-  * st_contains
-  * st_containsproperly
-  * st_covers
-  * st_coveredby
-  * st_crosses
-  * st_disjoint
-  * st_equals
-  * st_intersects
-  * st_orderingequals
-  * st_overlaps
-  * st_touches
-  * st_within
-  * st_dwithin
-
-  Ordering scopes are also included:
-
-  * order_by_ndims
-  * order_by_npoints
-  * order_by_nrings
-  * order_by_numgeometries
-  * order_by_numinteriorring
-  * order_by_numinteriorrings
-  * order_by_numpoints
-  * order_by_length3d
-  * order_by_length
-  * order_by_length2d
-  * order_by_perimeter
-  * order_by_perimeter2d
-  * order_by_perimeter3d
-  * order_by_distance
-  * order_by_distance_sphere
-  * order_by_maxdistance
-  * order_by_hausdorffdistance
-  * order_by_distance_spheroid
-  * order_by_length2d_spheroid
-  * order_by_length3d_spheroid
-  * order_by_length_spheroid
-
-  These let you chain together scopes to build geospatial queries:
-
-    neighbourhood = Neighbourhood.find(12345)
-    my_model = MyModel.active.
-      recent.
-      st_within(neighbourhood.the_geom_geos.envelope).
-      st_dwithin(point, 0.1).
-      all(
-        :limit => 10
-      )
-
 === Google Maps API Output
 
 Starting with version 0.1.0, ZGEL supports both Google Maps API
@@ -148,14 +70,10 @@ At an unspecified point in the future, we'll likely make Google Maps
 API version 3 the default, but for the time being, we'll stick with
 version 2 since switching between the two is pretty painless.
 
-=== Running ActiveRecord Tests
+== ActiveRecord Extensions
 
-ActiveRecord unit tests can be run by setting the TEST_ACTIVERECORD
-environment variable when running `rake test`. The test database name
-is geos_extensions_unit_tests and requires PostGIS to be installed. The
-test scripts will try to find your postgis.sql and spatial_ref_sys.sql
-files, but if it needs a hint, set the POSTGIS_PATH environment variable
-to the directory the files are in to create the database properly. You
-can also set the database up manually before running the tests -- just
-make sure the database has PostGIS installed with the spatial_ref_sys
-table populated and you'll be fine.
+This extension used to contain a bunch of extensions to ActiveRecord, but as of
+version 0.3.0 we have decided to strip those extensions out and move them into
+their own gem called activerecord-spatial available at
+https://github.com/zoocasa/activerecord-spatial .
+
