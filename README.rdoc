@@ -1,5 +1,5 @@
 
-== Zoocasa GEOS Extensions
+= Zoocasa GEOS Extensions
 
 The Zoocasa GEOS Extensions library (ZGEL) is a set of utilities and tools that
 extend the GEOS Ruby bindings module. From http://geos.refractions.net/ ...
@@ -46,7 +46,7 @@ ZGEL contains a number of enhancements to the GEOS Ruby library:
 
 * Geos::GeometryCollection has been made an Enumerable.
 
-=== Google Maps API Output
+== Google Maps API Output
 
 Starting with version 0.1.0, ZGEL supports both Google Maps API
 version 2 and version 3 style outputs. By default and for the sake of
@@ -76,4 +76,9 @@ This extension used to contain a bunch of extensions to ActiveRecord, but as of
 version 0.3.0 we have decided to strip those extensions out and move them into
 their own gem called activerecord-spatial available at
 https://github.com/zoocasa/activerecord-spatial .
+
+== License
+
+This gem is licensed under an MIT-style license. See the +MIT-LICENSE+ file for
+details.
 
