@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/zoocasa/geos-extensions"
   s.require_paths = ["lib"]
 
-  s.add_dependency("ffi-geos", ["~> 0.0.4"])
+  s.add_dependency("ffi-geos", ["~> 0.1"])
   s.add_dependency("rdoc")
   s.add_dependency("rake", ["~> 0.9"])
   s.add_dependency("minitest")
