@@ -1,6 +1,7 @@
 
 require 'rubygems'
-require 'turn/autorun'
+require 'minitest/autorun'
+require 'minitest/reporters'
 
 require File.join(File.dirname(__FILE__), %w{ .. lib geos_extensions })
 
@@ -94,10 +95,5 @@ module TestHelper
   end
 end
 
-if ENV['autotest']
-  module Turn::Colorize
-    def self.color_supported?
-      true
-    end
-  end
-end
+MiniTest::Reporters.use!(MiniTest::Reporters::SpecReporter.new)
+
