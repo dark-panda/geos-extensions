@@ -19,3 +19,5 @@ test/local_database.yml
 .config
 .yardoc
 Gemfile.lock
+Gemfile.local
+Guardfile.local
