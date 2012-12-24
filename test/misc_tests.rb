@@ -102,4 +102,30 @@ class GeosMiscTests < MiniTest::Unit::TestCase
     assert_equal(5.0, @polygon.e)
     assert_equal(10.0, @point.e)
   end
+
+  def test_lat_lng
+    %w{
+      lat_lng
+      latlng
+      latlong
+      lat_lon
+      latlon
+    }.each do |m|
+      assert_equal([ 10.01, 10.0 ], @point.send(m))
+      assert_equal([ 12.5, 10.0 ], Geos.read('LINESTRING(0 0, 20 25)').envelope.send(m))
+    end
+  end
+
+  def test_lng_lat
+    %w{
+      long_lat
+      lnglat
+      longlat
+      lon_lat
+      lonlat
+    }.each do |m|
+      assert_equal([ 10.0, 10.01 ], @point.send(m))
+      assert_equal([ 10.0, 12.5 ], Geos.read('LINESTRING(0 0, 20 25)').envelope.send(m))
+    end
+  end
 end

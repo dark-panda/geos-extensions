@@ -375,8 +375,25 @@ module Geos
     def to_geojson(options = {})
       self.to_geojsonable(options).to_json
     end
-  end
 
+    def lat_lng
+      self.centroid.to_a[0, 2].reverse
+    end
+    alias :lat_long :lat_lng
+    alias :latlng :lat_lng
+    alias :latlong :lat_lng
+    alias :lat_lon :lat_lng
+    alias :latlon :lat_lng
+
+    def lng_lat
+      self.centroid.to_a[0, 2]
+    end
+    alias :long_lat :lng_lat
+    alias :lnglat :lng_lat
+    alias :longlat :lng_lat
+    alias :lon_lat :lng_lat
+    alias :lonlat :lng_lat
+  end
 
   class CoordinateSequence
     # Returns a Ruby Array of Arrays of coordinates within the
