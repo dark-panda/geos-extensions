@@ -19,9 +19,12 @@
 
 require 'yaml'
 
-if YAML.const_defined?('ENGINE') && YAML::ENGINE.yamler = 'psych'
+# Ruby 2.0 check
+if Object.const_defined?(:Psych) && YAML == Psych
+  require File.join(File.dirname(__FILE__), 'yaml_psych')
+# Ruby 1.9 check
+elsif YAML.const_defined?('ENGINE') && YAML::ENGINE.yamler = 'psych'
   require File.join(File.dirname(__FILE__), 'yaml_psych')
 else
   require File.join(File.dirname(__FILE__), 'yaml_syck')
 end
-
