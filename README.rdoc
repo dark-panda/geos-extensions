@@ -77,6 +77,11 @@ version 0.3.0 we have decided to strip those extensions out and move them into
 their own gem called activerecord-spatial available at
 https://github.com/zoocasa/activerecord-spatial .
 
+== Thanks
+
+* Thanks to Charlie Savage for donating for YAML dumping and loading
+  support.
+
 == License
 
 This gem is licensed under an MIT-style license. See the +MIT-LICENSE+ file for

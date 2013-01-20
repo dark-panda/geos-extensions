@@ -9,13 +9,14 @@ if RUBY_VERSION >= '1.9'
 end
 
 require 'rubygems'
+require 'forwardable'
 require 'minitest/autorun'
 
 if RUBY_VERSION >= '1.9'
   require 'minitest/reporters'
 end
 
-require File.join(File.dirname(__FILE__), %w{ .. lib geos_extensions })
+require File.join(File.dirname(__FILE__), %w{ .. lib geos-extensions })
 
 puts "Ruby version #{RUBY_VERSION}-p#{RUBY_PATCHLEVEL} - #{RbConfig::CONFIG['RUBY_INSTALL_NAME']}"
 puts "ffi version #{Gem.loaded_specs['ffi'].version}" if Gem.loaded_specs['ffi']
@@ -27,6 +28,7 @@ if defined?(Geos::FFIGeos)
 end
 
 module TestHelper
+  DELTA_TOLERANCE = 1e-8
   POINT_WKT = 'POINT(10 10.01)'
   POINT_EWKT = 'SRID=4326; POINT(10 10.01)'
   POINT_WKB = "0101000000000000000000244085EB51B81E052440"

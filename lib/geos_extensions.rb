@@ -9,6 +9,7 @@ end
 require 'geos' unless defined?(Geos)
 
 require File.join(File.dirname(__FILE__), *%w{ geos extensions version })
+require File.join(File.dirname(__FILE__), *%w{ geos yaml })
 
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
