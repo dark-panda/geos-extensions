@@ -181,4 +181,41 @@ class GeosReaderTests < MiniTest::Unit::TestCase
 
     assert_equal('POINT (0 0)', Geos.read('BOX(0 0, 0 0)').to_wkt(:trim => true))
   end
+
+  def test_allowed
+    assert_raises(ArgumentError) do
+      Geos.read(Geos.read(POINT_WKT), :allowed => [])
+    end
+
+    assert_equal(
+      'POINT (10 10.01)',
+      Geos.read(POINT_WKT, :allowed => :wkt).to_wkt(:trim => true)
+    )
+  end
+
+  def test_allowed_array
+    assert_equal(
+      'POINT (10 10.01)',
+      Geos.read(POINT_WKT, :allowed => [ :wkt ]).to_wkt(:trim => true)
+    )
+  end
+
+  def test_excluded
+    assert_raises(ArgumentError) do
+      Geos.read(POINT_WKT, :excluded => :wkt)
+    end
+  end
+
+  def test_excluded_array
+    assert_raises(ArgumentError) do
+      Geos.read(POINT_WKT, :excluded => [ :wkt ])
+    end
+  end
+
+  def test_allowed_and_excluded
+    assert_raises(ArgumentError) do
+      Geos.read(POINT_WKT, :allowed => :wkt, :excluded => :wkt)
+    end
+  end
 end
+

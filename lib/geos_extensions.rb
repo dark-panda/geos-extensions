@@ -75,25 +75,63 @@ module Geos
     geom
   end
 
+  ALLOWED_GEOS_READ_TYPES = [
+    :geometry,
+    :wkt,
+    :wkb,
+    :wkb_hex,
+    :g_lat_lng_bounds,
+    :g_lat_lng,
+    :box2d,
+    :wkb,
+    :nil
+  ]
+
   # Tries its best to return a Geometry object.
   def self.read(geom, options = {})
-    geos = case geom
+    allowed = Geos::Helper.array_wrap(options[:allowed] || ALLOWED_GEOS_READ_TYPES)
+    allowed = allowed - Geos::Helper.array_wrap(options[:excluded])
+
+    type = case geom
       when Geos::Geometry
-        geom
+        :geometry
       when REGEXP_WKT
-        Geos.from_wkt(geom, options)
+        :wkt
       when REGEXP_WKB_HEX
-        Geos.from_wkb(geom, options)
-      when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
-        Geos.from_g_lat_lng(geom, options)
+        :wkb_hex
+      when REGEXP_G_LAT_LNG_BOUNDS
+        :g_lat_lng_bounds
+      when REGEXP_G_LAT_LNG
+        :g_lat_lng
       when REGEXP_BOX2D
-        Geos.from_box2d(geom)
+        :box2d
       when String
-        Geos.from_wkb(geom.unpack('H*').first.upcase, options)
+        :wkb
       when nil
-        nil
+        :nil
       else
         raise ArgumentError.new("Invalid geometry!")
+    end
+
+    if !allowed.include?(type)
+      raise ArgumentError.new("geom appears to be a #{type} but #{type} is being filtered")
+    end
+
+    geos = case type
+      when :geometry
+        geom
+      when :wkt
+        Geos.from_wkt(geom, options)
+      when :wkb_hex
+        Geos.from_wkb(geom, options)
+      when :g_lat_lng_bounds, :g_lat_lng
+        Geos.from_g_lat_lng(geom, options)
+      when :box2d
+        Geos.from_box2d(geom)
+      when :wkb
+        Geos.from_wkb(geom.unpack('H*').first.upcase, options)
+      when :nil
+        nil
     end
 
     if geos && options[:srid]
