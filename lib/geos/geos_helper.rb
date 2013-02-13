@@ -102,6 +102,17 @@ module Geos::Helper
       rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
       "%01.#{precision}f" % rounded_number
     end
+
+    # Makes sure an object is wrapped in an Array.
+    def array_wrap(object)
+      if object.nil?
+        []
+      elsif object.respond_to?(:to_ary)
+        object.to_ary || [ object ]
+      else
+        [ object ]
+      end
+    end
   end
 end
 
