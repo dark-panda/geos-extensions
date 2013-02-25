@@ -92,6 +92,8 @@ module Geos
     allowed = Geos::Helper.array_wrap(options[:allowed] || ALLOWED_GEOS_READ_TYPES)
     allowed = allowed - Geos::Helper.array_wrap(options[:excluded])
 
+    geom = geom.dup.force_encoding('BINARY') if geom.respond_to?(:force_encoding)
+
     type = case geom
       when Geos::Geometry
         :geometry
