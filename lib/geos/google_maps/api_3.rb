@@ -26,23 +26,7 @@ module Geos::GoogleMaps
   end
 
   module Api3::Geometry
-    # Spit out Google's JSON geocoder Point format. The extra 0 is added
-    # on as Google's format seems to like including the Z coordinate.
-    def to_g_json_point_api3
-      {
-        :coordinates => (self.centroid.to_a << 0)
-      }
-    end
-
-    # Spit out Google's JSON geocoder ExtendedData LatLonBox format.
-    def to_g_lat_lon_box_api3
-      {
-        :north => self.north,
-        :east => self.east,
-        :south => self.south,
-        :west => self.west
-      }
-    end
+    include Geos::GoogleMaps::ApiCommon::Geometry
 
     # Spit out Google's toUrlValue format.
     def to_g_url_value_api3(precision = 6)

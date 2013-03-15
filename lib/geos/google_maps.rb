@@ -22,6 +22,7 @@ module Geos
 
     autoload :PolylineEncoder, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps polyline_encoder })
     autoload :ApiIncluder, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps api_includer })
+    autoload :ApiCommon, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps api_common })
     autoload :Api2, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps api_2 })
     autoload :Api3, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps api_3 })
   end
