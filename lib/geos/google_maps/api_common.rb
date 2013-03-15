@@ -20,6 +20,20 @@ module Geos
             :west => self.west
           }
         end
+
+        # Spit out Google's toUrlValue format.
+        def to_g_url_value(precision = 6)
+          c = self.centroid
+          "#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
+        end
+      end
+
+      module UrlValueBounds
+        # Spit out Google's toUrlValue format.
+        def to_g_url_value(precision = 6)
+          e = self.envelope
+          "#{e.southwest.to_g_url_value(precision)},#{e.northeast.to_g_url_value(precision)}"
+        end
       end
     end
   end

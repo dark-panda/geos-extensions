@@ -28,12 +28,6 @@ module Geos::GoogleMaps
   module Api3::Geometry
     include Geos::GoogleMaps::ApiCommon::Geometry
 
-    # Spit out Google's toUrlValue format.
-    def to_g_url_value_api3(precision = 6)
-      c = self.centroid
-      "#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
-    end
-
     # Returns a new LatLngBounds object with the proper LatLngs in place
     # for determining the geometry bounds.
     def to_g_lat_lng_bounds_api3(options = {})
@@ -42,7 +36,7 @@ module Geos::GoogleMaps
 
     # Returns a bounds parameter for the Google Maps API 3 geocoder service.
     def to_g_geocoder_bounds_api3(precision = 6)
-      "#{self.lower_left.to_g_url_value_api3(precision)}|#{self.upper_right.to_g_url_value_api3(precision)}"
+      "#{self.lower_left.to_g_url_value(precision)}|#{self.upper_right.to_g_url_value(precision)}"
     end
 
     # Returns a String in Google Maps' LatLngBounds#toString() format.
@@ -156,6 +150,8 @@ module Geos::GoogleMaps
   end
 
   module Api3::Polygon
+    include Geos::GoogleMaps::ApiCommon::UrlValueBounds
+
     # Returns a Polyline of the exterior ring of the Polygon. This does
     # not take into consideration any interior rings the Polygon may
     # have.
@@ -171,7 +167,13 @@ module Geos::GoogleMaps
     end
   end
 
+  module Api3::LineString
+    include Geos::GoogleMaps::ApiCommon::UrlValueBounds
+  end
+
   module Api3::GeometryCollection
+    include Geos::GoogleMaps::ApiCommon::UrlValueBounds
+
     # Returns a Ruby Array of Polylines for each geometry in the
     # collection.
     def to_g_polyline_api3(polyline_options = {}, options = {})
