@@ -85,6 +85,15 @@ module TestHelper
     POINT (9 0)
   )'
 
+  MULTIPOINT_WKT = "MULTIPOINT((0 0), (10 10))"
+
+  MULTIPOLYGON_WKT = "MULTIPOLYGON(
+    ((0 0, 5 0, 5 5, 0 5, 0 0),(4 4, 4 1, 1 1, 1 4, 4 4)),
+    ((10 10, 15 10, 15 15, 10 15, 10 10),(14 14, 14 11, 11 11, 11 14, 14 14))
+  )"
+
+  MULTILINESTRING_WKT = "MULTILINESTRING((-20 -20, 10 10), (0 0, 30 30))"
+
   BOUNDS_G_LAT_LNG = "((0.1, 0.1), (5.2, 5.2))"
   BOUNDS_G_LAT_LNG_URL_VALUE = '0.1,0.1,5.2,5.2'
 
