@@ -123,13 +123,13 @@ module Geos
       when :geometry
         geom
       when :wkt
-        Geos.from_wkt(geom, options)
+        Geos.from_wkt($~, options)
       when :wkb_hex
         Geos.from_wkb(geom, options)
       when :g_lat_lng_bounds, :g_lat_lng
-        Geos.from_g_lat_lng(geom, options)
+        Geos.from_g_lat_lng($~, options)
       when :box2d
-        Geos.from_box2d(geom)
+        Geos.from_box2d($~)
       when :wkb
         Geos.from_wkb(geom.unpack('H*').first.upcase, options)
       when :nil
@@ -145,8 +145,13 @@ module Geos
 
   # Returns some kind of Geometry object from the given WKT. This method
   # will also accept PostGIS-style EWKT and its various enhancements.
-  def self.from_wkt(wkt, options = {})
-    srid, raw_wkt = wkt.scan(REGEXP_WKT).first
+  def self.from_wkt(wkt_or_match_data, options = {})
+    srid, raw_wkt = if wkt_or_match_data.kind_of?(MatchData)
+      [ wkt_or_match_data[1], wkt_or_match_data[2] ]
+    else
+      wkt_or_match_data.scan(REGEXP_WKT).first
+    end
+
     geom = self.wkt_reader_singleton.read(raw_wkt.upcase)
     geom.srid = (options[:srid] || srid).to_i if options[:srid] || srid
     geom
@@ -160,31 +165,37 @@ module Geos
   # while for GLatLngBounds we return a Geos::Polygon that encompasses the
   # bounds. Use the option :points to interpret the incoming value as
   # as GPoints rather than GLatLngs.
-  def self.from_g_lat_lng(geometry, options = {})
-    geom = case geometry
-      when REGEXP_G_LAT_LNG_BOUNDS
-        coords = Array.new
-        $~.captures.compact.each_slice(2) { |f|
-          coords << f.collect(&:to_f)
-        }
-
-        unless options[:points]
-          coords.each do |c|
-            c.reverse!
-          end
-        end
-
-        Geos.from_wkt("LINESTRING(%s, %s)" % [
-          coords[0].join(' '),
-          coords[1].join(' ')
-        ]).envelope
-      when REGEXP_G_LAT_LNG
-        coords = $~.captures.collect(&:to_f).tap { |c|
-          c.reverse! unless options[:points]
-        }
-        Geos.from_wkt("POINT(#{coords.join(' ')})")
+  def self.from_g_lat_lng(geometry_or_match_data, options = {})
+    match_data = case geometry_or_match_data
+      when MatchData
+        geometry_or_match_data.captures
+      when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
+        $~.captures
       else
         raise "Invalid GLatLng format"
+    end
+
+    geom = if match_data.length > 3
+      coords = Array.new
+      match_data.compact.each_slice(2) { |f|
+        coords << f.collect(&:to_f)
+      }
+
+      unless options[:points]
+        coords.each do |c|
+          c.reverse!
+        end
+      end
+
+      Geos.from_wkt("LINESTRING(%s, %s)" % [
+        coords[0].join(' '),
+        coords[1].join(' ')
+      ]).envelope
+    else
+      coords = match_data.collect(&:to_f).tap { |c|
+        c.reverse! unless options[:points]
+      }
+      Geos.from_wkt("POINT(#{coords.join(' ')})")
     end
 
     if options[:srid]
@@ -202,20 +213,25 @@ module Geos
   end
 
   # Creates a Geometry from a PostGIS-style BOX string.
-  def self.from_box2d(geometry)
-    if geometry =~ REGEXP_BOX2D
-      coords = []
-      $~.captures.compact.each_slice(2) { |f|
-        coords << f.collect(&:to_f)
-      }
-
-      Geos.from_wkt("LINESTRING(%s, %s)" % [
-        coords[0].join(' '),
-        coords[1].join(' ')
-      ]).envelope
-    else
-      raise "Invalid BOX2D"
+  def self.from_box2d(geometry_or_match_data)
+    match_data = case geometry_or_match_data
+      when MatchData
+        geometry_or_match_data.captures
+      when REGEXP_BOX2D
+        $~.captures
+      else
+        raise "Invalid BOX2D"
     end
+
+    coords = []
+    match_data.compact.each_slice(2) { |f|
+      coords << f.collect(&:to_f)
+    }
+
+    Geos.from_wkt("LINESTRING(%s, %s)" % [
+      coords[0].join(' '),
+      coords[1].join(' ')
+    ]).envelope
   end
 
   # This is our base module that we use for some generic methods used all
