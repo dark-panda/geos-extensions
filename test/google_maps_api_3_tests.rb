@@ -11,66 +11,70 @@ end
 class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
   include TestHelper
 
-  POINT = Geos.read(POINT_EWKB)
-  POLYGON = Geos.read(POLYGON_EWKB)
-  LINESTRING = Geos.read(LINESTRING_WKT)
-  MULTIPOINT = Geos.read(MULTIPOINT_WKT)
-  MULTIPOLYGON = Geos.read(MULTIPOLYGON_WKT)
-  MULTILINESTRING = Geos.read(MULTILINESTRING_WKT)
-  GEOMETRYCOLLECTION = Geos.read(GEOMETRYCOLLECTION_WKT)
+  def initialize(*args)
+    @point = Geos.read(POINT_WKT)
+    @polygon = Geos.read(POLYGON_WKT)
+    @linestring = Geos.read(LINESTRING_WKT)
+    @multipoint = Geos.read(MULTIPOINT_WKT)
+    @multipolygon = Geos.read(MULTIPOLYGON_WKT)
+    @multilinestring = Geos.read(MULTILINESTRING_WKT)
+    @geometrycollection = Geos.read(GEOMETRYCOLLECTION_WKT)
+
+    super
+  end
 
   def setup
     Geos::GoogleMaps.use_api(3)
   end
 
   def test_to_g_lat_lng
-    assert_equal("new google.maps.LatLng(10.01, 10.0)", POINT.to_g_lat_lng)
-    assert_equal("new google.maps.LatLng(10.01, 10.0, true)", POINT.to_g_lat_lng(:no_wrap => true))
+    assert_equal("new google.maps.LatLng(10.01, 10.0)", @point.to_g_lat_lng)
+    assert_equal("new google.maps.LatLng(10.01, 10.0, true)", @point.to_g_lat_lng(:no_wrap => true))
   end
 
   def test_to_g_lat_lng_bounds_string
-    assert_equal('((10.0100000000,10.0000000000), (10.0100000000,10.0000000000))', POINT.to_g_lat_lng_bounds_string)
-    assert_equal('((0.0000000000,0.0000000000), (5.0000000000,5.0000000000))', POLYGON.to_g_lat_lng_bounds_string)
+    assert_equal('((10.0100000000,10.0000000000), (10.0100000000,10.0000000000))', @point.to_g_lat_lng_bounds_string)
+    assert_equal('((0.0000000000,0.0000000000), (5.0000000000,5.0000000000))', @polygon.to_g_lat_lng_bounds_string)
   end
 
   def test_to_g_geocoder_bounds
-    assert_equal('10.010000,10.000000|10.010000,10.000000', POINT.to_g_geocoder_bounds)
-    assert_equal('0.000000,0.000000|5.000000,5.000000', POLYGON.to_g_geocoder_bounds)
+    assert_equal('10.010000,10.000000|10.010000,10.000000', @point.to_g_geocoder_bounds)
+    assert_equal('0.000000,0.000000|5.000000,5.000000', @polygon.to_g_geocoder_bounds)
   end
 
   def test_to_g_url_value_point
-    assert_equal('10.010000,10.000000', POINT.to_g_url_value)
-    assert_equal('10.010,10.000', POINT.to_g_url_value(3))
+    assert_equal('10.010000,10.000000', @point.to_g_url_value)
+    assert_equal('10.010,10.000', @point.to_g_url_value(3))
   end
 
   def test_to_g_url_value_polygon
-    assert_equal('0.000000,0.000000,5.000000,5.000000', POLYGON.to_g_url_value)
-    assert_equal('0.000,0.000,5.000,5.000', POLYGON.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,5.000000,5.000000', @polygon.to_g_url_value)
+    assert_equal('0.000,0.000,5.000,5.000', @polygon.to_g_url_value(3))
   end
 
   def test_to_g_url_value_line_string
-    assert_equal('0.000000,0.000000,10.000000,10.000000', LINESTRING.to_g_url_value)
-    assert_equal('0.000,0.000,10.000,10.000', LINESTRING.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,10.000000,10.000000', @linestring.to_g_url_value)
+    assert_equal('0.000,0.000,10.000,10.000', @linestring.to_g_url_value(3))
   end
 
   def test_to_g_url_value_multi_point
-    assert_equal('0.000000,0.000000,10.000000,10.000000', MULTIPOINT.to_g_url_value)
-    assert_equal('0.000,0.000,10.000,10.000', MULTIPOINT.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,10.000000,10.000000', @multipoint.to_g_url_value)
+    assert_equal('0.000,0.000,10.000,10.000', @multipoint.to_g_url_value(3))
   end
 
   def test_to_g_url_value_multi_polygon
-    assert_equal('0.000000,0.000000,15.000000,15.000000', MULTIPOLYGON.to_g_url_value)
-    assert_equal('0.000,0.000,15.000,15.000', MULTIPOLYGON.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,15.000000,15.000000', @multipolygon.to_g_url_value)
+    assert_equal('0.000,0.000,15.000,15.000', @multipolygon.to_g_url_value(3))
   end
 
   def test_to_g_url_value_multi_line_string
-    assert_equal('-20.000000,-20.000000,30.000000,30.000000', MULTILINESTRING.to_g_url_value)
-    assert_equal('-20.000,-20.000,30.000,30.000', MULTILINESTRING.to_g_url_value(3))
+    assert_equal('-20.000000,-20.000000,30.000000,30.000000', @multilinestring.to_g_url_value)
+    assert_equal('-20.000,-20.000,30.000,30.000', @multilinestring.to_g_url_value(3))
   end
 
   def test_to_g_url_value_geometry_collection
-    assert_equal('0.000000,0.000000,14.000000,14.000000', GEOMETRYCOLLECTION.to_g_url_value)
-    assert_equal('0.000,0.000,14.000,14.000', GEOMETRYCOLLECTION.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,14.000000,14.000000', @geometrycollection.to_g_url_value)
+    assert_equal('0.000,0.000,14.000,14.000', @geometrycollection.to_g_url_value(3))
   end
 
   def test_to_jsonable
@@ -78,7 +82,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
       :type => "point",
       :lat => 10.01,
       :lng => 10.0
-    }, POINT.to_jsonable)
+    }, @point.to_jsonable)
 
     assert_equal({
       :type => "polygon",
@@ -92,7 +96,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
       }],
       :options => {},
       :encoded => true
-    }, POLYGON.to_jsonable)
+    }, @polygon.to_jsonable)
   end
 
   if defined?(JSON)
@@ -109,7 +113,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
         "paths" => [
           [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
         ]
-      }, POLYGON.to_g_polygon)
+      }, @polygon.to_g_polygon)
 
       poly_tester('Polygon', {
         'strokeColor' => '#b00b1e',
@@ -124,7 +128,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
           [ 5.0, 5.0 ],
           [ 0.0, 0.0 ]
         ]
-      }, POLYGON.to_g_polygon(
+      }, @polygon.to_g_polygon(
         :stroke_color => '#b00b1e',
         :stroke_weight => 5,
         :stroke_opacity => 0.5,
@@ -211,7 +215,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
         "path" => [
           [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
         ]
-      }, POLYGON.to_g_polyline)
+      }, @polygon.to_g_polyline)
 
       poly_tester("Polyline", {
         "strokeColor" => "#b00b1e",
@@ -221,7 +225,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
         "path" => [
           [0.0, 0.0], [1.0, 1.0], [2.5, 2.5], [5.0, 5.0], [0.0, 0.0]
         ]
-      }, POLYGON.to_g_polyline(
+      }, @polygon.to_g_polyline(
         :stroke_color => '#b00b1e',
         :stroke_weight => 5,
         :stroke_opacity => 0.5,
@@ -230,7 +234,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
     end
 
     def test_to_g_marker
-      marker = POINT.to_g_marker
+      marker = @point.to_g_marker
 
       lat, lng = if marker =~ /^new\s+
         google\.maps\.Marker\(\{
@@ -250,7 +254,7 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
 
 
     def test_to_g_marker_with_options
-      marker = POINT.to_g_marker({
+      marker = @point.to_g_marker({
         :raise_on_drag => true,
         :cursor => 'test'
       }, {
@@ -275,14 +279,14 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
     def test_to_g_json_point
       assert_equal(
         { :coordinates => [ 10.0, 10.01, 0 ] },
-        POINT.to_g_json_point
+        @point.to_g_json_point
       )
     end
 
     def test_to_g_lat_lon_box
       assert_equal(
         { :east => 5.0, :west => 0.0, :north => 5.0, :south => 0.0},
-        POLYGON.to_g_lat_lon_box
+        @polygon.to_g_lat_lon_box
       )
     end
   end
