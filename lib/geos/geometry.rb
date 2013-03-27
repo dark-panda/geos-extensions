@@ -215,6 +215,27 @@ module Geos
     alias :longlat :lng_lat
     alias :lon_lat :lng_lat
     alias :lonlat :lng_lat
+
+    def to_bbox(long_or_short_names = :long)
+      case long_or_short_names
+        when :long
+          {
+            :north => self.north,
+            :east => self.east,
+            :south => self.south,
+            :west => self.west
+          }
+        when :short
+          {
+            :n => self.north,
+            :e => self.east,
+            :s => self.south,
+            :w => self.west
+          }
+        else
+          raise ArgumentError.new("Expected either :long or :short for long_or_short_names argument")
+      end
+    end
   end
 end
 

@@ -162,4 +162,64 @@ class GeosMiscTests < MiniTest::Unit::TestCase
       assert_equal([ 10.0, 12.5 ], linestring.envelope.send(m))
     end
   end
+
+  def test_to_bbox_with_point
+    point_bbox = @point.to_bbox
+
+    assert_equal(10.01, point_bbox[:north])
+    assert_equal(10.0, point_bbox[:east])
+    assert_equal(10.01, point_bbox[:south])
+    assert_equal(10, point_bbox[:west])
+  end
+
+  def test_to_bbox_with_point_with_explicit_long_names
+    point_bbox = @point.to_bbox(:long)
+
+    assert_equal(10.01, point_bbox[:north])
+    assert_equal(10.0, point_bbox[:east])
+    assert_equal(10.01, point_bbox[:south])
+    assert_equal(10, point_bbox[:west])
+  end
+
+  def test_to_bbox_with_point_with_short_names
+    point_bbox = @point.to_bbox(:short)
+
+    assert_equal(10.01, point_bbox[:n])
+    assert_equal(10.0, point_bbox[:e])
+    assert_equal(10.01, point_bbox[:s])
+    assert_equal(10, point_bbox[:w])
+  end
+
+  def test_to_bbox_with_polygon
+    polygon_bbox = @polygon.to_bbox
+
+    assert_equal(2.5, polygon_bbox[:north])
+    assert_equal(5.0, polygon_bbox[:east])
+    assert_equal(0, polygon_bbox[:south])
+    assert_equal(0, polygon_bbox[:west])
+  end
+
+  def test_to_bbox_with_polygon_explicit_long_names
+    polygon_bbox = @polygon.to_bbox(:long)
+
+    assert_equal(2.5, polygon_bbox[:north])
+    assert_equal(5.0, polygon_bbox[:east])
+    assert_equal(0, polygon_bbox[:south])
+    assert_equal(0, polygon_bbox[:west])
+  end
+
+  def test_to_bbox_with_polygon_with_short_names
+    polygon_bbox = @polygon.to_bbox(:short)
+
+    assert_equal(2.5, polygon_bbox[:n])
+    assert_equal(5.0, polygon_bbox[:e])
+    assert_equal(0, polygon_bbox[:s])
+    assert_equal(0, polygon_bbox[:w])
+  end
+
+  def test_to_bbox_with_invalid_long_or_short_value
+    assert_raises(ArgumentError) do
+      @point.to_bbox(:blart)
+    end
+  end
 end
