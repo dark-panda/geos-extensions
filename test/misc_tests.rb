@@ -134,6 +134,8 @@ class GeosMiscTests < MiniTest::Unit::TestCase
   end
 
   def test_lat_lng
+    linestring = Geos.read('LINESTRING(0 0, 20 25)')
+
     %w{
       lat_lng
       latlng
@@ -142,11 +144,13 @@ class GeosMiscTests < MiniTest::Unit::TestCase
       latlon
     }.each do |m|
       assert_equal([ 10.01, 10.0 ], @point.send(m))
-      assert_equal([ 12.5, 10.0 ], Geos.read('LINESTRING(0 0, 20 25)').envelope.send(m))
+      assert_equal([ 12.5, 10.0 ], linestring.envelope.send(m))
     end
   end
 
   def test_lng_lat
+    linestring = Geos.read('LINESTRING(0 0, 20 25)')
+
     %w{
       long_lat
       lnglat
@@ -155,7 +159,7 @@ class GeosMiscTests < MiniTest::Unit::TestCase
       lonlat
     }.each do |m|
       assert_equal([ 10.0, 10.01 ], @point.send(m))
-      assert_equal([ 10.0, 12.5 ], Geos.read('LINESTRING(0 0, 20 25)').envelope.send(m))
+      assert_equal([ 10.0, 12.5 ], linestring.envelope.send(m))
     end
   end
 end
