@@ -34,7 +34,7 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
 
   def test_to_g_lat_lng_bounds_string
     assert_equal('((10.0100000000,10.0000000000), (10.0100000000,10.0000000000))', @point.to_g_lat_lng_bounds_string)
-    assert_equal('((0.0000000000,0.0000000000), (5.0000000000,5.0000000000))', @polygon.to_g_lat_lng_bounds_string)
+    assert_equal('((0.0000000000,0.0000000000), (2.5000000000,5.0000000000))', @polygon.to_g_lat_lng_bounds_string)
   end
 
   def test_to_g_url_value_point
@@ -43,8 +43,8 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
   end
 
   def test_to_g_url_value_polygon
-    assert_equal('0.000000,0.000000,5.000000,5.000000', @polygon.to_g_url_value)
-    assert_equal('0.000,0.000,5.000,5.000', @polygon.to_g_url_value(3))
+    assert_equal('0.000000,0.000000,2.500000,5.000000', @polygon.to_g_url_value)
+    assert_equal('0.000,0.000,2.500,5.000', @polygon.to_g_url_value(3))
   end
 
   def test_to_g_url_value_line_string
@@ -81,33 +81,33 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
 
     assert_equal({
       :type => "polygon",
+      :encoded => true,
       :polylines => [{
-        :points => "??_ibE_ibE_~cH_~cH_hgN_hgN~po]~po]",
+        :points => "??_ibE?_~cH_hgN?_hgN~ggN~po]",
+        :levels => "BBBBB",
         :bounds => {
-          :sw => [ 0.0, 0.0 ],
-          :ne => [ 5.0, 5.0 ]
-        },
-        :levels=>"BBBBB"
+          :sw => [0.0, 0.0],
+          :ne => [5.0, 2.5]
+        }
       }],
-      :options => {},
-      :encoded => true
+      :options => {}
     }, @polygon.to_jsonable)
   end
 
   if defined?(JSON)
     def test_to_g_polygon
       assert_equal(
-        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null, null, null)",
+        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 0.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(2.5, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null, null, null)",
         @polygon.to_g_polygon
       )
 
       assert_equal(
-        "new GPolygon([new GLatLng(0.0, 0.0), new GLatLng(1.0, 1.0), new GLatLng(2.5, 2.5), new GLatLng(5.0, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null, null, null)",
+        "new GPolygon([new GLatLng(0.0, 0.0), new GLatLng(1.0, 0.0), new GLatLng(2.5, 2.5), new GLatLng(2.5, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null, null, null)",
         @polygon.to_g_polygon({}, :short_class => true)
       )
 
       assert_equal(
-        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, '#b00b1e', null, {\"mouseOutTolerence\":5})",
+        "new google.maps.Polygon([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 0.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(2.5, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, '#b00b1e', null, {\"mouseOutTolerence\":5})",
         @polygon.to_g_polygon(
           :stroke_color => '#b00b1e',
           :stroke_weight => 5,
@@ -122,17 +122,17 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
 
     def test_to_g_polyline
       assert_equal(
-        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null)",
+        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 0.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(2.5, 5.0), new google.maps.LatLng(0.0, 0.0)], null, null, null, null)",
         @polygon.to_g_polyline
       )
 
       assert_equal(
-        "new GPolyline([new GLatLng(0.0, 0.0), new GLatLng(1.0, 1.0), new GLatLng(2.5, 2.5), new GLatLng(5.0, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null)",
+        "new GPolyline([new GLatLng(0.0, 0.0), new GLatLng(1.0, 0.0), new GLatLng(2.5, 2.5), new GLatLng(2.5, 5.0), new GLatLng(0.0, 0.0)], null, null, null, null)",
         @polygon.to_g_polyline({}, :short_class => true)
       )
 
       assert_equal(
-        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 1.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(5.0, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, {\"mouseOutTolerence\":5})",
+        "new google.maps.Polyline([new google.maps.LatLng(0.0, 0.0), new google.maps.LatLng(1.0, 0.0), new google.maps.LatLng(2.5, 2.5), new google.maps.LatLng(2.5, 5.0), new google.maps.LatLng(0.0, 0.0)], '#b00b1e', 5, 0.5, {\"mouseOutTolerence\":5})",
         @polygon.to_g_polyline(
           :color => '#b00b1e',
           :weight => 5,
@@ -226,7 +226,7 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
 
     def test_to_g_lat_lon_box
       assert_equal(
-        { :east => 5.0, :west => 0.0, :north => 5.0, :south => 0.0},
+        { :east => 5.0, :west => 0.0, :north => 2.5, :south => 0.0},
         @polygon.to_g_lat_lon_box
       )
     end

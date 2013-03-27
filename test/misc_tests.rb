@@ -15,25 +15,55 @@ class GeosMiscTests < MiniTest::Unit::TestCase
     g.to_wkt(:rounding_precision => 0)
   end
 
+  def test_sanity_of_test_geometries
+    %w{
+      POINT_WKT
+      POINT_EWKT
+      POINT_WKB
+      POINT_WKB_BIN
+      POINT_EWKB
+      POINT_EWKB_BIN
+      POINT_G_LAT_LNG
+      POINT_G_LAT_LNG_URL_VALUE
+      POLYGON_WKT
+      POLYGON_EWKT
+      POLYGON_WKB
+      POLYGON_WKB_BIN
+      POLYGON_EWKB
+      POLYGON_EWKB_BIN
+      POLYGON_WITH_INTERIOR_RING
+      LINESTRING_WKT
+      GEOMETRYCOLLECTION_WKT
+      MULTIPOINT_WKT
+      MULTIPOLYGON_WKT
+      MULTILINESTRING_WKT
+      BOUNDS_G_LAT_LNG
+      BOUNDS_G_LAT_LNG_URL_VALUE
+    }.each do |constant_name|
+      geom = Geos.read(self.class.const_get(constant_name))
+      assert_equal("Valid Geometry", geom.valid_reason)
+    end
+  end
+
   def test_upper_left
-    assert_equal('POINT (0 5)', write(@polygon.upper_left))
+    assert_equal('POINT (0 2)', write(@polygon.upper_left))
     assert_equal('POINT (10 10)', write(@point.upper_left))
 
-    assert_equal('POINT (0 5)', write(@polygon.northwest))
+    assert_equal('POINT (0 2)', write(@polygon.northwest))
     assert_equal('POINT (10 10)', write(@point.northwest))
 
-    assert_equal('POINT (0 5)', write(@polygon.nw))
+    assert_equal('POINT (0 2)', write(@polygon.nw))
     assert_equal('POINT (10 10)', write(@point.nw))
   end
 
   def test_upper_right
-    assert_equal('POINT (5 5)', write(@polygon.upper_right))
+    assert_equal('POINT (5 2)', write(@polygon.upper_right))
     assert_equal('POINT (10 10)', write(@point.upper_right))
 
-    assert_equal('POINT (5 5)', write(@polygon.northeast))
+    assert_equal('POINT (5 2)', write(@polygon.northeast))
     assert_equal('POINT (10 10)', write(@point.northeast))
 
-    assert_equal('POINT (5 5)', write(@polygon.ne))
+    assert_equal('POINT (5 2)', write(@polygon.ne))
     assert_equal('POINT (10 10)', write(@point.ne))
   end
 
@@ -60,13 +90,13 @@ class GeosMiscTests < MiniTest::Unit::TestCase
   end
 
   def test_top
-    assert_equal(5.0, @polygon.top)
+    assert_equal(2.5, @polygon.top)
     assert_equal(10.01, @point.top)
 
-    assert_equal(5.0, @polygon.north)
+    assert_equal(2.5, @polygon.north)
     assert_equal(10.01, @point.north)
 
-    assert_equal(5.0, @polygon.n)
+    assert_equal(2.5, @polygon.n)
     assert_equal(10.01, @point.n)
   end
 

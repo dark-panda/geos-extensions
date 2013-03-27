@@ -77,7 +77,7 @@ class GeosWriterTests < MiniTest::Unit::TestCase
   end
 
   def test_to_flickr_bbox
-    assert_equal('0.0,0.0,5.0,5.0', @polygon.to_flickr_bbox)
+    assert_equal('0.0,0.0,5.0,2.5', @polygon.to_flickr_bbox)
   end
 
   if defined?(Builder::XmlMarkup)
@@ -102,7 +102,7 @@ class GeosWriterTests < MiniTest::Unit::TestCase
       })
       out.rewind
 
-      assert_equal("<Polygon id=\"\"><extrude>true</extrude><altitudeMode>relativeToGround</altitudeMode><outerBoundaryIs><LinearRing><coordinates>0.0,0.0 1.0,1.0 2.5,2.5 5.0,5.0 0.0,0.0</coordinates></LinearRing></outerBoundaryIs></Polygon>",
+      assert_equal("<Polygon id=\"\"><extrude>true</extrude><altitudeMode>relativeToGround</altitudeMode><outerBoundaryIs><LinearRing><coordinates>0.0,0.0 0.0,1.0 2.5,2.5 5.0,2.5 0.0,0.0</coordinates></LinearRing></outerBoundaryIs></Polygon>",
         out.read
       )
     end
@@ -156,11 +156,11 @@ class GeosWriterTests < MiniTest::Unit::TestCase
       assert_equal({
         "type" => "LineString",
         "coordinates" => [
-          [0.0, 0.0],
-          [1.0, 1.0],
-          [2.5, 2.5],
-          [5.0, 5.0],
-          [0.0, 0.0]
+          [ 0.0, 0.0 ],
+          [ 0.0, 1.0 ],
+          [ 2.5, 2.5 ],
+          [ 5.0, 2.5 ],
+          [ 0.0, 0.0 ]
         ]
       }, JSON.load(json))
     end
@@ -174,9 +174,9 @@ class GeosWriterTests < MiniTest::Unit::TestCase
         "coordinates" => [
           [
             [0.0, 0.0],
-            [1.0, 1.0],
+            [0.0, 1.0],
             [2.5, 2.5],
-            [5.0, 5.0],
+            [5.0, 2.5],
             [0.0, 0.0]
           ]
         ]
