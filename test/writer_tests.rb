@@ -9,6 +9,12 @@ rescue LoadError
   # do nothing
 end
 
+begin
+  require 'json'
+rescue LoadError
+  # do nothing
+end
+
 class GeosWriterTests < MiniTest::Unit::TestCase
   include TestHelper
 
