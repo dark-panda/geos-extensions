@@ -9,13 +9,14 @@ if RUBY_VERSION >= '1.9'
 end
 
 require 'rubygems'
+require 'forwardable'
 require 'minitest/autorun'
 
 if RUBY_VERSION >= '1.9'
   require 'minitest/reporters'
 end
 
-require File.join(File.dirname(__FILE__), %w{ .. lib geos_extensions })
+require File.join(File.dirname(__FILE__), %w{ .. lib geos-extensions })
 
 puts "Ruby version #{RUBY_VERSION}-p#{RUBY_PATCHLEVEL} - #{RbConfig::CONFIG['RUBY_INSTALL_NAME']}"
 puts "ffi version #{Gem.loaded_specs['ffi'].version}" if Gem.loaded_specs['ffi']
