@@ -194,10 +194,12 @@ module Geos
       ].join(',')
     end
 
+    # Spits out the actual stringified GeoJSON.
     def to_geojson(options = {})
       self.to_geojsonable(options).to_json
     end
 
+    # Returns the Y and X coordinates of the Geometry's centroid in an Array.
     def lat_lng
       self.centroid.to_a[0, 2].reverse
     end
@@ -207,6 +209,7 @@ module Geos
     alias :lat_lon :lat_lng
     alias :latlon :lat_lng
 
+    # Returns the X and Y coordinates of the Geometry's centroid in an Array.
     def lng_lat
       self.centroid.to_a[0, 2]
     end
@@ -216,6 +219,8 @@ module Geos
     alias :lon_lat :lng_lat
     alias :lonlat :lng_lat
 
+    # Spits out a Hash containing the cardinal points that describe the
+    # Geometry's bbox.
     def to_bbox(long_or_short_names = :long)
       case long_or_short_names
         when :long
