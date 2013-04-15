@@ -241,6 +241,12 @@ module Geos
           raise ArgumentError.new("Expected either :long or :short for long_or_short_names argument")
       end
     end
+
+    # Spits out a PostGIS BOX2D-style representing the Geometry's bounding
+    # box.
+    def to_box2d
+      "BOX(#{self.southwest.to_a.join(' ')}, #{self.northeast.to_a.join(' ')})"
+    end
   end
 end
 

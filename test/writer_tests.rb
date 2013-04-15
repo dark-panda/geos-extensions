@@ -21,6 +21,11 @@ class GeosWriterTests < MiniTest::Unit::TestCase
   def initialize(*args)
     @point = Geos.read(POINT_EWKB)
     @polygon = Geos.read(POLYGON_EWKB)
+    @linestring = Geos.read(LINESTRING_WKT)
+    @multipoint = Geos.read(MULTIPOINT_WKT)
+    @multipolygon = Geos.read(MULTIPOLYGON_WKT)
+    @multilinestring = Geos.read(MULTILINESTRING_WKT)
+    @geometrycollection = Geos.read(GEOMETRYCOLLECTION_WKT)
     super(*args)
   end
 
@@ -363,5 +368,15 @@ class GeosWriterTests < MiniTest::Unit::TestCase
         } ]
       }, JSON.load(collection.to_geojson(:interior_rings => false)))
     end
+  end
+
+  def test_to_box2d
+    assert_equal("BOX(10.0 10.01, 10.0 10.01)", @point.to_box2d)
+    assert_equal("BOX(0.0 0.0, 5.0 2.5)", @polygon.to_box2d)
+    assert_equal("BOX(0.0 0.0, 10.0 10.0)", @linestring.to_box2d)
+    assert_equal("BOX(0.0 0.0, 10.0 10.0)", @multipoint.to_box2d)
+    assert_equal("BOX(0.0 0.0, 15.0 15.0)", @multipolygon.to_box2d)
+    assert_equal("BOX(-20.0 -20.0, 30.0 30.0)", @multilinestring.to_box2d)
+    assert_equal("BOX(0.0 0.0, 14.0 14.0)", @geometrycollection.to_box2d)
   end
 end
