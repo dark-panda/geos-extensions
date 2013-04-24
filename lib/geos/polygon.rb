@@ -6,7 +6,7 @@ module Geos
     # will be converted automatically, i.e. :altitudeMode, not
     # :altitude_mode. You can also include interior rings by setting
     # :interior_rings to true. The default is false.
-    def to_kml *args
+    def to_kml(*args)
       xml, options = Geos::Helper.xml_options(*args)
 
       xml.Polygon(:id => options[:id]) do
@@ -38,7 +38,7 @@ module Geos
 
     # Build some XmlMarkup for GeoRSS. You should include the
     # appropriate georss and gml XML namespaces in your document.
-    def to_georss *args
+    def to_georss(*args)
       xml = Geos::Helper.xml_options(*args)[0]
 
       xml.georss(:where) do
@@ -68,7 +68,7 @@ module Geos
     # * :style_options - any style options you want to pass along in the
     #   JSON. These options will be automatically camelized into
     #   Javascripty code.
-    def to_jsonable options = {}
+    def to_jsonable(options = {})
       options = {
         :encoded => true,
         :level => 3,

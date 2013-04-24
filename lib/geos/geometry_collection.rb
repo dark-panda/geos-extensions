@@ -25,14 +25,14 @@ module Geos
     end
 
     # Returns a Hash suitable for converting to JSON.
-    def to_jsonable options = {}
+    def to_jsonable(options = {})
       self.collect do |p|
         p.to_jsonable options
       end
     end
 
     # Build some XmlMarkup for KML.
-    def to_kml *args
+    def to_kml(*args)
       self.collect do |p|
         p.to_kml(*args)
       end
@@ -43,7 +43,7 @@ module Geos
     # a Polygon. Not to bright, mind you, but until GeoRSS stops with the
     # suck, what are we to do. You should include the appropriate georss
     # and gml XML namespaces in your document.
-    def to_georss *args
+    def to_georss(*args)
       self.exterior_ring.to_georss(*args)
     end
 

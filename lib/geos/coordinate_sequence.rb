@@ -17,7 +17,7 @@ module Geos
     # tessellate, altitudeMode, etc. Use Rails/Ruby-style code and it
     # will be converted automatically, i.e. :altitudeMode, not
     # :altitude_mode.
-    def to_kml *args
+    def to_kml(*args)
       xml, options = Geos::Helper.xml_options(*args)
 
       xml.LineString(:id => options[:id]) do
@@ -34,7 +34,7 @@ module Geos
 
     # Build some XmlMarkup for GeoRSS GML. You should include the
     # appropriate georss and gml XML namespaces in your document.
-    def to_georss *args
+    def to_georss(*args)
       xml = Geos::Helper.xml_options(*args)[0]
 
       xml.georss(:where) do
@@ -55,7 +55,7 @@ module Geos
     # * :encoded - enable or disable Google Maps encoding. The default is
     #   true.
     # * :level - set the level of the Google Maps encoding algorithm.
-    def to_jsonable options = {}
+    def to_jsonable(options = {})
       options = {
         :encoded => true,
         :level => 3
