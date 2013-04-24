@@ -98,7 +98,7 @@ module Geos
     end
 
     # Returns a Hash suitable for converting to JSON.
-    def to_jsonable(options = {})
+    def as_json(options = {})
       cs = self.coord_seq
       if self.has_z?
         { :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0), :z => cs.get_z(0) }
@@ -106,13 +106,15 @@ module Geos
         { :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0) }
       end
     end
+    alias :to_jsonable :as_json
 
-    def to_geojsonable(options = {})
+    def as_geojson(options = {})
       {
         :type => 'Point',
         :coordinates => self.to_a
       }
     end
+    alias :to_geojsonable :as_geojson
   end
 end
 

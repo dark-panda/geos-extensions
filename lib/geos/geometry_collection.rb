@@ -25,11 +25,12 @@ module Geos
     end
 
     # Returns a Hash suitable for converting to JSON.
-    def to_jsonable(options = {})
+    def as_json(options = {})
       self.collect do |p|
         p.to_jsonable options
       end
     end
+    alias :to_jsonable :as_json
 
     # Build some XmlMarkup for KML.
     def to_kml(*args)
@@ -47,12 +48,13 @@ module Geos
       self.exterior_ring.to_georss(*args)
     end
 
-    def to_geojsonable(options = {})
+    def as_geojson(options = {})
       {
         :type => 'GeometryCollection',
         :geometries => self.to_a.collect { |g| g.to_geojsonable(options) }
       }
     end
+    alias :to_geojsonable :as_geojson
   end
 end
 

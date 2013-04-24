@@ -68,7 +68,7 @@ module Geos
     # * :style_options - any style options you want to pass along in the
     #   JSON. These options will be automatically camelized into
     #   Javascripty code.
-    def to_jsonable(options = {})
+    def as_json(options = {})
       options = {
         :encoded => true,
         :level => 3,
@@ -128,12 +128,13 @@ module Geos
         ret
       end
     end
+    alias :to_jsonable :as_json
 
     # Options:
     #
     # * :interior_rings - whether to include any interior rings in the output.
     #   The default is true.
-    def to_geojsonable(options = {})
+    def as_geojson(options = {})
       options = {
         :interior_rings => true
       }.merge(options)
@@ -151,6 +152,7 @@ module Geos
 
       ret
     end
+    alias :to_geojsonable :as_geojson
   end
 end
 

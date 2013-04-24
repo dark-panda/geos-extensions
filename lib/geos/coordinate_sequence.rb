@@ -55,7 +55,7 @@ module Geos
     # * :encoded - enable or disable Google Maps encoding. The default is
     #   true.
     # * :level - set the level of the Google Maps encoding algorithm.
-    def to_jsonable(options = {})
+    def as_json(options = {})
       options = {
         :encoded => true,
         :level => 3
@@ -74,13 +74,15 @@ module Geos
         }
       end
     end
+    alias :to_jsonable :as_json
 
-    def to_geojsonable(options = {})
+    def as_geojson(options = {})
       {
         :type => 'LineString',
         :coordinates => self.to_a
       }
     end
+    alias :to_geojsonable :as_geojson
 
     def to_geojson(options = {})
       self.to_geojsonable(options).to_json
