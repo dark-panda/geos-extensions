@@ -72,28 +72,6 @@ class GoogleMapsApi2Tests < MiniTest::Unit::TestCase
     assert_equal('0.000,0.000,14.000,14.000', @geometrycollection.to_g_url_value(3))
   end
 
-  def test_to_jsonable
-    assert_equal({
-      :type => "point",
-      :lat => 10.01,
-      :lng => 10.0
-    }, @point.to_jsonable)
-
-    assert_equal({
-      :type => "polygon",
-      :encoded => true,
-      :polylines => [{
-        :points => "??_ibE?_~cH_hgN?_hgN~ggN~po]",
-        :levels => "BBBBB",
-        :bounds => {
-          :sw => [0.0, 0.0],
-          :ne => [5.0, 2.5]
-        }
-      }],
-      :options => {}
-    }, @polygon.to_jsonable)
-  end
-
   if defined?(JSON)
     def test_to_g_polygon
       assert_equal(

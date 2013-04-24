@@ -379,4 +379,302 @@ class GeosWriterTests < MiniTest::Unit::TestCase
     assert_equal("BOX(-20.0 -20.0, 30.0 30.0)", @multilinestring.to_box2d)
     assert_equal("BOX(0.0 0.0, 14.0 14.0)", @geometrycollection.to_box2d)
   end
+
+  def test_as_json
+    assert_equal({
+      :type => "point",
+      :lat => 10.01,
+      :lng => 10.0
+    }, @point.as_json)
+
+    assert_equal({
+      :type => "polygon",
+      :encoded => true,
+      :polylines => [ {
+        :points => "??_ibE?_~cH_hgN?_hgN~ggN~po]",
+        :levels => "BBBBB",
+        :bounds => {
+          :sw => [ 0.0, 0.0 ],
+          :ne => [ 5.0, 2.5 ]
+        }
+      } ],
+      :options => {}
+    }, @polygon.as_json)
+
+    assert_equal({
+      :type => "polygon",
+      :encoded => false,
+      :polylines => [ {
+        :points => [ [ 0.0, 0.0 ],  [ 0.0, 1.0 ],  [ 2.5, 2.5 ],  [ 5.0, 2.5 ],  [ 0.0, 0.0 ] ],
+        :bounds => {
+          :sw => [ 0.0, 0.0 ],
+          :ne => [ 5.0, 2.5 ]
+        }
+      } ]
+    }, @polygon.as_json(:encoded => false))
+
+    assert_equal({
+      :type => "lineString",
+      :encoded => true,
+      :points => "??_qo]_qo]_qo]??_qo]",
+      :levels => "BBBB"
+    }, @linestring.as_json)
+
+    assert_equal({
+      :type => "lineString",
+      :encoded => false,
+      :points => [ [ 0.0, 0.0 ], [ 5.0, 5.0 ], [ 5.0, 10.0 ], [ 10.0, 10.0 ] ]
+    }, @linestring.as_json(:encoded => false))
+
+    assert_equal([ {
+      :type => "point",
+      :lat => 0.0,
+      :lng => 0.0
+    }, {
+      :type => "point",
+      :lat => 10.0,
+      :lng => 10.0
+    } ], @multipoint.as_json)
+
+    assert_equal([ {
+      :type => "polygon",
+      :encoded => true,
+      :polylines => [ {
+        :points => "???_qo]_qo]??~po]~po]?",
+        :levels => "BBBBB",
+        :bounds => {
+          :sw => [ 0.0, 0.0 ],
+          :ne => [ 5.0, 5.0 ]
+        }
+      } ],
+      :options => {}
+    }, {
+      :type => "polygon",
+      :encoded => true,
+      :polylines => [ {
+        :points => "_c`|@_c`|@?_qo]_qo]??~po]~po]?",
+        :levels => "BBBBB",
+        :bounds => {
+          :sw => [ 10.0, 10.0 ],
+          :ne => [ 15.0, 15.0 ]
+        }
+      } ],
+      :options => {}
+    } ], @multipolygon.as_json)
+
+    assert_equal([ {
+      :type => "polygon",
+      :encoded => false,
+      :polylines => [ {
+        :points => [ [ 0.0, 0.0 ], [ 5.0, 0.0 ], [ 5.0, 5.0 ], [ 0.0, 5.0 ], [ 0.0, 0.0 ] ],
+        :bounds => {
+          :sw => [ 0.0, 0.0 ],
+          :ne => [ 5.0, 5.0 ]
+        }
+      } ]
+    }, {
+      :type => "polygon",
+      :encoded => false,
+      :polylines => [ {
+        :points => [ [ 10.0, 10.0 ], [ 15.0, 10.0 ], [ 15.0, 15.0 ], [ 10.0, 15.0 ], [ 10.0, 10.0 ] ],
+        :bounds => {
+          :sw => [ 10.0, 10.0 ],
+          :ne => [ 15.0, 15.0 ]
+        }
+      } ]
+    } ], @multipolygon.as_json(:encoded => false))
+
+    assert_equal([ {
+      :type => "lineString",
+      :encoded => true,
+      :points => "~fayB~fayB_kbvD_kbvD",
+      :levels => "BB"
+    }, {
+      :type => "lineString",
+      :encoded => true,
+      :points => "??_kbvD_kbvD",
+      :levels => "BB"
+    } ], @multilinestring.as_json)
+
+    assert_equal([{
+      :type => "lineString",
+      :encoded => false,
+      :points => [ [ -20.0, -20.0 ], [ 10.0, 10.0 ] ]
+    }, {
+      :type => "lineString",
+      :encoded => false,
+      :points => [ [ 0.0, 0.0 ], [ 30.0, 30.0 ] ]
+    } ], @multilinestring.as_json(:encoded => false))
+
+    assert_equal([
+      [ {
+        :type => "polygon",
+        :encoded => true,
+        :polylines => [ {
+          :points => "???_ibE_ibE??~hbE~hbE?",
+          :levels => "BBBBB",
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 1.0, 1.0 ]
+          }
+        } ],
+        :options => {}
+      }, {
+        :type => "polygon",
+        :encoded => true,
+        :polylines => [ {
+          :points => "_c`|@_c`|@_glW??_glW~flW??~flW",
+          :levels => "BBBBB",
+          :bounds => {
+            :sw => [ 10.0, 10.0 ],
+            :ne => [ 14.0, 14.0 ]
+          }
+        } ],
+        :options => {}
+      } ],
+
+      {
+        :type => "polygon",
+        :encoded => true,
+        :polylines => [ {
+          :points => "???_ibE_ibE??~hbE~hbE?",
+          :levels => "BBBBB",
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 1.0, 1.0 ]
+          }
+        } ],
+        :options => {}
+      }, {
+        :type => "polygon",
+        :encoded => true,
+        :polylines => [ {
+          :points => "???_qo]_qo]??~po]~po]?",
+          :levels => "BBBBB",
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 5.0, 5.0 ]
+          }
+        } ],
+        :options => {}
+      },
+
+      [ {
+        :type => "lineString",
+        :encoded => true,
+        :points => "??_}hQ_seK",
+        :levels => "BB"
+      }, {
+        :type => "lineString",
+        :encoded => true,
+        :points => "_c`|@_c`|@~zrc@~dvi@",
+        :levels => "BB"
+      } ],
+
+      {
+        :type => "lineString",
+        :encoded => true,
+        :points => "??_}hQ_seK",
+        :levels => "BB"
+      },
+
+      [ {
+        :type => "point",
+        :lat => 0.0,
+        :lng => 0.0
+      }, {
+        :type => "point",
+        :lat => 3.0,
+        :lng => 2.0
+      } ],
+
+      {
+        :type => "point",
+        :lat => 0.0,
+        :lng => 9.0
+      }
+    ], @geometrycollection.as_json)
+
+    assert_equal([
+      [ {
+        :type => "polygon",
+        :encoded => false,
+        :polylines => [ {
+          :points => [ [ 0.0, 0.0], [ 1.0, 0.0], [ 1.0, 1.0], [ 0.0, 1.0], [ 0.0, 0.0 ] ],
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 1.0, 1.0 ]
+          }
+        } ]
+      },
+
+      {
+        :type => "polygon",
+        :encoded => false,
+        :polylines => [ {
+          :points => [ [ 10.0, 10.0 ], [ 10.0, 14.0 ], [ 14.0, 14.0 ], [ 14.0, 10.0 ], [ 10.0, 10.0 ] ],
+          :bounds => {
+            :sw => [ 10.0, 10.0 ],
+            :ne => [ 14.0, 14.0 ]
+          }
+        } ]
+      } ],
+
+      {
+        :type => "polygon",
+        :encoded => false,
+        :polylines => [ {
+          :points => [ [ 0.0, 0.0 ], [ 1.0, 0.0 ], [ 1.0, 1.0 ], [ 0.0, 1.0 ], [ 0.0, 0.0 ] ],
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 1.0, 1.0 ]
+          }
+        } ]
+      },
+
+      {
+        :type => "polygon",
+        :encoded => false,
+        :polylines => [ {
+          :points => [ [ 0.0, 0.0 ], [ 5.0, 0.0 ], [ 5.0, 5.0 ], [ 0.0, 5.0 ], [ 0.0, 0.0 ] ],
+          :bounds => {
+            :sw => [ 0.0, 0.0 ],
+            :ne => [ 5.0, 5.0 ]
+          }
+        } ]
+      },
+
+      [ {
+        :type => "lineString",
+        :encoded => false,
+        :points => [ [ 0.0, 0.0 ], [ 2.0, 3.0 ] ]
+      }, {
+        :type => "lineString",
+        :encoded => false,
+        :points => [ [ 10.0, 10.0 ], [ 3.0, 4.0 ] ]
+      } ],
+
+      {
+        :type => "lineString",
+        :encoded => false,
+        :points => [ [ 0.0, 0.0 ], [ 2.0, 3.0 ] ]
+      },
+
+      [ {
+        :type => "point",
+        :lat => 0.0,
+        :lng => 0.0
+      }, {
+        :type => "point",
+        :lat => 3.0,
+        :lng => 2.0
+      } ],
+
+      {
+        :type => "point",
+        :lat => 0.0,
+        :lng => 9.0
+      }
+    ], @geometrycollection.as_json(:encoded => false))
+  end
 end
