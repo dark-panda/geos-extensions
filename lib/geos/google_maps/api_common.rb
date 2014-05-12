@@ -26,6 +26,13 @@ module Geos
           c = self.centroid
           "#{Geos::Helper.number_with_precision(c.lat, precision)},#{Geos::Helper.number_with_precision(c.lng, precision)}"
         end
+        alias_method :to_g_url_value_point, :to_g_url_value
+
+        # Spit out Google's toUrlValue format.
+        def to_g_url_value_bounds(precision = 6)
+          url_value = self.to_g_url_value(precision)
+          "#{url_value},#{url_value}"
+        end
       end
 
       module UrlValueBounds
@@ -33,6 +40,11 @@ module Geos
         def to_g_url_value(precision = 6)
           e = self.envelope
           "#{e.southwest.to_g_url_value(precision)},#{e.northeast.to_g_url_value(precision)}"
+        end
+        alias_method :to_g_url_value_bounds, :to_g_url_value
+
+        def to_g_url_value_point(precision = 6)
+          self.centroid.to_g_url_value(precision)
         end
       end
     end

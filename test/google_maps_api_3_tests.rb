@@ -42,41 +42,6 @@ class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
     assert_equal('0.000000,0.000000|2.500000,5.000000', @polygon.to_g_geocoder_bounds)
   end
 
-  def test_to_g_url_value_point
-    assert_equal('10.010000,10.000000', @point.to_g_url_value)
-    assert_equal('10.010,10.000', @point.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_polygon
-    assert_equal('0.000000,0.000000,2.500000,5.000000', @polygon.to_g_url_value)
-    assert_equal('0.000,0.000,2.500,5.000', @polygon.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_line_string
-    assert_equal('0.000000,0.000000,10.000000,10.000000', @linestring.to_g_url_value)
-    assert_equal('0.000,0.000,10.000,10.000', @linestring.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_multi_point
-    assert_equal('0.000000,0.000000,10.000000,10.000000', @multipoint.to_g_url_value)
-    assert_equal('0.000,0.000,10.000,10.000', @multipoint.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_multi_polygon
-    assert_equal('0.000000,0.000000,15.000000,15.000000', @multipolygon.to_g_url_value)
-    assert_equal('0.000,0.000,15.000,15.000', @multipolygon.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_multi_line_string
-    assert_equal('-20.000000,-20.000000,30.000000,30.000000', @multilinestring.to_g_url_value)
-    assert_equal('-20.000,-20.000,30.000,30.000', @multilinestring.to_g_url_value(3))
-  end
-
-  def test_to_g_url_value_geometry_collection
-    assert_equal('0.000000,0.000000,14.000000,14.000000', @geometrycollection.to_g_url_value)
-    assert_equal('0.000,0.000,14.000,14.000', @geometrycollection.to_g_url_value(3))
-  end
-
   if defined?(JSON)
     def poly_tester(type, expected, poly)
       json = poly.gsub(/new google.maps.LatLng\(([^)]+)\)/, '[ \1 ]').gsub(/"map":\s*map/, %{"map": "map"})
