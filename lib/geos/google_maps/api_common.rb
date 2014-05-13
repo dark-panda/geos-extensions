@@ -28,7 +28,7 @@ module Geos
         end
         alias_method :to_g_url_value_point, :to_g_url_value
 
-        # Spit out Google's toUrlValue format.
+        # Force to Google's toUrlValue as a set of bounds.
         def to_g_url_value_bounds(precision = 6)
           url_value = self.to_g_url_value(precision)
           "#{url_value},#{url_value}"
@@ -43,6 +43,7 @@ module Geos
         end
         alias_method :to_g_url_value_bounds, :to_g_url_value
 
+        # Force to Google's toUrlValue as a point.
         def to_g_url_value_point(precision = 6)
           self.centroid.to_g_url_value(precision)
         end
