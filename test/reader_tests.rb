@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class GeosReaderTests < MiniTest::Unit::TestCase
+class GeosReaderTests < Minitest::Test
   include TestHelper
 
   def test_from_wkb_bin

@@ -3,7 +3,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class YamlTests < MiniTest::Unit::TestCase
+class YamlTests < Minitest::Test
   include TestHelper
 
   # This is for 1.8 support, makes tests easier

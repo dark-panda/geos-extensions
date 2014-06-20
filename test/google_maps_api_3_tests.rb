@@ -8,7 +8,7 @@ rescue LoadError
   # do nothing
 end
 
-class GoogleMapsApi3Tests < MiniTest::Unit::TestCase
+class GoogleMapsApi3Tests < Minitest::Test
   include TestHelper
 
   def initialize(*args)

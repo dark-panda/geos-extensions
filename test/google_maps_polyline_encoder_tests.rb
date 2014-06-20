@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class GoogleMapsPolylineEncoderTests < MiniTest::Unit::TestCase
+class GoogleMapsPolylineEncoderTests < Minitest::Test
   include TestHelper
 
   ENCODED = '_p~iF~ps|U_ulLnnqC_mqNvxq`@'

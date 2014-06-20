@@ -3,7 +3,7 @@ $: << File.dirname(__FILE__)
 require 'test_helper'
 
 class HelperTests
-  class ArrayWrapTests < MiniTest::Unit::TestCase
+  class ArrayWrapTests < Minitest::Test
     include TestHelper
 
     def test_array

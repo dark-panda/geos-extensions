@@ -130,7 +130,7 @@ class GoogleMapsApiCommonTests
     end
   end
 
-  class Api2Tests < MiniTest::Unit::TestCase
+  class Api2Tests < Minitest::Test
     include Tests
 
     def setup
@@ -138,7 +138,7 @@ class GoogleMapsApiCommonTests
     end
   end
 
-  class Api3Tests < MiniTest::Unit::TestCase
+  class Api3Tests < Minitest::Test
     include Tests
 
     def setup

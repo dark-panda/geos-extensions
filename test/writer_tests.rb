@@ -15,7 +15,7 @@ rescue LoadError
   # do nothing
 end
 
-class GeosWriterTests < MiniTest::Unit::TestCase
+class GeosWriterTests < Minitest::Test
   include TestHelper
 
   def initialize(*args)
