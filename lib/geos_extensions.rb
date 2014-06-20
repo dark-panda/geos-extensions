@@ -8,26 +8,30 @@ end
 
 require 'geos' unless defined?(Geos)
 
-require File.join(File.dirname(__FILE__), *%w{ geos extensions version })
-require File.join(File.dirname(__FILE__), *%w{ geos yaml })
-
 # Some custom extensions to the SWIG-based Geos Ruby extension.
 module Geos
   GEOS_EXTENSIONS_BASE = File.join(File.dirname(__FILE__))
-  GEOS_EXTENSIONS_VERSION = Geos::Extensions::VERSION
 
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geometry })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos coordinate_sequence })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos point })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos line_string })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos polygon })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geometry_collection })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos multi_polygon })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos multi_line_string })
-  require File.join(GEOS_EXTENSIONS_BASE, *%w{ geos multi_point })
+  %w{
+    extensions/version
+    yaml
+    geometry
+    coordinate_sequence
+    point
+    line_string
+    polygon
+    geometry_collection
+    multi_polygon
+    multi_line_string
+    multi_point
+  }.each do |file|
+    require File.join(GEOS_EXTENSIONS_BASE, "geos", file)
+  end
 
   autoload :Helper, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos geos_helper })
   autoload :GoogleMaps, File.join(GEOS_EXTENSIONS_BASE, *%w{ geos google_maps })
+
+  GEOS_EXTENSIONS_VERSION = Geos::Extensions::VERSION
 
   REGEXP_FLOAT = /(-?\d*(?:\.\d+)?|-?\d*(?:\.\d+?)[eE][-+]?\d+)/
   REGEXP_LAT_LNG = /#{REGEXP_FLOAT}\s*,\s*#{REGEXP_FLOAT}/
