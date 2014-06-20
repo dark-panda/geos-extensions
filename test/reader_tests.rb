@@ -105,6 +105,19 @@ class GeosReaderTests < Minitest::Test
     assert_equal(10.01, point.lng)
   end
 
+  def test_from_g_lat_lng_exceptions
+    assert_raises(Geos::Extensions::InvalidGLatLngFormatError) do
+      Geos.from_g_lat_lng('foo')
+    end
+
+    begin
+      Geos.from_g_lat_lng('foo')
+    rescue => e
+      assert_kind_of(RuntimeError, e)
+      assert_kind_of(Geos::ParseError, e)
+    end
+  end
+
   def test_from_g_lat_lng_bounds
     bounds = Geos.from_g_lat_lng(BOUNDS_G_LAT_LNG)
 
@@ -180,6 +193,19 @@ class GeosReaderTests < Minitest::Test
       Geos.read('BOX(123.456 78.9, 9.876 54.321)').to_wkt(:rounding_precision => 0))
 
     assert_equal('POINT (0 0)', Geos.read('BOX(0 0, 0 0)').to_wkt(:trim => true))
+  end
+
+  def test_from_box2d_exceptions
+    assert_raises(Geos::Extensions::InvalidBox2DError) do
+      Geos.from_box2d('foo')
+    end
+
+    begin
+      Geos.from_box2d('foo')
+    rescue => e
+      assert_kind_of(RuntimeError, e)
+      assert_kind_of(Geos::ParseError, e)
+    end
   end
 
   def test_allowed

@@ -77,6 +77,17 @@ version 0.3.0 we have decided to strip those extensions out and move them into
 their own gem called activerecord-spatial available at
 https://github.com/zoocasa/activerecord-spatial .
 
+== Error Handling in 1.0+
+
+Starting with ZGEL 1.0.0, parser exceptions raised from methods like
+`Geos.from_g_lat_lng` and `Geos.from_box2d` are now instances of
+`Geos::Extensions::InvalidGLatLngFormatError` and `Geos::Extensions::InvalidBox2DError`
+respectively, which themselves are inherited from `Geos::ParseError`,
+`Geos::Error` and `RuntimeError`. This reflects similar changes in ffi-geos
+1.0.0. For compatibility purposes with older versions of ffi-geos and the
+native geos library, the exception classes in `Geos` will be created for
+you if they aren't already defined.
+
 == Thanks
 
 * Thanks to Charlie Savage for donating for YAML dumping and loading

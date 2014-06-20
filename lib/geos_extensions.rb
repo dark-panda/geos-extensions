@@ -14,6 +14,7 @@ module Geos
 
   %w{
     extensions/version
+    extensions/exceptions
     yaml
     geometry
     coordinate_sequence
@@ -187,7 +188,7 @@ module Geos
       when REGEXP_G_LAT_LNG_BOUNDS, REGEXP_G_LAT_LNG
         $~.captures
       else
-        raise "Invalid GLatLng format"
+        raise Geos::Extensions::InvalidGLatLngFormatError.new
     end
 
     geom = if match_data.length > 3
@@ -235,7 +236,7 @@ module Geos
       when REGEXP_BOX2D
         $~.captures
       else
-        raise "Invalid BOX2D"
+        raise Geos::Extensions::InvalidBox2DError.new
     end
 
     coords = []
