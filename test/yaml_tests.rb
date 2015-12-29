@@ -11,20 +11,11 @@ class YamlTests < Minitest::Test
     YAML::ENGINE = 'syck'
   end
 
-  def munge_expected(expected)
-    # Sych expects a space after the tag, psych does not
-    if YAML::ENGINE == 'syck'
-      expected.sub!(/\n/, " \n")
-    else
-      expected
-    end
-  end
-
   def test_point_wkt
     geom = Geos.read('POINT(5 7)')
     yaml = YAML.dump(geom)
 
-    expected = munge_expected <<-EOS
+    expected = <<-EOS
 --- !ruby/object:Geos::Point
 geom: POINT (5.0000000000000000 7.0000000000000000)
 EOS
@@ -41,7 +32,7 @@ EOS
     geom = Geos.read('LINESTRING (0 0, 10 10)')
     yaml = YAML.dump(geom)
 
-    expected = munge_expected <<-EOS
+    expected = <<-EOS
 --- !ruby/object:Geos::LineString
 geom: LINESTRING (0.0000000000000000 0.0000000000000000, 10.0000000000000000 10.0000000000000000)
 EOS
@@ -66,12 +57,12 @@ EOS
     yaml = YAML.dump(geom)
 
     expected = if YAML::ENGINE == 'syck' || RUBY_ENGINE == 'jruby'
-      munge_expected(<<-EOS)
+      <<-EOS
 --- !ruby/object:Geos::Polygon
 geom: POLYGON ((0.0000000000000000 0.0000000000000000, 5.0000000000000000 0.0000000000000000, 5.0000000000000000 5.0000000000000000, 0.0000000000000000 5.0000000000000000, 0.0000000000000000 0.0000000000000000))
 EOS
   else
-  <<-EOS
+    <<-EOS
 --- !ruby/object:Geos::Polygon
 geom: POLYGON ((0.0000000000000000 0.0000000000000000, 5.0000000000000000 0.0000000000000000,
   5.0000000000000000 5.0000000000000000, 0.0000000000000000 5.0000000000000000, 0.0000000000000000
@@ -92,7 +83,7 @@ EOS
     geom = Geos.read('GEOMETRYCOLLECTION (POINT(5 7))')
     yaml = YAML.dump(geom)
 
-    expected = munge_expected <<-EOS
+    expected = <<-EOS
 --- !ruby/object:Geos::GeometryCollection
 geom: GEOMETRYCOLLECTION (POINT (5.0000000000000000 7.0000000000000000))
     EOS
