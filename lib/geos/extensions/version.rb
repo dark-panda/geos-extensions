@@ -1,7 +1,7 @@
 
 module Geos
   module Extensions
-    VERSION = "0.5.1.dev"
+    VERSION = "1.0.0.dev"
   end
 end
 
