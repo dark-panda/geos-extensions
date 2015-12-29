@@ -56,7 +56,7 @@ EOS
     geom = Geos.read('POLYGON ((0 0, 5 0, 5 5, 0 5, 0 0))')
     yaml = YAML.dump(geom)
 
-    expected = if YAML::ENGINE == 'syck' || RUBY_ENGINE == 'jruby'
+    expected = if RUBY_VERSION < '2.2' && (YAML::ENGINE == 'syck' || RUBY_ENGINE == 'jruby')
       <<-EOS
 --- !ruby/object:Geos::Polygon
 geom: POLYGON ((0.0000000000000000 0.0000000000000000, 5.0000000000000000 0.0000000000000000, 5.0000000000000000 5.0000000000000000, 0.0000000000000000 5.0000000000000000, 0.0000000000000000 0.0000000000000000))
