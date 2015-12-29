@@ -1,7 +1,7 @@
 
-= Zoocasa GEOS Extensions
+= GEOS Extensions
 
-The Zoocasa GEOS Extensions library (ZGEL) is a set of utilities and tools that
+The GEOS Extensions library (GEL) is a set of utilities and tools that
 extend the GEOS Ruby bindings module. From http://geos.refractions.net/ ...
 
   GEOS (Geometry Engine - Open Source) is a C++ port of the  Java Topology
@@ -21,7 +21,7 @@ in the geos-extensions gemspec.
 
 The ffi-geos gem is available at https://github.com/dark-panda/ffi-geos .
 
-ZGEL contains a number of enhancements to the GEOS Ruby library:
+GEL contains a number of enhancements to the GEOS Ruby library:
 
 * a host of helper methods to make reading and writing to and from WKT
   and WKB easier. For instance, rather than
@@ -48,7 +48,7 @@ ZGEL contains a number of enhancements to the GEOS Ruby library:
 
 == Google Maps API Output
 
-Starting with version 0.1.0, ZGEL supports both Google Maps API
+Starting with version 0.1.0, GEL supports both Google Maps API
 version 2 and version 3 style outputs. By default and for the sake of
 backwards compatibility, API version 2 output will remain the default
 but as Google has deprecated API version 2, so shall we at some point
@@ -75,11 +75,11 @@ version 2 since switching between the two is pretty painless.
 This extension used to contain a bunch of extensions to ActiveRecord, but as of
 version 0.3.0 we have decided to strip those extensions out and move them into
 their own gem called activerecord-spatial available at
-https://github.com/zoocasa/activerecord-spatial .
+https://github.com/dark-panda/activerecord-spatial .
 
 == Error Handling in 1.0+
 
-Starting with ZGEL 1.0.0, parser exceptions raised from methods like
+Starting with GEL 1.0.0, parser exceptions raised from methods like
 `Geos.from_g_lat_lng` and `Geos.from_box2d` are now instances of
 `Geos::Extensions::InvalidGLatLngFormatError` and `Geos::Extensions::InvalidBox2DError`
 respectively, which themselves are inherited from `Geos::ParseError`,
