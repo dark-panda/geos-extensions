@@ -12,6 +12,11 @@ module Geos
       self.coord_seq.to_geojsonable(options)
     end
     alias_method :to_geojsonable, :as_geojson
+
+    # Dumps points similarly to the PostGIS `ST_DumpPoints` function.
+    def dump_points(cur_path = [])
+      cur_path.concat(self.to_a)
+    end
   end
 end
 
