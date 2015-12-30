@@ -98,6 +98,10 @@ module TestHelper
   BOUNDS_G_LAT_LNG = "((0.1, 0.1), (5.2, 5.2))"
   BOUNDS_G_LAT_LNG_URL_VALUE = '0.1,0.1,5.2,5.2'
 
+  def read(*args)
+    Geos.read(*args)
+  end
+
   if String.method_defined?(:force_encoding)
     POINT_WKB_BIN.force_encoding('BINARY')
     POINT_EWKB_BIN.force_encoding('BINARY')
