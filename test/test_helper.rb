@@ -98,8 +98,22 @@ module TestHelper
   BOUNDS_G_LAT_LNG = "((0.1, 0.1), (5.2, 5.2))"
   BOUNDS_G_LAT_LNG_URL_VALUE = '0.1,0.1,5.2,5.2'
 
+  def self.included(base)
+    base.class_eval do
+      attr_reader :writer
+    end
+  end
+
+  def setup
+    @writer = Geos::WktWriter.new
+  end
+
   def read(*args)
     Geos.read(*args)
+  end
+
+  def write(*args)
+    writer.write(*args)
   end
 
   if String.method_defined?(:force_encoding)
@@ -126,6 +140,31 @@ module TestHelper
       [ 5.0, 2.5 ],
       [ 0.0, 0.0 ]
     ], cs.to_a)
+  end
+
+  def srid_copy_tester(method, expected, expected_srid, srid_policy, wkt, *args)
+    geom = read(wkt)
+    geom.srid = 4326
+    Geos.srid_copy_policy = srid_policy
+    geom_b = geom.send(method, *args)
+    assert_equal(4326, geom.srid)
+    assert_equal(expected_srid, geom_b.srid)
+    assert_equal(expected, write(geom_b))
+  ensure
+    Geos.srid_copy_policy = :default
+  end
+
+  def simple_bang_tester(method, expected, wkt, *args)
+    geom = read(wkt)
+    result = geom.send(method, *args)
+
+    assert_equal(wkt, write(geom))
+    assert_equal(expected, write(result))
+
+    geom = read(wkt)
+    geom.send("#{method}!", *args)
+
+    assert_equal(expected, write(geom))
   end
 end
 
