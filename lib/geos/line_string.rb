@@ -63,6 +63,33 @@ module Geos
       ret.srid = pick_srid_according_to_policy(self.srid)
       ret
     end
+
+    %w{
+      affine
+      rotate
+      rotate_x
+      rotate_y
+      rotate_z
+      scale
+      trans_scale
+      translate
+    }.each do |m|
+      self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
+        def #{m}!(*args)
+          unless self.empty?
+            self.coord_seq.#{m}!(*args)
+          end
+
+          self
+        end
+
+        def #{m}(*args)
+          ret = self.dup.#{m}!(*args)
+          ret.srid = pick_srid_according_to_policy(self.srid)
+          ret
+        end
+      EOF
+    end
   end
 end
 

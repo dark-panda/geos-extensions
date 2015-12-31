@@ -164,4 +164,93 @@ class CoordinateSequenceTests < Minitest::Test
     assert_equal(coords, cs.to_a)
     assert_equal(expected, cs2.to_a)
   end
+
+  def cs_affine_tester(method, expected, coords, *args)
+    cs = Geos::CoordinateSequence.new(coords)
+    cs.send("#{method}!", *args)
+
+    expected.length.times do |i|
+      assert_in_delta(expected[i], cs.get_ordinate(0, i), DELTA_TOLERANCE)
+    end
+
+    cs = Geos::CoordinateSequence.new(coords)
+    cs2 = cs.send(method, *args)
+
+    expected.length.times do |i|
+      assert_in_delta(coords[i], cs.get_ordinate(0, i), DELTA_TOLERANCE)
+      assert_in_delta(expected[i], cs2.get_ordinate(0, i), DELTA_TOLERANCE)
+    end
+  end
+
+  def test_rotate
+    cs_affine_tester(:rotate, [ 29.0, 11.0 ], [ 1, 1 ], Math::PI / 2, [ 10.0, 20.0 ])
+    cs_affine_tester(:rotate, [ -2.0, 0.0 ], [ 1, 1 ], -Math::PI / 2, [ -1.0, 2.0 ])
+    cs_affine_tester(:rotate, [ 19.0, 1.0 ], [ 1, 1 ], Math::PI / 2, read('POINT(10 10)'))
+    cs_affine_tester(:rotate, [ -0.5, 0.5 ], [ 1, 1 ], Math::PI / 2, read('LINESTRING(0 0, 1 0)'))
+  end
+
+  def test_rotate_x
+    cs_affine_tester(:rotate_x, [ 1, -1, -1 ], [ 1, 1, 1 ], Math::PI)
+    cs_affine_tester(:rotate_x, [ 1, -1, 1 ], [ 1, 1, 1 ], Math::PI / 2)
+    cs_affine_tester(:rotate_x, [ 1, 1, -1 ], [ 1, 1, 1 ], Math::PI + Math::PI / 2)
+    cs_affine_tester(:rotate_x, [ 1, 1, 1 ], [ 1, 1, 1 ], Math::PI * 2)
+  end
+
+  def test_rotate_y
+    cs_affine_tester(:rotate_y, [ -1, 1, -1 ], [ 1, 1, 1 ], Math::PI)
+    cs_affine_tester(:rotate_y, [ 1, 1, -1 ], [ 1, 1, 1 ], Math::PI / 2)
+    cs_affine_tester(:rotate_y, [ -1, 1, 1 ], [ 1, 1, 1 ], Math::PI + Math::PI / 2)
+    cs_affine_tester(:rotate_y, [ 1, 1, 1 ], [ 1, 1, 1 ], Math::PI * 2)
+  end
+
+  def test_rotate_z
+    cs_affine_tester(:rotate_z, [ -1, -1 ], [ 1, 1 ], Math::PI)
+    cs_affine_tester(:rotate_z, [ -1, 1 ], [ 1, 1 ], Math::PI / 2)
+    cs_affine_tester(:rotate_z, [ 1, -1 ], [ 1, 1 ], Math::PI + Math::PI / 2)
+    cs_affine_tester(:rotate_z, [ 1, 1 ], [ 1, 1 ], Math::PI * 2)
+  end
+
+  def test_scale
+    cs_affine_tester(:scale, [ 5, 5 ], [ 1, 1 ], 5, 5)
+    cs_affine_tester(:scale, [ 3, 2 ], [ 1, 1 ], 3, 2)
+    cs_affine_tester(:scale, [ 40, 40, 40 ], [ 10, 20, -5 ], 4, 2, -8)
+  end
+
+  def test_scale_hash
+    cs_affine_tester(:scale, [ 5, 5 ], [ 1, 1 ], :x => 5, :y => 5)
+    cs_affine_tester(:scale, [ 3, 2 ], [ 1, 1 ], :x => 3, :y => 2)
+    cs_affine_tester(:scale, [ 40, 40, 40 ], [ 10, 20, -5 ], :x => 4, :y => 2, :z => -8)
+  end
+
+  def test_trans_scale
+    cs_affine_tester(:trans_scale, [ 2, 2 ], [ 1, 1 ], 1, 1, 1, 1)
+    cs_affine_tester(:trans_scale, [ 3, 3 ], [ 2, 2 ], 1, 1, 1, 1)
+    cs_affine_tester(:trans_scale, [ 0, 0 ], [ 1, 1 ], -1, -1, -1, -1)
+    cs_affine_tester(:trans_scale, [ 1, 2 ], [ 1, 1 ], 0, 1, 1, 1)
+    cs_affine_tester(:trans_scale, [ 2, 1 ], [ 1, 1 ], 1, 0, 1, 1)
+    cs_affine_tester(:trans_scale, [ 0, 2 ], [ 1, 1 ], 1, 1, 0, 1)
+    cs_affine_tester(:trans_scale, [ 2, 0 ], [ 1, 1 ], 1, 1, 1, 0)
+    cs_affine_tester(:trans_scale, [ 3, 2 ], [ 1, 1 ], 2, 1, 1, 1)
+    cs_affine_tester(:trans_scale, [ 2, 3 ], [ 1, 1 ], 1, 2, 1, 1)
+    cs_affine_tester(:trans_scale, [ 4, 2 ], [ 1, 1 ], 1, 1, 2, 1)
+    cs_affine_tester(:trans_scale, [ 2, 4 ], [ 1, 1 ], 1, 1, 1, 2)
+    cs_affine_tester(:trans_scale, [ 15, 28 ], [ 1, 1 ], 2, 3, 5, 7)
+    cs_affine_tester(:trans_scale, [ 15, 28, 1 ], [ 1, 1, 1 ], 2, 3, 5, 7)
+  end
+
+  def test_trans_scale_hash
+    cs_affine_tester(:trans_scale, [ 2, 2 ], [ 1, 1 ], :delta_x => 1, :delta_y => 1, :x_factor => 1, :y_factor => 1)
+    cs_affine_tester(:trans_scale, [ 15, 28, 1 ], [ 1, 1, 1 ], :delta_x => 2, :delta_y => 3, :x_factor => 5, :y_factor => 7)
+    cs_affine_tester(:trans_scale, [ 3, 1, 1 ], [ 1, 1, 1 ], :delta_x => 2, :z_factor => 2)
+  end
+
+  def test_translate
+    cs_affine_tester(:translate, [ 5, 12 ], [ 0, 0 ], 5, 12)
+    cs_affine_tester(:translate, [ -3, -7, 3 ], [ 0, 0, 0 ], -3, -7, 3)
+  end
+
+  def test_translate_hash
+    cs_affine_tester(:translate, [ 5, 12 ], [ 0, 0 ], :x => 5, :y => 12)
+    cs_affine_tester(:translate, [ -3, -7, 3 ], [ 0, 0, 0 ], :x => -3, :y => -7, :z => 3)
+  end
 end
