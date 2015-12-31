@@ -3,18 +3,6 @@
 
 module Geos
   class CoordinateSequence
-    # Returns a Ruby Array of Arrays of coordinates within the
-    # CoordinateSequence in the form [ x, y, z ].
-    def to_a
-      (0...self.length).to_a.collect do |p|
-        [
-          self.get_x(p),
-          (self.dimensions >= 2 ? self.get_y(p) : nil),
-          (self.dimensions >= 3 && self.get_z(p) > 1.7e-306 ? self.get_z(p) : nil)
-        ].compact
-      end
-    end
-
     # Build some XmlMarkup for KML. You can set various KML options like
     # tessellate, altitudeMode, etc. Use Rails/Ruby-style code and it
     # will be converted automatically, i.e. :altitudeMode, not
