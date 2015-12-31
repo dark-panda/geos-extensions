@@ -144,6 +144,17 @@ module TestHelper
     ], cs.to_a)
   end
 
+  def simple_tester(method, expected, geom, *args)
+    geom = read(geom)
+    result = geom.send(method, *args)
+
+    if result.is_a?(Geos::Geometry)
+      result = write(result)
+    end
+
+    assert_equal(expected, result)
+  end
+
   def srid_copy_tester(method, expected, expected_srid, srid_policy, wkt, *args)
     geom = read(wkt)
     geom.srid = 4326
