@@ -3,14 +3,16 @@ if RUBY_VERSION >= '1.9'
   require 'simplecov'
 
   SimpleCov.command_name('Unit Tests')
+  SimpleCov.merge_timeout(3600)
   SimpleCov.start do
     add_filter '/test/'
+    add_filter '/.bundle/'
   end
 end
 
 require 'rubygems'
-require 'forwardable'
 require 'minitest/autorun'
+require 'minitest/reporters' if RUBY_VERSION >= '1.9'
 
 if RUBY_VERSION >= '1.9'
   require 'minitest/reporters'
@@ -184,5 +186,5 @@ module TestHelper
 end
 
 if RUBY_VERSION >= '1.9'
-  MiniTest::Reporters.use!(MiniTest::Reporters::SpecReporter.new)
+  Minitest::Reporters.use!(Minitest::Reporters::SpecReporter.new)
 end
