@@ -12,7 +12,7 @@ module Geos
       latitude lat north south n s
     }.each do |name|
       self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
-        alias #{name} :y
+        alias_method :#{name}, :y
       EOF
     end
 
@@ -27,7 +27,7 @@ module Geos
       longitude lng east west e w
     }.each do |name|
       self.class_eval(<<-EOF, __FILE__, __LINE__ + 1)
-        alias #{name} :x
+        alias_method :#{name}, :x
       EOF
     end
 
@@ -106,7 +106,7 @@ module Geos
         { :type => 'point', :lat => cs.get_y(0), :lng => cs.get_x(0) }
       end
     end
-    alias :to_jsonable :as_json
+    alias_method :to_jsonable, :as_json
 
     def as_geojson(options = {})
       {
@@ -114,7 +114,7 @@ module Geos
         :coordinates => self.to_a
       }
     end
-    alias :to_geojsonable :as_geojson
+    alias_method :to_geojsonable, :as_geojson
   end
 end
 

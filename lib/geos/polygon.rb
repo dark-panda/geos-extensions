@@ -128,7 +128,7 @@ module Geos
         ret
       end
     end
-    alias :to_jsonable :as_json
+    alias_method :to_jsonable, :as_json
 
     # Options:
     #
@@ -152,7 +152,7 @@ module Geos
 
       ret
     end
-    alias :to_geojsonable :as_geojson
+    alias_method :to_geojsonable, :as_geojson
   end
 end
 

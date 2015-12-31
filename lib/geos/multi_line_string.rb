@@ -9,7 +9,7 @@ module Geos
         }
       }
     end
-    alias :as_geojson :to_geojsonable
+    alias_method :as_geojson, :to_geojsonable
   end
 end
 

@@ -181,7 +181,7 @@ module Geos::GoogleMaps
         p.to_g_polyline_api3(polyline_options, options)
       end
     end
-    alias :to_g_polylines_api3 :to_g_polyline_api3
+    alias_method :to_g_polylines_api3, :to_g_polyline_api3
 
     # Returns a Ruby Array of Polygons for each geometry in the
     # collection. If the :single option is set, a single Polygon object will

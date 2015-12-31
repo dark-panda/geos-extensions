@@ -93,8 +93,8 @@ module Geos
         @upper_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(3)} #{cs.get_y(3)})")
       end
     end
-    alias :nw :upper_left
-    alias :northwest :upper_left
+    alias_method :nw, :upper_left
+    alias_method :northwest, :upper_left
 
     # Returns a Point for the envelope's upper right coordinate.
     def upper_right
@@ -105,8 +105,8 @@ module Geos
         @upper_right = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(2)} #{cs.get_y(2)})")
       end
     end
-    alias :ne :upper_right
-    alias :northeast :upper_right
+    alias_method :ne, :upper_right
+    alias_method :northeast, :upper_right
 
     # Returns a Point for the envelope's lower right coordinate.
     def lower_right
@@ -117,8 +117,8 @@ module Geos
         @lower_right = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(1)} #{cs.get_y(1)})")
       end
     end
-    alias :se :lower_right
-    alias :southeast :lower_right
+    alias_method :se, :lower_right
+    alias_method :southeast, :lower_right
 
     # Returns a Point for the envelope's lower left coordinate.
     def lower_left
@@ -129,8 +129,8 @@ module Geos
         @lower_left = Geos::wkt_reader_singleton.read("POINT(#{cs.get_x(0)} #{cs.get_y(0)})")
       end
     end
-    alias :sw :lower_left
-    alias :southwest :lower_left
+    alias_method :sw, :lower_left
+    alias_method :southwest, :lower_left
 
     # Northern-most Y coordinate.
     def top
@@ -140,8 +140,8 @@ module Geos
         @top = self.upper_right.y
       end
     end
-    alias :n :top
-    alias :north :top
+    alias_method :n, :top
+    alias_method :north, :top
 
     # Eastern-most X coordinate.
     def right
@@ -151,8 +151,8 @@ module Geos
         @right = self.upper_right.x
       end
     end
-    alias :e :right
-    alias :east :right
+    alias_method :e, :right
+    alias_method :east, :right
 
     # Southern-most Y coordinate.
     def bottom
@@ -162,8 +162,8 @@ module Geos
         @bottom = self.lower_left.y
       end
     end
-    alias :s :bottom
-    alias :south :bottom
+    alias_method :s, :bottom
+    alias_method :south, :bottom
 
     # Western-most X coordinate.
     def left
@@ -173,8 +173,8 @@ module Geos
         @left = self.lower_left.x
       end
     end
-    alias :w :left
-    alias :west :left
+    alias_method :w, :left
+    alias_method :west, :left
 
     # Spits out a bounding box the way Flickr likes it. You can set the
     # precision of the rounding using the :precision option. In order to
@@ -203,21 +203,21 @@ module Geos
     def lat_lng
       self.centroid.to_a[0, 2].reverse
     end
-    alias :lat_long :lat_lng
-    alias :latlng :lat_lng
-    alias :latlong :lat_lng
-    alias :lat_lon :lat_lng
-    alias :latlon :lat_lng
+    alias_method :lat_long, :lat_lng
+    alias_method :latlng, :lat_lng
+    alias_method :latlong, :lat_lng
+    alias_method :lat_lon, :lat_lng
+    alias_method :latlon, :lat_lng
 
     # Returns the X and Y coordinates of the Geometry's centroid in an Array.
     def lng_lat
       self.centroid.to_a[0, 2]
     end
-    alias :long_lat :lng_lat
-    alias :lnglat :lng_lat
-    alias :longlat :lng_lat
-    alias :lon_lat :lng_lat
-    alias :lonlat :lng_lat
+    alias_method :long_lat, :lng_lat
+    alias_method :lnglat, :lng_lat
+    alias_method :longlat, :lng_lat
+    alias_method :lon_lat, :lng_lat
+    alias_method :lonlat, :lng_lat
 
     # Spits out a Hash containing the cardinal points that describe the
     # Geometry's bbox.

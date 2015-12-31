@@ -16,7 +16,7 @@ module Geos
       def [](*args)
         self.to_a[*args]
       end
-      alias :slice :[]
+      alias_method :slice, :[]
     end
 
     # Returns the last geometry from the collection.
@@ -30,7 +30,7 @@ module Geos
         p.to_jsonable options
       end
     end
-    alias :to_jsonable :as_json
+    alias_method :to_jsonable, :as_json
 
     # Build some XmlMarkup for KML.
     def to_kml(*args)
@@ -54,7 +54,7 @@ module Geos
         :geometries => self.to_a.collect { |g| g.to_geojsonable(options) }
       }
     end
-    alias :to_geojsonable :as_geojson
+    alias_method :to_geojsonable, :as_geojson
   end
 end
 

@@ -74,7 +74,7 @@ module Geos
         }
       end
     end
-    alias :to_jsonable :as_json
+    alias_method :to_jsonable, :as_json
 
     def as_geojson(options = {})
       {
@@ -82,7 +82,7 @@ module Geos
         :coordinates => self.to_a
       }
     end
-    alias :to_geojsonable :as_geojson
+    alias_method :to_geojsonable, :as_geojson
 
     def to_geojson(options = {})
       self.to_geojsonable(options).to_json
