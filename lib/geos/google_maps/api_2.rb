@@ -1,3 +1,5 @@
+# encoding: UTF-8
+# frozen_string_literal: true
 
 module Geos::GoogleMaps::Api2
   module Geometry

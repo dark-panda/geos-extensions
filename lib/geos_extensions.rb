@@ -1,3 +1,5 @@
+# encoding: UTF-8
+# frozen_string_literal: true
 
 begin
   if !ENV['USE_BINARY_GEOS']

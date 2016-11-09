@@ -1,3 +1,5 @@
+# encoding: UTF-8
+# frozen_string_literal: true
 
 module Geos
   # This is our base module that we use for some generic methods used all
@@ -60,7 +62,7 @@ module Geos
         []
       end
 
-      ret = ''
+      ret = ''.dup
 
       if options[:include_srid]
         srid = if options[:srid]
