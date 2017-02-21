@@ -26,3 +26,5 @@ Rake::RDocTask.new do |t|
   t.rdoc_files.include('README.rdoc', 'MIT-LICENSE', 'lib/**/*.rb')
 end
 
+task :default => :test
+
